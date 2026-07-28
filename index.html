@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moye's Treats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="bg-[#f3e8ff]">
+
+<div id="app"></div>
+
+<script>
+const products = {
+  parfaits: {
+    id: 'parfaits',
+    name: 'Parfaits',
+    icon: '🍨',
+    desc: 'Creamy layers of yoghurt, fruit and crunch — from a single small cup to a shareable 2-litre bowl.',
+    fromPrice: 3500,
+    images: ['https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400','https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400','https://images.unsplash.com/photo-1551024601-bec78aea7a25?w=400'],
+    items: [
+      { name: 'Small Cup', price: 3500 },
+      { name: 'Big Cup', price: 5000 },
+      { name: '1 Litre Bowl', price: 11000 },
+      { name: '2 Litre Bowl', price: 20000 }
+    ]
+  },
+  cakeParfait: {
+    id: 'cakeParfait',
+    name: 'Cake Parfait',
+    icon: '🧁',
+    desc: 'Soft cake folded through our parfait cream. Rich, spoonable and gone far too soon.',
+    fromPrice: 2500,
+    images: ['https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400','https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400'],
+    items: [
+      { name: 'Small Cup', price: 2500 },
+      { name: 'Big Cup', price: 4000 }
+    ]
+  },
+  greekYoghurt: {
+    id: 'greekYoghurt',
+    name: 'Greek Yoghurt',
+    icon: '🥣',
+    desc: 'Thick, tangy Greek yoghurt in handy cups and bowls. Simple, wholesome, yours.',
+    fromPrice: 3000,
+    images: ['https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400','https://images.unsplash.com/photo-1511690656952-34342d5c2895?w=400','https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400'],
+    items: [
+      { name: '330ml Cup', price: 3000 },
+      { name: '500ml Cup', price: 4500 },
+      { name: '1 Litre Bowl', price: 9000 }
+    ]
+  },
+  bananaBread: {
+    id: 'bananaBread',
+    name: 'Banana Bread',
+    icon: '🍞',
+    desc: 'Moist, freshly baked banana bread — classic or double chocolate, from mini to maxi.',
+    fromPrice: 1500,
+    images: ['https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400','https://images.unsplash.com/photo-1587119276923-8b5c9e76e0a9?w=400'],
+    items: [
+      { name: 'Mini Loaf (MOQ of 3)', price: 1500 },
+      { name: 'Medium Loaf', price: 3500 },
+      { name: 'Maxi Loaf', price: 6500 },
+      { name: 'Double Chocolate Mini (MOQ of 2)', price: 2000 },
+      { name: 'Double Chocolate Medium', price: 5000 },
+      { name: 'Double Chocolate Maxi', price: 8000 }
+    ],
+    note: 'You can request for any toppings you want. Banana bread can come in boxes (additional fee included).'
+  },
+  cakeLoafs: {
+    id: 'cakeLoafs',
+    name: 'Cake Loafs',
+    icon: '🍰',
+    subtitle: '(Size 6")',
+    desc: '6-inch cake loaves in red velvet, chocolate and vanilla. Baked fresh to order.',
+    fromPrice: 6000,
+    images: ['https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400','https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400'],
+    items: [
+      { name: 'Red Velvet', price: 6500 },
+      { name: 'Chocolate', price: 6000 },
+      { name: 'Vanilla', price: 6000 }
+    ]
+  },
+  brownies: {
+    id: 'brownies',
+    name: 'Brownies',
+    icon: '🍫',
+    desc: 'Rich, fudgy chocolate brownies baked fresh in a shareable pack. Deep, gooey and hard to resist.',
+    fromPrice: 5000,
+    images: ['https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400','https://images.unsplash.com/photo-1589375025870-6c1d48150f96?w=400'],
+    items: [
+      { name: 'Pack', price: 5000 }
+    ]
+  },
+  yoghurtDrink: {
+    id: 'yoghurtDrink',
+    name: 'Yoghurt Drink',
+    icon: '🥤',
+    desc: 'Smooth, drinkable yoghurt in 50cl and 35cl bottles. Chilled and ready to grab.',
+    fromPrice: 1800,
+    images: ['https://images.unsplash.com/photo-1551884831-bbf3d1a15d71?w=400','https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400'],
+    items: [
+      { name: '50cl', price: 2500 },
+      { name: '35cl', price: 1800 }
+    ]
+  }
+};
+
+const contact = {
+  phone: '09071073489',
+  displayPhone: '0907 107 3489',
+  instagram: 'moyes_treats',
+  tiktok: 'Moyes.treats',
+  location: 'Minna'
+};
+
+let currentPage = 'home';
+let cart = {};
+let galleryImageIndex = {};
+
+function formatPrice(n) {
+  return '₦' + n.toLocaleString();
+}
+
+function getCartCount() {
+  return Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+}
+
+function getCartTotal() {
+  return Object.values(cart).reduce((sum, item) => sum + (item.price * item.qty), 0);
+}
+
+function addToCart(productId, itemName, price) {
+  const key = productId + '|' + itemName;
+  if (cart[key]) {
+    cart[key].qty++;
+  } else {
+    cart[key] = { productId, itemName, price, qty: 1 };
+  }
+  render();
+}
+
+function removeFromCart(key) {
+  delete cart[key];
+  render();
+}
+
+function updateCartQty(key, delta) {
+  if (!cart[key]) return;
+  cart[key].qty += delta;
+  if (cart[key].qty <= 0) {
+    delete cart[key];
+  }
+  render();
+}
+
+function setPage(page) {
+  currentPage = page;
+  window.scrollTo(0,0);
+  render();
+}
+
+function nextGalleryImage(productId, max) {
+  galleryImageIndex[productId] = ((galleryImageIndex[productId] || 0) + 1) % max;
+  render();
+}
+
+function prevGalleryImage(productId, max) {
+  galleryImageIndex[productId] = ((galleryImageIndex[productId] || 0) - 1 + max) % max;
+  render();
+}
+
+function generateWhatsAppMessage() {
+  let msg = "Hello Moye's Treats! I'd like to place an order:\n\n";
+  Object.values(cart).forEach(item => {
+    msg += `• ${item.qty}x ${products[item.productId].name} - ${item.itemName} (${formatPrice(item.price * item.qty)})\n`;
+  });
+  msg += `\nTotal: ${formatPrice(getCartTotal())}\n\nPlease confirm availability. Thank you!`;
+  return encodeURIComponent(msg);
+}
+
+function renderNav() {
+  const count = getCartCount();
+  const pages = ['Home','Gallery','Menu','Order'];
+  return `
+    <nav class="sticky top-0 z-50 bg-[#f3e8ff] border-b border-purple-200/50 px-4 py-3">
+      <div class="max-w-5xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="setPage('home')">
+          <span class="text-2xl">🧁</span>
+          <span class="text-xl font-bold text-[#4a2c6a]">Moye's</span>
+        </div>
+        <div class="flex gap-1 sm:gap-2">
+          ${pages.map(p => {
+            const isActive = currentPage.toLowerCase() === p.toLowerCase();
+            const isOrder = p === 'Order';
+            const badge = isOrder && count > 0 ? `<span class="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">${count}</span>` : '';
+            return `
+              <button onclick="setPage('${p.toLowerCase()}')" 
+                class="relative px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-[#4a2c6a] text-white' : 'text-[#4a2c6a] hover:bg-purple-200/50'}">
+                ${p}
+                ${badge}
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </nav>
+  `;
+}
+
+function renderHome() {
+  const categories = Object.values(products);
+  return `
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+      ${renderNav()}
+      <div class="text-center pt-12 pb-8 px-4">
+        <div class="text-5xl mb-4">🧁</div>
+        <h1 class="text-4xl sm:text-5xl font-bold text-[#4a2c6a] mb-2">Moye's Treats</h1>
+        <p class="text-[#7c5c9c] tracking-[0.3em] text-sm font-semibold mb-4">TREATS</p>
+        <p class="text-[#5a3a7a] text-lg italic mb-8">Parfaits, banana bread, brownies & more</p>
+        <div class="flex gap-4 justify-center">
+          <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg shadow-amber-500/30 transition-all">
+            See the menu
+          </button>
+          <button onclick="setPage('order')" class="bg-white hover:bg-gray-50 text-[#4a2c6a] border-2 border-purple-200 px-8 py-3 rounded-full font-semibold transition-all">
+            Start an order
+          </button>
+        </div>
+        <div class="mt-8 flex items-center justify-center gap-2">
+          <div class="w-12 h-0.5 bg-purple-300"></div>
+          <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+          <div class="w-12 h-0.5 bg-purple-300"></div>
+        </div>
+      </div>
+      <div class="max-w-5xl mx-auto px-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          ${categories.map(cat => `
+            <div onclick="setPage('gallery')" class="bg-white/80 backdrop-blur rounded-2xl p-4 text-center cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all border border-purple-100">
+              <div class="text-3xl mb-2">${cat.icon}</div>
+              <h3 class="font-bold text-[#4a2c6a] text-sm">${cat.name}</h3>
+              <p class="text-amber-600 text-xs font-semibold mt-1">from ${formatPrice(cat.fromPrice)}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="max-w-5xl mx-auto px-4 mt-12">
+        <div class="bg-[#4a2c6a] rounded-3xl p-8 text-center text-white">
+          <h2 class="text-2xl font-bold mb-3">Tell us what you're craving</h2>
+          <p class="text-purple-200 mb-6 max-w-lg mx-auto">Every cup, loaf and pack is made to order. Pick your treats, send us the list, and we'll take it from there.</p>
+          <div class="flex flex-wrap justify-center gap-6 text-sm">
+            <a href="tel:${contact.phone}" class="flex items-center gap-2 hover:text-amber-300 transition-colors">
+              <span>📞</span> ${contact.displayPhone}
+            </a>
+            <span class="flex items-center gap-2"><span>📷</span> ${contact.instagram}</span>
+            <span class="flex items-center gap-2"><span>🎵</span> ${contact.tiktok}</span>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
+        Moye's Treats · ${contact.location} · ${contact.displayPhone}
+      </div>
+    </div>
+  `;
+}
+
+function renderGallery() {
+  const categories = Object.values(products);
+  return `
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+      ${renderNav()}
+      <div class="text-center pt-10 pb-6 px-4">
+        <h1 class="text-4xl font-bold text-[#4a2c6a] mb-3">Gallery</h1>
+        <span class="bg-[#4a2c6a] text-white px-6 py-2 rounded-full text-sm font-semibold tracking-wider">SEE WHAT WE MAKE</span>
+      </div>
+      <div class="max-w-5xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        ${categories.map(cat => {
+          const imgIdx = galleryImageIndex[cat.id] || 0;
+          const imgCount = cat.images.length;
+          return `
+            <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-purple-100 hover:shadow-xl transition-all">
+              <div class="relative h-48 bg-gray-100 overflow-hidden">
+                <img src="${cat.images[imgIdx]}" class="w-full h-full object-cover" alt="${cat.name}">
+                ${imgCount > 1 ? `
+                  <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">${imgIdx+1}/${imgCount}</div>
+                  <button onclick="prevGalleryImage('${cat.id}', ${imgCount})" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center text-[#4a2c6a] font-bold">‹</button>
+                  <button onclick="nextGalleryImage('${cat.id}', ${imgCount})" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center text-[#4a2c6a] font-bold">›</button>
+                ` : ''}
+              </div>
+              <div class="p-5">
+                <h3 class="text-xl font-bold text-[#4a2c6a] mb-2">${cat.name} ${cat.subtitle ? `<span class="text-sm font-normal text-gray-500">${cat.subtitle}</span>` : ''}</h3>
+                <p class="text-gray-600 text-sm mb-4 leading-relaxed">${cat.desc}</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-amber-600 font-bold">from ${formatPrice(cat.fromPrice)}</span>
+                  <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all">See prices</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
+        Moye's Treats · ${contact.location} · ${contact.displayPhone}
+      </div>
+    </div>
+  `;
+}
+
+function renderMenu() {
+  const categories = Object.values(products);
+  return `
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+      ${renderNav()}
+      <div class="text-center pt-10 pb-6 px-4">
+        <h1 class="text-4xl font-bold text-[#4a2c6a] mb-3">Our Menu</h1>
+        <span class="bg-[#4a2c6a] text-white px-6 py-2 rounded-full text-sm font-semibold tracking-wider">PRICE LIST</span>
+      </div>
+      <div class="max-w-3xl mx-auto px-4 space-y-6">
+        ${categories.map(cat => `
+          <div class="bg-white/90 backdrop-blur rounded-3xl p-6 shadow-lg border border-purple-100">
+            <div class="flex items-center gap-3 mb-4 pb-3 border-b border-dashed border-purple-200">
+              <span class="text-2xl">${cat.icon}</span>
+              <div>
+                <h2 class="text-2xl font-bold text-[#4a2c6a]">${cat.name} ${cat.subtitle ? `<span class="text-sm font-normal text-gray-500">${cat.subtitle}</span>` : ''}</h2>
+              </div>
+            </div>
+            <div class="space-y-3">
+              ${cat.items.map(item => {
+                const key = cat.id + '|' + item.name;
+                const inCart = cart[key];
+                return `
+                  <div class="flex items-center justify-between py-2 border-b border-dashed border-purple-100 last:border-0">
+                    <div>
+                      <span class="font-semibold text-[#4a2c6a]">${item.name}</span>
+                      ${inCart ? `<span class="ml-2 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">${inCart.qty} in cart</span>` : ''}
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="text-amber-600 font-bold">${formatPrice(item.price)}</span>
+                      <button onclick="addToCart('${cat.id}', '${item.name}', ${item.price})" 
+                        class="w-9 h-9 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-amber-500/30 transition-all hover:scale-110">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            ${cat.note ? `<p class="mt-3 text-sm text-purple-600 italic">${cat.note}</p>` : ''}
+          </div>
+        `).join('')}
+      </div>
+      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
+        Moye's Treats · ${contact.location} · ${contact.displayPhone}
+      </div>
+    </div>
+  `;
+}
+
+function renderOrder() {
+  const cartItems = Object.values(cart);
+  const total = getCartTotal();
+  
+  if (cartItems.length === 0) {
+    return `
+      <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+        ${renderNav()}
+        <div class="text-center pt-20 px-4">
+          <div class="text-6xl mb-4">🛒</div>
+          <h2 class="text-2xl font-bold text-[#4a2c6a] mb-2">Your cart is empty</h2>
+          <p class="text-gray-500 mb-6">Browse our menu and add some treats!</p>
+          <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all">
+            Browse Menu
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  
+  return `
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+      ${renderNav()}
+      <div class="text-center pt-10 pb-6 px-4">
+        <h1 class="text-4xl font-bold text-[#4a2c6a] mb-3">Your Order</h1>
+        <span class="bg-[#4a2c6a] text-white px-6 py-2 rounded-full text-sm font-semibold tracking-wider">CART & CHECKOUT</span>
+      </div>
+      <div class="max-w-2xl mx-auto px-4">
+        <div class="bg-white/90 backdrop-blur rounded-3xl p-6 shadow-lg border border-purple-100">
+          <div class="space-y-4">
+            ${cartItems.map(item => {
+              const key = item.productId + '|' + item.itemName;
+              return `
+                <div class="flex items-center justify-between py-3 border-b border-dashed border-purple-200">
+                  <div class="flex-1">
+                    <div class="font-bold text-[#4a2c6a]">${item.itemName}</div>
+                    <div class="text-sm text-purple-500">${products[item.productId].name} · ${formatPrice(item.price)} each</div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 bg-gray-50 rounded-full px-1">
+                      <button onclick="updateCartQty('${key}', -1)" class="w-8 h-8 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 transition-all">−</button>
+                      <span class="w-6 text-center font-semibold text-[#4a2c6a]">${item.qty}</span>
+                      <button onclick="updateCartQty('${key}', 1)" class="w-8 h-8 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 transition-all">+</button>
+                    </div>
+                    <span class="text-amber-600 font-bold w-20 text-right">${formatPrice(item.price * item.qty)}</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="flex items-center justify-between mt-6 pt-4 border-t-2 border-purple-200">
+            <span class="text-xl font-bold text-[#4a2c6a]">Total</span>
+            <span class="text-2xl font-bold text-amber-600">${formatPrice(total)}</span>
+          </div>
+          <div class="mt-6 space-y-3">
+            <a href="https://wa.me/234${contact.phone}?text=${generateWhatsAppMessage()}" target="_blank" 
+              class="block w-full bg-amber-500 hover:bg-amber-600 text-white text-center py-4 rounded-full font-bold text-lg shadow-lg shadow-amber-500/30 transition-all">
+              Order on WhatsApp
+            </a>
+            <a href="tel:${contact.phone}" 
+              class="block w-full bg-[#4a2c6a] hover:bg-[#3a1c5a] text-white text-center py-4 rounded-full font-bold text-lg shadow-lg transition-all">
+              Call to order · ${contact.displayPhone}
+            </a>
+            <button onclick="setPage('menu')" 
+              class="block w-full bg-white border-2 border-purple-200 text-[#4a2c6a] text-center py-3 rounded-full font-semibold hover:bg-purple-50 transition-all">
+              Add more items
+            </button>
+          </div>
+          <div class="mt-4 bg-purple-50 rounded-2xl p-4 text-sm text-[#5a3a7a]">
+            <span class="font-bold">Heads up:</span> Mini Banana Bread has a minimum of 3, and Double Chocolate Mini a minimum of 2. Toppings and boxes can be added — just mention it when you send your order.
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
+        Moye's Treats · ${contact.location} · ${contact.displayPhone}
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (!app) return;
+  switch(currentPage) {
+    case 'home': app.innerHTML = renderHome(); break;
+    case 'gallery': app.innerHTML = renderGallery(); break;
+    case 'menu': app.innerHTML = renderMenu(); break;
+    case 'order': app.innerHTML = renderOrder(); break;
+    default: app.innerHTML = renderHome();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', render);
+</script>
+
+</body>
+</html>
