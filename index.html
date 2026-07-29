@@ -159,19 +159,78 @@
       padding-top: 10px; margin-top: 6px;
       font-weight: 700; color: var(--primary-dark); font-size: 1.05rem;
     }
+    
+    /* === PREVIEW GATE === */
+#previewGate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; font-family: 'Poppins', sans-serif;
+}
+#previewGate.hidden { display: none; }
+.gate-card {
+  background: white; border-radius: 24px; padding: 40px 32px;
+  max-width: 420px; width: 100%; text-align: center;
+  box-shadow: 0 25px 80px rgba(74,44,106,0.18);
+  border: 1px solid #e9d5ff;
+}
+.gate-card h2 {
+  font-family: 'Playfair Display', serif;
+  color: #4a2c6a; font-size: 1.6rem; margin-bottom: 8px;
+}
+.gate-card p {
+  color: #7c5c9c; font-size: 0.95rem; margin-bottom: 24px;
+}
+.gate-input {
+  width: 100%; padding: 14px 18px; border: 2px solid #e9d5ff;
+  border-radius: 14px; font-size: 1.1rem; text-align: center;
+  letter-spacing: 4px; font-weight: 600; color: #4a2c6a;
+  font-family: 'Poppins', sans-serif; transition: all 0.3s;
+}
+.gate-input:focus {
+  outline: none; border-color: #7c5c9c;
+  box-shadow: 0 0 0 4px rgba(124,79,184,0.12);
+}
+.gate-btn {
+  width: 100%; margin-top: 16px; padding: 14px;
+  border-radius: 14px; border: none;
+  background: linear-gradient(135deg, #4a2c6a, #7c5c9c);
+  color: white; font-weight: 700; font-size: 1rem;
+  cursor: pointer; transition: all 0.25s;
+  font-family: 'Poppins', sans-serif;
+}
+.gate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(74,44,106,0.3);
+}
+.gate-error {
+  color: #ef4444; font-size: 0.85rem; margin-top: 12px;
+  font-weight: 500; display: none;
+}
+.gate-error.show { display: block; }
+
   </style>
 </head>
 <body class="bg-[#f3e8ff] min-h-screen">
+    
+    <!-- PREVIEW ACCESS GATE -->
+<div id="previewGate">
+  <div class="gate-card">
+    <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
+    <h2>This website is currently under review.</h2>
+    <p>Please enter the access code to continue.</p>
+    <input type="password" id="gateCode" class="gate-input" placeholder="••••••" maxlength="10" autocomplete="off">
+    <button class="gate-btn" onclick="checkGateCode()">Continue</button>
+    <div id="gateError" class="gate-error">Incorrect code. Please try again.</div>
+  </div>
+</div>
+
 
 <div class="bg-shape bg-shape-1"></div>
 <div class="bg-shape bg-shape-2"></div>
 <div class="bg-shape bg-shape-3"></div>
 
-<div id="previewGate"></div>
-
-<div id="siteContent" style="display:none;">
-    <div id="app"></div>
-</div>
+<div id="app"></div>
 
 <!-- Bottom Cart Bar -->
 <div id="cartBar" class="cart-bar">
@@ -239,7 +298,7 @@
         </div>
         <div class="mb-4" id="deliveryLocationGroup" style="display:none;">
           <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Location</label>
-          <select name="deliveryLocation" required id="deliveryLocation" onchange="onLocationChange(this)" class="form-select">
+          <select name="deliveryLocation" id="deliveryLocation" required onchange="onLocationChange(this)" class="form-select">
             <option value="">&#9660; Select your area</option>
             <option value="Madalla">Madalla</option>
             <option value="Bosso">Bosso</option>
@@ -294,111 +353,6 @@
     <div class="text-xs text-gray-500 mt-0.5" id="toastMessage">Item added to your cart</div>
   </div>
 </div>
-<script>
-    const ACCESS_CODE = "moyes2026";   // Change this
-const STORAGE_KEY = "preview_access";
-const ACCESS_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
-function showWebsite() {
-    document.getElementById("previewGate").style.display = "none";
-    document.getElementById("siteContent").style.display = "block";
-}
-
-function createPreviewPage() {
-    document.getElementById("previewGate").innerHTML = `
-        <div style="
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background:#f3e8ff;
-            padding:20px;
-        ">
-            <div style="
-                max-width:420px;
-                width:100%;
-                background:white;
-                padding:40px;
-                border-radius:16px;
-                text-align:center;
-                box-shadow:0 10px 30px rgba(0,0,0,.12);
-            ">
-                <h2 style="margin-bottom:15px;color:#4a2c6a;">
-                    This website is currently under review.
-                </h2>
-
-                <p>Please enter the access code.</p>
-
-                <input
-                    id="accessCode"
-                    type="password"
-                    placeholder="Access Code"
-                    style="
-                        width:100%;
-                        padding:12px;
-                        margin:20px 0;
-                        border:1px solid #ccc;
-                        border-radius:8px;
-                    "
-                >
-
-                <button
-                    onclick="checkAccessCode()"
-                    style="
-                        width:100%;
-                        padding:12px;
-                        background:#4a2c6a;
-                        color:white;
-                        border:none;
-                        border-radius:8px;
-                        cursor:pointer;
-                    "
-                >
-                    Continue
-                </button>
-            </div>
-        </div>
-    `;
-}
-
-function checkAccessCode() {
-
-    const code = document.getElementById("accessCode").value;
-
-    if(code === ACCESS_CODE){
-
-        const expiry = Date.now() + ACCESS_DURATION;
-
-        localStorage.setItem(STORAGE_KEY, expiry);
-
-        showWebsite();
-
-    }else{
-
-        alert("Incorrect access code.");
-
-    }
-
-}
-
-window.addEventListener("load", () => {
-
-    const expiry = localStorage.getItem(STORAGE_KEY);
-
-    if(expiry && Date.now() < Number(expiry)){
-
-        showWebsite();
-
-    }else{
-
-        localStorage.removeItem(STORAGE_KEY);
-
-        createPreviewPage();
-
-    }
-
-});
-</script>
 <script>
 // ===================== DATA =====================
 const products = {
@@ -546,6 +500,51 @@ let galleryImageIndex = {};
 let customQty = { 'Samosa': 0, 'Spring Roll': 0, 'Puff Puff': 0, 'Beef': 0, 'Chicken': 0 };
 let deliveryMethod = 'pickup';
 let selectedLocation = '';
+
+// ===================== PREVIEW GATE =====================
+const ACCESS_CODE = 'moyes2026';        // ← CHANGE THIS TO YOUR DESIRED CODE
+const ACCESS_DURATION_HOURS = 24;       // ← CHANGE EXPIRY TIME (e.g., 24, 48, 72)
+
+function isAccessGranted() {
+  try {
+    const stored = localStorage.getItem('moyesPreviewAccess');
+    if (!stored) return false;
+    const data = JSON.parse(stored);
+    const expiry = data.timestamp + (ACCESS_DURATION_HOURS * 60 * 60 * 1000);
+    return Date.now() < expiry;
+  } catch (e) { return false; }
+}
+
+function grantAccess() {
+  try {
+    localStorage.setItem('moyesPreviewAccess', JSON.stringify({ timestamp: Date.now() }));
+  } catch (e) {}
+  const gate = document.getElementById('previewGate');
+  if (gate) gate.classList.add('hidden');
+  render(); // render the main app
+}
+
+function checkGateCode() {
+  const input = document.getElementById('gateCode');
+  const error = document.getElementById('gateError');
+  if (input.value.trim() === ACCESS_CODE) {
+    error.classList.remove('show');
+    grantAccess();
+  } else {
+    error.classList.add('show');
+    input.value = '';
+    input.focus();
+  }
+}
+
+// Allow Enter key to submit
+document.addEventListener('keydown', function(e) {
+  const gate = document.getElementById('previewGate');
+  if (gate && !gate.classList.contains('hidden') && e.key === 'Enter') {
+    checkGateCode();
+  }
+});
+
 
 // Load saved customer details
 let savedCustomer = {};
@@ -1245,7 +1244,13 @@ function render() {
   updateCartUI();
 }
 
-document.addEventListener('DOMContentLoaded', render);
+document.addEventListener('DOMContentLoaded', function() {
+  if (isAccessGranted()) {
+    grantAccess();
+  }
+  // If not granted, the gate stays visible and render() is NOT called yet
+});
+
 </script>
 </body>
 </html>
