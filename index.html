@@ -5,25 +5,412 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Moye's Treats</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+    :root {
+      --primary: #4a2c6a;
+      --primary-light: #7c5c9c;
+      --primary-dark: #3a1c5a;
+      --accent: #f59e0b;
+      --accent-light: #fbbf24;
+      --bg: #f3e8ff;
+      --bg-card: #ffffff;
+      --border: #e9d5ff;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); }
     h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    .font-pacifico { font-family: 'Pacifico', cursive; }
+    .font-poppins { font-family: 'Poppins', sans-serif; }
+
+    .bg-shape {
+      position: fixed; border-radius: 50%; opacity: 0.12; z-index: 0; pointer-events: none;
+    }
+    .bg-shape-1 { width: 300px; height: 300px; background: var(--primary); top: -80px; right: -60px; }
+    .bg-shape-2 { width: 220px; height: 220px; background: var(--accent); bottom: 80px; left: -60px; }
+    .bg-shape-3 { width: 160px; height: 160px; background: var(--primary-light); top: 45%; right: 8%; }
+
+    .cart-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: white;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.12); padding: 14px 20px; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      transform: translateY(100%);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cart-bar.active { transform: translateY(0); }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(31, 31, 46, 0.55);
+      backdrop-filter: blur(10px); z-index: 200;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal {
+      background: white; border-radius: 24px; width: 100%; max-width: 600px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+      transform: scale(0.92) translateY(30px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+    .modal-header { padding: 24px 28px 0; display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 1.35rem; font-weight: 700; color: var(--primary-dark); font-family: 'Poppins', sans-serif; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--bg);
+      color: var(--primary-dark); font-size: 1.3rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.25s;
+    }
+    .modal-close:hover { background: var(--border); transform: rotate(90deg); }
+    .modal-body { padding: 20px 28px 28px; }
+
+    .toast {
+      position: fixed; top: 20px; right: 20px; background: white; padding: 14px 22px;
+      border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      display: flex; align-items: center; gap: 12px; z-index: 300;
+      transform: translateX(150%);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      border-left: 4px solid var(--success);
+    }
+    .toast.active { transform: translateX(0); }
+    .toast-icon {
+      width: 28px; height: 28px; background: var(--success); color: white;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; flex-shrink: 0; font-size: 0.9rem;
+    }
+
+    .combo-card {
+      background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
+      border: 2px solid var(--border); border-radius: 18px; padding: 22px;
+      position: relative; transition: all 0.3s ease;
+    }
+    .combo-card:hover { border-color: var(--primary-light); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(91,46,145,0.1); }
+    .combo-card.best-value {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFFBEB 100%);
+    }
+    .best-value-badge {
+      position: absolute; top: -11px; right: 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: white; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 20px; box-shadow: 0 4px 12px rgba(245,158,11,0.3); letter-spacing: 1px;
+    }
+    .item-qty {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; border-radius: 50%; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .builder-card {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white; border: none; position: sticky; top: 80px;
+    }
+    .qty-btn {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      background: rgba(255,255,255,0.15); color: white; font-size: 1.1rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; font-weight: 600;
+    }
+    .qty-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .delivery-option {
+      flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 12px;
+      text-align: center; cursor: pointer; transition: all 0.3s;
+    }
+    .delivery-option.active {
+      border-color: var(--primary); background: rgba(91,46,145,0.05);
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px;
+      font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: all 0.3s; background: white;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(124,79,184,0.1);
+    }
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .heart-anim { display: inline-block; animation: heartbeat 1.5s ease infinite; }
+
+    .gal-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.85); hover:bg-white; rounded-full; w-8 h-8;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary); font-bold; transition: all 0.2s; border: none; cursor: pointer;
+    }
+    .gal-btn:hover { background: white; transform: translateY(-50%) scale(1.1); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+    .fee-line {
+      display: flex; justify-content: space-between; padding: 6px 0;
+      font-size: 0.9rem; color: #555;
+    }
+    .fee-line.total {
+      border-top: 2px solid var(--primary-dark);
+      padding-top: 10px; margin-top: 6px;
+      font-weight: 700; color: var(--primary-dark); font-size: 1.05rem;
+    }
   </style>
 </head>
-<body class="bg-[#f3e8ff]">
+<body class="bg-[#f3e8ff] min-h-screen">
 
-<div id="app"></div>
+<div class="bg-shape bg-shape-1"></div>
+<div class="bg-shape bg-shape-2"></div>
+<div class="bg-shape bg-shape-3"></div>
 
+<div id="previewGate"></div>
+
+<div id="siteContent" style="display:none;">
+    <div id="app"></div>
+</div>
+
+<!-- Bottom Cart Bar -->
+<div id="cartBar" class="cart-bar">
+  <div class="flex-1 min-w-0">
+    <div class="text-xs text-gray-500 font-medium font-poppins">Total Order</div>
+    <div class="text-xl font-extrabold text-[#4a2c6a] font-poppins" id="cartBarTotal">&#8358;0</div>
+  </div>
+  <div class="flex items-center gap-3">
+    <button onclick="openCartModal()" class="px-5 py-2.5 rounded-xl bg-[#f3e8ff] text-[#4a2c6a] font-semibold text-sm font-poppins hover:bg-[#e9d5ff] transition-all">
+      View Cart
+    </button>
+    <button onclick="openCheckoutModal()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm font-poppins shadow-lg shadow-amber-500/30 transition-all">
+      Checkout
+    </button>
+  </div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="modal-overlay" onclick="if(event.target===this)closeCartModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Your Order</div>
+      <button class="modal-close" onclick="closeCartModal()">&#215;</button>
+    </div>
+    <div class="modal-body" id="cartModalBody"></div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal-overlay" onclick="if(event.target===this)closeCheckoutModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Complete Your Order</div>
+      <button class="modal-close" onclick="closeCheckoutModal()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <div id="checkoutSummary" style="margin-bottom:20px;padding:16px;background:var(--bg);border-radius:14px;"></div>
+      <form onsubmit="submitOrder(event)">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">First Name</label>
+            <input type="text" name="firstName" id="firstName" required placeholder="John" class="form-input">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Last Name</label>
+            <input type="text" name="lastName" id="lastName" required placeholder="Doe" class="form-input">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Phone Number</label>
+          <input type="tel" name="phone" id="phone" required placeholder="0801 234 5678" class="form-input">
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Method</label>
+          <div class="flex gap-3">
+            <div class="delivery-option active" onclick="selectDelivery(this,'pickup')">
+              <div class="font-semibold text-sm text-gray-800 font-poppins">Pickup</div>
+              <div class="text-xs text-gray-500 mt-1 font-poppins">Free</div>
+            </div>
+            <div class="delivery-option" onclick="selectDelivery(this,'delivery')">
+              <div class="font-semibold text-sm text-gray-800 font-poppins">Delivery</div>
+              <div class="text-xs text-gray-500 mt-1 font-poppins">From &#8358;1,000</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-4" id="deliveryLocationGroup" style="display:none;">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Location</label>
+          <select name="deliveryLocation" required id="deliveryLocation" onchange="onLocationChange(this)" class="form-select">
+            <option value="">&#9660; Select your area</option>
+            <option value="Madalla">Madalla</option>
+            <option value="Bosso">Bosso</option>
+            <option value="GK">GK</option>
+            <option value="Tunga">Tunga</option>
+            <option value="Maitumbi">Maitumbi</option>
+            <option value="Maikunkele">Maikunkele</option>
+            <option value="Dutsen Kura">Dutsen Kura</option>
+            <option value="Okada Road">Okada Road</option>
+            <option value="Kpagungu">Kpagungu</option>
+            <option value="Shiroro Road">Shiroro Road</option>
+            <option value="Barkin Sale">Barkin Sale</option>
+            <option value="Chanchaga">Chanchaga</option>
+            <option value="Kure Market">Kure Market</option>
+            <option value="Kasuwan Gwari">Kasuwan Gwari</option>
+            <option value="New Market Maitumbi">New Market Maitumbi</option>
+            <option value="Sabon Gari">Sabon Gari</option>
+            <option value="Gidan Mangoro">Gidan Mangoro</option>
+            <option value="City Gate">City Gate</option>
+            <option value="Gbeganu">Gbeganu</option>
+            <option value="Fadikpe">Fadikpe</option>
+            <option value="Keterengwari">Keterengwari</option>
+            <option value="Albishiri">Albishiri</option>
+            <option value="Morris">Morris</option>
+            <option value="Tudun Fulani">Tudun Fulani</option>
+          </select>
+          <div id="deliveryFeeDisplay" class="mt-2 text-sm font-semibold text-amber-600 font-poppins" style="display:none;"></div>
+        </div>
+        <div class="mb-4" id="addressGroup" style="display:none;">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Address</label>
+          <input type="text" name="houseNumber" id="houseNumber" placeholder="House Number" class="form-input mb-2">
+          <input type="text" name="street" id="street" placeholder="Street" class="form-input mb-2">
+          <input type="text" name="landmark" id="landmark" placeholder="Nearest Landmark" class="form-input">
+        </div>
+        <div class="mb-5">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Order Notes (Optional)</label>
+          <textarea name="notes" id="notes" placeholder="Any special requests, allergies, or delivery instructions..." class="form-textarea"></textarea>
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#4a2c6a] to-[#7c5c9c] text-white font-bold text-base font-poppins shadow-lg shadow-purple-900/30 hover:shadow-purple-900/40 hover:-translate-y-0.5 transition-all">
+          Place Order via WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast">
+  <div class="toast-icon" id="toastIcon">&#10003;</div>
+  <div>
+    <div class="font-semibold text-sm text-gray-800" id="toastTitle">Added!</div>
+    <div class="text-xs text-gray-500 mt-0.5" id="toastMessage">Item added to your cart</div>
+  </div>
+</div>
 <script>
+    const ACCESS_CODE = "moyes2026";   // Change this
+const STORAGE_KEY = "preview_access";
+const ACCESS_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+function showWebsite() {
+    document.getElementById("previewGate").style.display = "none";
+    document.getElementById("siteContent").style.display = "block";
+}
+
+function createPreviewPage() {
+    document.getElementById("previewGate").innerHTML = `
+        <div style="
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:#f3e8ff;
+            padding:20px;
+        ">
+            <div style="
+                max-width:420px;
+                width:100%;
+                background:white;
+                padding:40px;
+                border-radius:16px;
+                text-align:center;
+                box-shadow:0 10px 30px rgba(0,0,0,.12);
+            ">
+                <h2 style="margin-bottom:15px;color:#4a2c6a;">
+                    This website is currently under review.
+                </h2>
+
+                <p>Please enter the access code.</p>
+
+                <input
+                    id="accessCode"
+                    type="password"
+                    placeholder="Access Code"
+                    style="
+                        width:100%;
+                        padding:12px;
+                        margin:20px 0;
+                        border:1px solid #ccc;
+                        border-radius:8px;
+                    "
+                >
+
+                <button
+                    onclick="checkAccessCode()"
+                    style="
+                        width:100%;
+                        padding:12px;
+                        background:#4a2c6a;
+                        color:white;
+                        border:none;
+                        border-radius:8px;
+                        cursor:pointer;
+                    "
+                >
+                    Continue
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function checkAccessCode() {
+
+    const code = document.getElementById("accessCode").value;
+
+    if(code === ACCESS_CODE){
+
+        const expiry = Date.now() + ACCESS_DURATION;
+
+        localStorage.setItem(STORAGE_KEY, expiry);
+
+        showWebsite();
+
+    }else{
+
+        alert("Incorrect access code.");
+
+    }
+
+}
+
+window.addEventListener("load", () => {
+
+    const expiry = localStorage.getItem(STORAGE_KEY);
+
+    if(expiry && Date.now() < Number(expiry)){
+
+        showWebsite();
+
+    }else{
+
+        localStorage.removeItem(STORAGE_KEY);
+
+        createPreviewPage();
+
+    }
+
+});
+</script>
+<script>
+// ===================== DATA =====================
 const products = {
   parfaits: {
-    id: 'parfaits',
-    name: 'Parfaits',
-    icon: '🍨',
+    id: 'parfaits', name: 'Parfaits', icon: '🍨',
     desc: 'Creamy layers of yoghurt, fruit and crunch — from a single small cup to a shareable 2-litre bowl.',
     fromPrice: 3500,
-    images: ['https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400','https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400','https://images.unsplash.com/photo-1551024601-bec78aea7a25?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500',
+      'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500',
+      'https://images.unsplash.com/photo-1551024601-bec78aea7a25?w=500'
+    ],
     items: [
       { name: 'Small Cup', price: 3500 },
       { name: 'Big Cup', price: 5000 },
@@ -32,24 +419,27 @@ const products = {
     ]
   },
   cakeParfait: {
-    id: 'cakeParfait',
-    name: 'Cake Parfait',
-    icon: '🧁',
+    id: 'cakeParfait', name: 'Cake Parfait', icon: '🧁',
     desc: 'Soft cake folded through our parfait cream. Rich, spoonable and gone far too soon.',
     fromPrice: 2500,
-    images: ['https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400','https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500',
+      'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=500'
+    ],
     items: [
       { name: 'Small Cup', price: 2500 },
       { name: 'Big Cup', price: 4000 }
     ]
   },
   greekYoghurt: {
-    id: 'greekYoghurt',
-    name: 'Greek Yoghurt',
-    icon: '🥣',
+    id: 'greekYoghurt', name: 'Greek Yoghurt', icon: '🥣',
     desc: 'Thick, tangy Greek yoghurt in handy cups and bowls. Simple, wholesome, yours.',
     fromPrice: 3000,
-    images: ['https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400','https://images.unsplash.com/photo-1511690656952-34342d5c2895?w=400','https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500',
+      'https://images.unsplash.com/photo-1511690656952-34342d5c2895?w=500',
+      'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500'
+    ],
     items: [
       { name: '330ml Cup', price: 3000 },
       { name: '500ml Cup', price: 4500 },
@@ -57,12 +447,13 @@ const products = {
     ]
   },
   bananaBread: {
-    id: 'bananaBread',
-    name: 'Banana Bread',
-    icon: '🍞',
+    id: 'bananaBread', name: 'Banana Bread', icon: '🍞',
     desc: 'Moist, freshly baked banana bread — classic or double chocolate, from mini to maxi.',
     fromPrice: 1500,
-    images: ['https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400','https://images.unsplash.com/photo-1587119276923-8b5c9e76e0a9?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=500',
+      'https://images.unsplash.com/photo-1587119276923-8b5c9e76e0a9?w=500'
+    ],
     items: [
       { name: 'Mini Loaf (MOQ of 3)', price: 1500 },
       { name: 'Medium Loaf', price: 3500 },
@@ -74,13 +465,13 @@ const products = {
     note: 'You can request for any toppings you want. Banana bread can come in boxes (additional fee included).'
   },
   cakeLoafs: {
-    id: 'cakeLoafs',
-    name: 'Cake Loafs',
-    icon: '🍰',
-    subtitle: '(Size 6")',
+    id: 'cakeLoafs', name: 'Cake Loafs', icon: '🍰', subtitle: '(Size 6")',
     desc: '6-inch cake loaves in red velvet, chocolate and vanilla. Baked fresh to order.',
     fromPrice: 6000,
-    images: ['https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400','https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500',
+      'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500'
+    ],
     items: [
       { name: 'Red Velvet', price: 6500 },
       { name: 'Chocolate', price: 6000 },
@@ -88,81 +479,465 @@ const products = {
     ]
   },
   brownies: {
-    id: 'brownies',
-    name: 'Brownies',
-    icon: '🍫',
+    id: 'brownies', name: 'Brownies', icon: '🍫',
     desc: 'Rich, fudgy chocolate brownies baked fresh in a shareable pack. Deep, gooey and hard to resist.',
     fromPrice: 5000,
-    images: ['https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400','https://images.unsplash.com/photo-1589375025870-6c1d48150f96?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1606313564200-e75d5c9e76e0a9?w=500',
+      'https://images.unsplash.com/photo-1589375025870-6c1d48150f96?w=500'
+    ],
     items: [
       { name: 'Pack', price: 5000 }
     ]
   },
   yoghurtDrink: {
-    id: 'yoghurtDrink',
-    name: 'Yoghurt Drink',
-    icon: '🥤',
+    id: 'yoghurtDrink', name: 'Yoghurt Drink', icon: '🥤',
     desc: 'Smooth, drinkable yoghurt in 50cl and 35cl bottles. Chilled and ready to grab.',
     fromPrice: 1800,
-    images: ['https://images.unsplash.com/photo-1551884831-bbf3d1a15d71?w=400','https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400'],
+    images: [
+      'https://images.unsplash.com/photo-1551884831-bbf3d1a15d71?w=500',
+      'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500'
+    ],
     items: [
       { name: '50cl', price: 2500 },
       { name: '35cl', price: 1800 }
     ]
+  },
+  smallChops: {
+    id: 'smallChops', name: 'Small Chops', icon: '🍤',
+    desc: 'Freshly made party favourites — samosa, spring rolls, puff puff, beef & chicken.',
+    fromPrice: 1500,
+    images: [
+      'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=500',
+      'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500'
+    ],
+    items: []
   }
+};
+
+const combos = [
+  { name: 'Classic Box', price: 1500, items: { 'Samosa': 1, 'Spring Roll': 1, 'Puff Puff': 3, 'Beef': 1 } },
+  { name: 'Sharing Box', price: 2200, items: { 'Samosa': 2, 'Spring Roll': 2, 'Puff Puff': 4, 'Beef': 1 } },
+  { name: 'Party Box', price: 5000, bestValue: true, items: { 'Samosa': 4, 'Spring Roll': 4, 'Puff Puff': 8, 'Beef': 2 } }
+];
+
+const smallChopsPrices = {
+  'Samosa': 350, 'Spring Roll': 300, 'Puff Puff': 100, 'Beef': 400, 'Chicken': 1500
+};
+
+const deliveryFees = {
+  'Madalla': 1500, 'Bosso': 1500, 'GK': 2500, 'Tunga': 1000, 'Maitumbi': 1000,
+  'Maikunkele': 2000, 'Dutsen Kura': 1500, 'Okada Road': 1500, 'Kpagungu': 1500,
+  'Shiroro Road': 1500, 'Barkin Sale': 1500, 'Chanchaga': 1500, 'Kure Market': 1500,
+  'Kasuwan Gwari': 1000, 'New Market Maitumbi': 1000, 'Sabon Gari': 1000,
+  'Gidan Mangoro': 2000, 'City Gate': 1000, 'Gbeganu': 1500, 'Fadikpe': 1500,
+  'Keterengwari': 1500, 'Albishiri': 1500, 'Morris': 1500, 'Tudun Fulani': 1500
 };
 
 const contact = {
-  phone: '09071073489',
-  displayPhone: '0907 107 3489',
-  instagram: 'moyes_treats',
-  tiktok: 'Moyes.treats',
-  location: 'Minna'
+  phone: '09071073489', displayPhone: '0907 107 3489',
+  instagram: 'moyes_treats', tiktok: 'Moyes.treats', location: 'Minna'
 };
 
+// ===================== STATE =====================
 let currentPage = 'home';
-let cart = {};
+let cart = [];
 let galleryImageIndex = {};
+let customQty = { 'Samosa': 0, 'Spring Roll': 0, 'Puff Puff': 0, 'Beef': 0, 'Chicken': 0 };
+let deliveryMethod = 'pickup';
+let selectedLocation = '';
 
+// Load saved customer details
+let savedCustomer = {};
+try {
+  const stored = localStorage.getItem('moyesCustomer');
+  if (stored) savedCustomer = JSON.parse(stored);
+} catch(e) {}
+
+// ===================== UTILS =====================
 function formatPrice(n) {
-  return '₦' + n.toLocaleString();
+  return '₦' + n.toLocaleString('en-NG');
 }
-
-function getCartCount() {
-  return Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
-}
-
 function getCartTotal() {
-  return Object.values(cart).reduce((sum, item) => sum + (item.price * item.qty), 0);
+  return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+}
+function getCartCount() {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+function getCustomSubtotal() {
+  return cart
+    .filter(item => item.type === 'custom')
+    .reduce((sum, item) => sum + (item.price * item.qty), 0);
+}
+function getPackagingFee() {
+  const customTotal = getCustomSubtotal();
+  if (customTotal === 0) return 0;
+  if (customTotal >= 1000 && customTotal <= 4999) return 600;
+  if (customTotal >= 5000 && customTotal <= 9999) return 1000;
+  if (customTotal >= 10000 && customTotal <= 14999) return 1200;
+  if (customTotal >= 15000 && customTotal <= 20000) return 1500;
+  if (customTotal > 20000 && customTotal <= 30000) return 2500;
+  if (customTotal > 30000) return 2500;
+  return 0;
+}
+function getDeliveryFee() {
+  if (deliveryMethod !== 'delivery' || !selectedLocation) return 0;
+  return deliveryFees[selectedLocation] || 0;
+}
+function getSubtotal() {
+  return getCartTotal();
+}
+function getGrandTotal() {
+  return getSubtotal() + getPackagingFee() + getDeliveryFee();
+}
+function hasCustomPackage() {
+  return cart.some(item => item.type === 'custom');
 }
 
-function addToCart(productId, itemName, price) {
-  const key = productId + '|' + itemName;
-  if (cart[key]) {
-    cart[key].qty++;
+// ===================== CART ACTIONS =====================
+function addMenuItem(productId, itemName, price) {
+  const existing = cart.find(i => i.type === 'menu' && i.productId === productId && i.itemName === itemName);
+  if (existing) {
+    existing.qty++;
   } else {
-    cart[key] = { productId, itemName, price, qty: 1 };
+    cart.push({ id: Date.now() + Math.random(), type: 'menu', productId, itemName, price, qty: 1 });
   }
-  render();
+  updateCartUI();
+  showToast('Added to Cart!', `${products[productId].name} — ${itemName}`);
 }
 
-function removeFromCart(key) {
-  delete cart[key];
-  render();
-}
-
-function updateCartQty(key, delta) {
-  if (!cart[key]) return;
-  cart[key].qty += delta;
-  if (cart[key].qty <= 0) {
-    delete cart[key];
+function addCombo(name, price, items) {
+  const existing = cart.find(i => i.type === 'combo' && i.name === name);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ id: Date.now() + Math.random(), type: 'combo', name, price, items, qty: 1 });
   }
-  render();
+  updateCartUI();
+  showToast('Combo Added!', `${name} added to your order.`);
 }
 
+function addCustomToCart() {
+  const hasItems = Object.values(customQty).some(q => q > 0);
+  if (!hasItems) {
+    showToast('Empty Package', 'Please select at least one item.', true);
+    return;
+  }
+  let total = 0;
+  let items = {};
+  for (let [item, qty] of Object.entries(customQty)) {
+    if (qty > 0) {
+      items[item] = qty;
+      total += qty * smallChopsPrices[item];
+    }
+  }
+  cart.push({ id: Date.now() + Math.random(), type: 'custom', name: 'Custom Package', price: total, items, qty: 1 });
+  for (let item in customQty) { customQty[item] = 0; }
+  updateCartUI();
+  showToast('Custom Package Added!', 'Your custom selection has been added.');
+}
+
+function updateCartQty(cartId, delta) {
+  const item = cart.find(i => i.id === cartId);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i.id !== cartId);
+  }
+  updateCartUI();
+  renderCartModal();
+  renderCheckoutSummary();
+}
+
+function removeFromCart(cartId) {
+  cart = cart.filter(i => i.id !== cartId);
+  updateCartUI();
+  renderCartModal();
+  renderCheckoutSummary();
+}
+
+function updateCartUI() {
+  const total = getGrandTotal();
+  const count = getCartCount();
+  document.getElementById('cartBarTotal').textContent = formatPrice(total);
+  document.getElementById('cartBar').classList.toggle('active', count > 0);
+  const badge = document.getElementById('navCartBadge');
+  if (badge) badge.textContent = count;
+}
+
+// ===================== SMALL CHOPS BUILDER =====================
+function updateQty(item, change) {
+  customQty[item] = Math.max(0, customQty[item] + change);
+  const el = document.getElementById('qty-' + item.replace(/\s/g, '-'));
+  if (el) el.textContent = customQty[item];
+}
+
+// ===================== TOAST =====================
+function showToast(title, message, isError = false) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMessage').textContent = message;
+  const icon = document.getElementById('toastIcon');
+  icon.textContent = isError ? '!' : '✓';
+  icon.style.background = isError ? 'var(--danger)' : 'var(--success)';
+  toast.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--success)';
+  toast.classList.add('active');
+  setTimeout(() => toast.classList.remove('active'), 2800);
+}
+
+// ===================== MODALS =====================
+function openCartModal() {
+  renderCartModal();
+  document.getElementById('cartModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeCartModal() {
+  document.getElementById('cartModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function openCheckoutModal() {
+  if (savedCustomer.firstName) document.getElementById('firstName').value = savedCustomer.firstName;
+  if (savedCustomer.lastName) document.getElementById('lastName').value = savedCustomer.lastName;
+  if (savedCustomer.phone) document.getElementById('phone').value = savedCustomer.phone;
+  if (savedCustomer.houseNumber) document.getElementById('houseNumber').value = savedCustomer.houseNumber;
+  if (savedCustomer.street) document.getElementById('street').value = savedCustomer.street;
+  if (savedCustomer.landmark) document.getElementById('landmark').value = savedCustomer.landmark;
+  if (savedCustomer.notes) document.getElementById('notes').value = savedCustomer.notes;
+
+  renderCheckoutSummary();
+  document.getElementById('checkoutModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeCheckoutModal() {
+  document.getElementById('checkoutModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function renderCartModal() {
+  const container = document.getElementById('cartModalBody');
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-10">
+        <div class="text-5xl mb-3">🛒</div>
+        <p class="text-gray-500 font-medium">Your cart is empty</p>
+        <p class="text-gray-400 text-sm mt-1">Add some treats to get started!</p>
+      </div>`;
+    return;
+  }
+
+  let html = '<div class="space-y-3 mb-5">';
+  cart.forEach(item => {
+    let title, subtitle;
+    if (item.type === 'menu') {
+      title = item.itemName;
+      subtitle = products[item.productId].name;
+    } else if (item.type === 'combo') {
+      title = item.name;
+      subtitle = Object.entries(item.items).map(([n,q]) => `${q} ${n}`).join(', ');
+    } else {
+      title = item.name;
+      subtitle = Object.entries(item.items).map(([n,q]) => `${q}× ${n}`).join(', ');
+    }
+
+    html += `
+      <div class="flex items-center justify-between py-3 border-b border-dashed border-purple-200">
+        <div class="flex-1 min-w-0 pr-3">
+          <div class="font-bold text-[#4a2c6a] text-sm">${title}</div>
+          <div class="text-xs text-purple-500 truncate">${subtitle}</div>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+          <div class="flex items-center gap-1 bg-gray-50 rounded-full px-1">
+            <button onclick="updateCartQty('${item.id}', -1)" class="w-7 h-7 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 text-sm font-bold">−</button>
+            <span class="w-5 text-center font-semibold text-[#4a2c6a] text-sm">${item.qty}</span>
+            <button onclick="updateCartQty('${item.id}', 1)" class="w-7 h-7 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 text-sm font-bold">+</button>
+          </div>
+          <span class="text-amber-600 font-bold text-sm w-16 text-right">${formatPrice(item.price * item.qty)}</span>
+          <button onclick="removeFromCart('${item.id}')" class="text-red-500 hover:text-red-600 text-xs font-semibold px-2 py-1 rounded hover:bg-red-50 transition-colors">Remove</button>
+        </div>
+      </div>`;
+  });
+  html += '</div>';
+
+  const subtotal = getSubtotal();
+  const packagingFee = getPackagingFee();
+  const grandTotal = getGrandTotal();
+
+  html += `
+    <div style="border-top: 1px dashed #d8b4fe; padding-top: 12px; margin-bottom: 8px;">
+      <div class="fee-line">
+        <span>Subtotal</span>
+        <span class="font-semibold">${formatPrice(subtotal)}</span>
+      </div>`;
+
+  if (packagingFee > 0) {
+    html += `
+      <div class="fee-line">
+        <span>Packaging Fee</span>
+        <span class="font-semibold">${formatPrice(packagingFee)}</span>
+      </div>`;
+  }
+
+  html += `
+    </div>
+    <div class="fee-line total">
+      <span>Estimated Total</span>
+      <span>${formatPrice(grandTotal)}</span>
+    </div>
+    <div class="grid grid-cols-2 gap-3 mt-5">
+      <button onclick="closeCartModal(); openCheckoutModal();" class="py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-lg shadow-amber-500/30 transition-all">
+        Checkout
+      </button>
+      <button onclick="closeCartModal();" class="py-3 rounded-xl bg-white border-2 border-purple-200 text-[#4a2c6a] font-semibold hover:bg-purple-50 transition-all">
+        Continue Shopping
+      </button>
+    </div>`;
+
+  container.innerHTML = html;
+}
+
+function renderCheckoutSummary() {
+  const container = document.getElementById('checkoutSummary');
+  if (cart.length === 0) {
+    container.innerHTML = '<p class="text-center text-gray-500 text-sm">Your cart is empty</p>';
+    return;
+  }
+
+  const subtotal = getSubtotal();
+  const packagingFee = getPackagingFee();
+  const deliveryFee = getDeliveryFee();
+  const grandTotal = getGrandTotal();
+
+  let html = '<div class="font-bold text-[#4a2c6a] mb-3 text-sm">Order Summary</div>';
+
+  cart.forEach(item => {
+    let name = item.type === 'menu' ? `${products[item.productId].name} — ${item.itemName}` : item.name;
+    html += `<div class="flex justify-between py-1.5 text-sm border-b border-dashed border-purple-200">
+      <span class="text-gray-700">${name} <span class="text-gray-400">×${item.qty}</span></span>
+      <span class="font-semibold text-[#4a2c6a]">${formatPrice(item.price * item.qty)}</span>
+    </div>`;
+  });
+
+  html += `<div style="border-top: 1px dashed #d8b4fe; margin-top: 8px; padding-top: 8px;">`;
+  html += `<div class="fee-line"><span>Subtotal</span><span class="font-semibold text-[#4a2c6a]">${formatPrice(subtotal)}</span></div>`;
+
+  if (packagingFee > 0) {
+    html += `<div class="fee-line"><span>Packaging Fee</span><span class="font-semibold text-[#4a2c6a]">${formatPrice(packagingFee)}</span></div>`;
+  }
+  if (deliveryFee > 0) {
+    html += `<div class="fee-line"><span>Delivery Fee</span><span class="font-semibold text-[#4a2c6a]">${formatPrice(deliveryFee)}</span></div>`;
+  }
+
+  html += `</div>`;
+  html += `<div class="fee-line total">
+    <span>Grand Total</span>
+    <span>${formatPrice(grandTotal)}</span>
+  </div>`;
+
+  container.innerHTML = html;
+}
+
+function selectDelivery(el, method) {
+  deliveryMethod = method;
+  selectedLocation = '';
+  document.querySelectorAll('.delivery-option').forEach(opt => opt.classList.remove('active'));
+  el.classList.add('active');
+
+  const locationGroup = document.getElementById('deliveryLocationGroup');
+  const addressGroup = document.getElementById('addressGroup');
+  const feeDisplay = document.getElementById('deliveryFeeDisplay');
+  const locationSelect = document.getElementById('deliveryLocation');
+
+  if (method === 'delivery') {
+    locationGroup.style.display = 'block';
+    addressGroup.style.display = 'block';
+  } else {
+    locationGroup.style.display = 'none';
+    addressGroup.style.display = 'none';
+    feeDisplay.style.display = 'none';
+    if (locationSelect) locationSelect.value = '';
+  }
+  renderCheckoutSummary();
+}
+
+function onLocationChange(select) {
+  selectedLocation = select.value;
+  const feeDisplay = document.getElementById('deliveryFeeDisplay');
+  if (selectedLocation && deliveryFees[selectedLocation]) {
+    feeDisplay.textContent = `Delivery Fee: ${formatPrice(deliveryFees[selectedLocation])}`;
+    feeDisplay.style.display = 'block';
+  } else {
+    feeDisplay.style.display = 'none';
+  }
+  renderCheckoutSummary();
+}
+
+function submitOrder(e) {
+  e.preventDefault();
+  if (cart.length === 0) {
+    showToast('Empty Cart', 'Please add items to your order first.', true);
+    return;
+  }
+
+  const form = e.target;
+  const firstName = form.firstName.value;
+  const lastName = form.lastName.value;
+  const phone = form.phone.value;
+  const houseNumber = form.houseNumber.value;
+  const street = form.street.value;
+  const landmark = form.landmark.value;
+  const notes = form.notes.value;
+
+  // Save customer details to localStorage
+  savedCustomer = { firstName, lastName, phone, houseNumber, street, landmark, notes };
+  try {
+    localStorage.setItem('moyesCustomer', JSON.stringify(savedCustomer));
+  } catch(err) {}
+
+  const subtotal = getSubtotal();
+  const packagingFee = getPackagingFee();
+  const deliveryFee = getDeliveryFee();
+  const grandTotal = getGrandTotal();
+
+  let msg = `*NEW ORDER — Moye's Treats*%0A%0A`;
+  msg += `*Customer:* ${firstName} ${lastName}%0A`;
+  msg += `*Phone:* ${phone}%0A`;
+  msg += `*Delivery:* ${deliveryMethod === 'pickup' ? 'Pickup' : 'Delivery'}%0A`;
+  if (deliveryMethod === 'delivery') {
+    if (selectedLocation) msg += `*Location:* ${selectedLocation}%0A`;
+    if (houseNumber) msg += `*House Number:* ${houseNumber}%0A`;
+    if (street) msg += `*Street:* ${street}%0A`;
+    if (landmark) msg += `*Nearest Landmark:* ${landmark}%0A`;
+  }
+  if (notes) msg += `*Notes:* ${notes}%0A`;
+  msg += `%0A*ORDER ITEMS:*%0A`;
+
+  cart.forEach((item, i) => {
+    let line = '';
+    if (item.type === 'menu') {
+      line = `${products[item.productId].name} — ${item.itemName}`;
+    } else if (item.type === 'combo') {
+      line = `${item.name} (${Object.entries(item.items).map(([n,q])=>`${q} ${n}`).join(', ')})`;
+    } else {
+      line = `${item.name} (${Object.entries(item.items).map(([n,q])=>`${q}× ${n}`).join(', ')})`;
+    }
+    msg += `${i+1}. ${line} ×${item.qty} — ${formatPrice(item.price * item.qty)}%0A`;
+  });
+
+  msg += `%0A*ORDER TOTAL:*%0A`;
+  msg += `Subtotal: ${formatPrice(subtotal)}%0A`;
+  if (packagingFee > 0) msg += `Packaging Fee: ${formatPrice(packagingFee)}%0A`;
+  if (deliveryFee > 0) msg += `Delivery Fee: ${formatPrice(deliveryFee)}%0A`;
+  msg += `*GRAND TOTAL: ${formatPrice(grandTotal)}*`;
+
+  const whatsappUrl = `https://wa.me/234${contact.phone}?text=${msg}`;
+  window.open(whatsappUrl, '_blank');
+  showToast('Order Ready!', 'Redirecting you to WhatsApp...');
+}
+
+// ===================== NAVIGATION =====================
 function setPage(page) {
   currentPage = page;
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
   render();
 }
 
@@ -170,66 +945,61 @@ function nextGalleryImage(productId, max) {
   galleryImageIndex[productId] = ((galleryImageIndex[productId] || 0) + 1) % max;
   render();
 }
-
 function prevGalleryImage(productId, max) {
   galleryImageIndex[productId] = ((galleryImageIndex[productId] || 0) - 1 + max) % max;
   render();
 }
 
-function generateWhatsAppMessage() {
-  let msg = "Hello Moye's Treats! I'd like to place an order:\n\n";
-  Object.values(cart).forEach(item => {
-    msg += `• ${item.qty}x ${products[item.productId].name} - ${item.itemName} (${formatPrice(item.price * item.qty)})\n`;
-  });
-  msg += `\nTotal: ${formatPrice(getCartTotal())}\n\nPlease confirm availability. Thank you!`;
-  return encodeURIComponent(msg);
-}
-
 function renderNav() {
   const count = getCartCount();
-  const pages = ['Home','Gallery','Menu','Order'];
+  const pages = [
+    { key: 'home', label: 'Home' },
+    { key: 'gallery', label: 'Gallery' },
+    { key: 'menu', label: 'Menu' },
+    { key: 'smallchops', label: 'Small Chops' }
+  ];
   return `
-    <nav class="sticky top-0 z-50 bg-[#f3e8ff] border-b border-purple-200/50 px-4 py-3">
-      <div class="max-w-5xl mx-auto flex items-center justify-between">
+    <nav class="sticky top-0 z-50 bg-[#f3e8ff]/90 backdrop-blur-md border-b border-purple-200/50 px-4 py-3">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="setPage('home')">
           <span class="text-2xl">🧁</span>
-          <span class="text-xl font-bold text-[#4a2c6a]">Moye's</span>
+          <span class="text-xl font-bold text-[#4a2c6a] font-pacifico">Moye's</span>
         </div>
-        <div class="flex gap-1 sm:gap-2">
+        <div class="flex gap-1 sm:gap-2 items-center">
           ${pages.map(p => {
-            const isActive = currentPage.toLowerCase() === p.toLowerCase();
-            const isOrder = p === 'Order';
-            const badge = isOrder && count > 0 ? `<span class="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">${count}</span>` : '';
+            const isActive = currentPage === p.key;
             return `
-              <button onclick="setPage('${p.toLowerCase()}')" 
-                class="relative px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-[#4a2c6a] text-white' : 'text-[#4a2c6a] hover:bg-purple-200/50'}">
-                ${p}
-                ${badge}
-              </button>
-            `;
+              <button onclick="setPage('${p.key}')"
+                class="px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-[#4a2c6a] text-white' : 'text-[#4a2c6a] hover:bg-purple-200/50'}">
+                ${p.label}
+              </button>`;
           }).join('')}
+          <button onclick="openCartModal()" class="relative ml-1 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-md shadow-amber-500/20">
+            🛒
+            ${count > 0 ? `<span id="navCartBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-[#f3e8ff]">${count}</span>` : ''}
+          </button>
         </div>
       </div>
-    </nav>
-  `;
+    </nav>`;
 }
 
+// ===================== HOME =====================
 function renderHome() {
   const categories = Object.values(products);
   return `
-    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-16">
       ${renderNav()}
       <div class="text-center pt-12 pb-8 px-4">
         <div class="text-5xl mb-4">🧁</div>
-        <h1 class="text-4xl sm:text-5xl font-bold text-[#4a2c6a] mb-2">Moye's Treats</h1>
-        <p class="text-[#7c5c9c] tracking-[0.3em] text-sm font-semibold mb-4">TREATS</p>
-        <p class="text-[#5a3a7a] text-lg italic mb-8">Parfaits, banana bread, brownies & more</p>
-        <div class="flex gap-4 justify-center">
+        <h1 class="text-4xl sm:text-5xl font-bold text-[#4a2c6a] mb-2 font-pacifico">Moye's Treats</h1>
+        <p class="text-[#7c5c9c] tracking-[0.3em] text-sm font-semibold mb-4 font-poppins">TREATS</p>
+        <p class="text-[#5a3a7a] text-lg italic mb-8">Parfaits, banana bread, brownies, small chops & more</p>
+        <div class="flex gap-4 justify-center flex-wrap">
           <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg shadow-amber-500/30 transition-all">
             See the menu
           </button>
-          <button onclick="setPage('order')" class="bg-white hover:bg-gray-50 text-[#4a2c6a] border-2 border-purple-200 px-8 py-3 rounded-full font-semibold transition-all">
-            Start an order
+          <button onclick="setPage('smallchops')" class="bg-white hover:bg-gray-50 text-[#4a2c6a] border-2 border-purple-200 px-8 py-3 rounded-full font-semibold transition-all">
+            Small Chops
           </button>
         </div>
         <div class="mt-8 flex items-center justify-center gap-2">
@@ -238,10 +1008,10 @@ function renderHome() {
           <div class="w-12 h-0.5 bg-purple-300"></div>
         </div>
       </div>
-      <div class="max-w-5xl mx-auto px-4">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           ${categories.map(cat => `
-            <div onclick="setPage('gallery')" class="bg-white/80 backdrop-blur rounded-2xl p-4 text-center cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all border border-purple-100">
+            <div onclick="setPage('${cat.id === 'smallChops' ? 'smallchops' : 'gallery'})" class="bg-white/80 backdrop-blur rounded-2xl p-4 text-center cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all border border-purple-100">
               <div class="text-3xl mb-2">${cat.icon}</div>
               <h3 class="font-bold text-[#4a2c6a] text-sm">${cat.name}</h3>
               <p class="text-amber-600 text-xs font-semibold mt-1">from ${formatPrice(cat.fromPrice)}</p>
@@ -249,7 +1019,7 @@ function renderHome() {
           `).join('')}
         </div>
       </div>
-      <div class="max-w-5xl mx-auto px-4 mt-12">
+      <div class="max-w-6xl mx-auto px-4 mt-12">
         <div class="bg-[#4a2c6a] rounded-3xl p-8 text-center text-white">
           <h2 class="text-2xl font-bold mb-3">Tell us what you're craving</h2>
           <p class="text-purple-200 mb-6 max-w-lg mx-auto">Every cup, loaf and pack is made to order. Pick your treats, send us the list, and we'll take it from there.</p>
@@ -265,31 +1035,31 @@ function renderHome() {
       <div class="text-center mt-8 text-[#7c5c9c] text-sm">
         Moye's Treats · ${contact.location} · ${contact.displayPhone}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
+// ===================== GALLERY =====================
 function renderGallery() {
-  const categories = Object.values(products);
+  const categories = Object.values(products).filter(p => p.id !== 'smallChops');
   return `
-    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-16">
       ${renderNav()}
       <div class="text-center pt-10 pb-6 px-4">
         <h1 class="text-4xl font-bold text-[#4a2c6a] mb-3">Gallery</h1>
         <span class="bg-[#4a2c6a] text-white px-6 py-2 rounded-full text-sm font-semibold tracking-wider">SEE WHAT WE MAKE</span>
       </div>
-      <div class="max-w-5xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         ${categories.map(cat => {
           const imgIdx = galleryImageIndex[cat.id] || 0;
           const imgCount = cat.images.length;
           return `
             <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-purple-100 hover:shadow-xl transition-all">
-              <div class="relative h-48 bg-gray-100 overflow-hidden">
-                <img src="${cat.images[imgIdx]}" class="w-full h-full object-cover" alt="${cat.name}">
+              <div class="relative h-52 bg-gray-100 overflow-hidden group">
+                <img src="${cat.images[imgIdx]}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${cat.name}">
                 ${imgCount > 1 ? `
-                  <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">${imgIdx+1}/${imgCount}</div>
-                  <button onclick="prevGalleryImage('${cat.id}', ${imgCount})" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center text-[#4a2c6a] font-bold">‹</button>
-                  <button onclick="nextGalleryImage('${cat.id}', ${imgCount})" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center text-[#4a2c6a] font-bold">›</button>
+                  <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">${imgIdx+1}/${imgCount}</div>
+                  <button onclick="prevGalleryImage('${cat.id}', ${imgCount})" class="gal-btn left-2">‹</button>
+                  <button onclick="nextGalleryImage('${cat.id}', ${imgCount})" class="gal-btn right-2">›</button>
                 ` : ''}
               </div>
               <div class="p-5">
@@ -300,21 +1070,20 @@ function renderGallery() {
                   <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all">See prices</button>
                 </div>
               </div>
-            </div>
-          `;
+            </div>`;
         }).join('')}
       </div>
       <div class="text-center mt-8 text-[#7c5c9c] text-sm">
         Moye's Treats · ${contact.location} · ${contact.displayPhone}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
+// ===================== MENU =====================
 function renderMenu() {
-  const categories = Object.values(products);
+  const categories = Object.values(products).filter(p => p.id !== 'smallChops');
   return `
-    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-20">
       ${renderNav()}
       <div class="text-center pt-10 pb-6 px-4">
         <h1 class="text-4xl font-bold text-[#4a2c6a] mb-3">Our Menu</h1>
@@ -331,130 +1100,152 @@ function renderMenu() {
             </div>
             <div class="space-y-3">
               ${cat.items.map(item => {
-                const key = cat.id + '|' + item.name;
-                const inCart = cart[key];
+                const cartItem = cart.find(i => i.type === 'menu' && i.productId === cat.id && i.itemName === item.name);
                 return `
                   <div class="flex items-center justify-between py-2 border-b border-dashed border-purple-100 last:border-0">
-                    <div>
-                      <span class="font-semibold text-[#4a2c6a]">${item.name}</span>
-                      ${inCart ? `<span class="ml-2 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">${inCart.qty} in cart</span>` : ''}
+                    <div class="min-w-0 pr-2">
+                      <span class="font-semibold text-[#4a2c6a] text-sm">${item.name}</span>
+                      ${cartItem ? `<span class="ml-2 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">${cartItem.qty} in cart</span>` : ''}
                     </div>
-                    <div class="flex items-center gap-3">
-                      <span class="text-amber-600 font-bold">${formatPrice(item.price)}</span>
-                      <button onclick="addToCart('${cat.id}', '${item.name}', ${item.price})" 
+                    <div class="flex items-center gap-3 shrink-0">
+                      <span class="text-amber-600 font-bold text-sm">${formatPrice(item.price)}</span>
+                      <button onclick="addMenuItem('${cat.id}', '${item.name}', ${item.price})"
                         class="w-9 h-9 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-amber-500/30 transition-all hover:scale-110">
                         +
                       </button>
                     </div>
-                  </div>
-                `;
+                  </div>`;
               }).join('')}
             </div>
             ${cat.note ? `<p class="mt-3 text-sm text-purple-600 italic">${cat.note}</p>` : ''}
           </div>
         `).join('')}
-      </div>
-      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
-        Moye's Treats · ${contact.location} · ${contact.displayPhone}
-      </div>
-    </div>
-  `;
-}
-
-function renderOrder() {
-  const cartItems = Object.values(cart);
-  const total = getCartTotal();
-  
-  if (cartItems.length === 0) {
-    return `
-      <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
-        ${renderNav()}
-        <div class="text-center pt-20 px-4">
-          <div class="text-6xl mb-4">🛒</div>
-          <h2 class="text-2xl font-bold text-[#4a2c6a] mb-2">Your cart is empty</h2>
-          <p class="text-gray-500 mb-6">Browse our menu and add some treats!</p>
-          <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all">
-            Browse Menu
+        <div class="bg-gradient-to-r from-[#4a2c6a] to-[#7c5c9c] rounded-3xl p-6 text-white text-center shadow-lg">
+          <p class="text-sm opacity-90 mb-2">Craving something savoury?</p>
+          <button onclick="setPage('smallchops')" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg">
+            Check out our Small Chops →
           </button>
         </div>
       </div>
-    `;
-  }
-  
-  return `
-    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-12">
-      ${renderNav()}
-      <div class="text-center pt-10 pb-6 px-4">
-        <h1 class="text-4xl font-bold text-[#4a2c6a] mb-3">Your Order</h1>
-        <span class="bg-[#4a2c6a] text-white px-6 py-2 rounded-full text-sm font-semibold tracking-wider">CART & CHECKOUT</span>
-      </div>
-      <div class="max-w-2xl mx-auto px-4">
-        <div class="bg-white/90 backdrop-blur rounded-3xl p-6 shadow-lg border border-purple-100">
-          <div class="space-y-4">
-            ${cartItems.map(item => {
-              const key = item.productId + '|' + item.itemName;
-              return `
-                <div class="flex items-center justify-between py-3 border-b border-dashed border-purple-200">
-                  <div class="flex-1">
-                    <div class="font-bold text-[#4a2c6a]">${item.itemName}</div>
-                    <div class="text-sm text-purple-500">${products[item.productId].name} · ${formatPrice(item.price)} each</div>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-2 bg-gray-50 rounded-full px-1">
-                      <button onclick="updateCartQty('${key}', -1)" class="w-8 h-8 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 transition-all">−</button>
-                      <span class="w-6 text-center font-semibold text-[#4a2c6a]">${item.qty}</span>
-                      <button onclick="updateCartQty('${key}', 1)" class="w-8 h-8 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 transition-all">+</button>
-                    </div>
-                    <span class="text-amber-600 font-bold w-20 text-right">${formatPrice(item.price * item.qty)}</span>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-          <div class="flex items-center justify-between mt-6 pt-4 border-t-2 border-purple-200">
-            <span class="text-xl font-bold text-[#4a2c6a]">Total</span>
-            <span class="text-2xl font-bold text-amber-600">${formatPrice(total)}</span>
-          </div>
-          <div class="mt-6 space-y-3">
-            <a href="https://wa.me/234${contact.phone}?text=${generateWhatsAppMessage()}" target="_blank" 
-              class="block w-full bg-amber-500 hover:bg-amber-600 text-white text-center py-4 rounded-full font-bold text-lg shadow-lg shadow-amber-500/30 transition-all">
-              Order on WhatsApp
-            </a>
-            <a href="tel:${contact.phone}" 
-              class="block w-full bg-[#4a2c6a] hover:bg-[#3a1c5a] text-white text-center py-4 rounded-full font-bold text-lg shadow-lg transition-all">
-              Call to order · ${contact.displayPhone}
-            </a>
-            <button onclick="setPage('menu')" 
-              class="block w-full bg-white border-2 border-purple-200 text-[#4a2c6a] text-center py-3 rounded-full font-semibold hover:bg-purple-50 transition-all">
-              Add more items
-            </button>
-          </div>
-          <div class="mt-4 bg-purple-50 rounded-2xl p-4 text-sm text-[#5a3a7a]">
-            <span class="font-bold">Heads up:</span> Mini Banana Bread has a minimum of 3, and Double Chocolate Mini a minimum of 2. Toppings and boxes can be added — just mention it when you send your order.
-          </div>
-        </div>
-      </div>
       <div class="text-center mt-8 text-[#7c5c9c] text-sm">
         Moye's Treats · ${contact.location} · ${contact.displayPhone}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
+// ===================== SMALL CHOPS =====================
+function renderSmallChops() {
+  setTimeout(() => {
+    for (let item in customQty) {
+      const el = document.getElementById('qty-' + item.replace(/\s/g, '-'));
+      if (el) el.textContent = customQty[item];
+    }
+  }, 0);
+
+  return `
+    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-24 font-poppins">
+      ${renderNav()}
+      <header class="text-center pt-10 pb-6 px-4">
+        <div class="text-xs tracking-[0.25em] uppercase text-[#7c5c9c] font-semibold mb-2">Freshly Made · Party Favourites</div>
+        <h1 class="text-4xl sm:text-5xl text-[#4a2c6a] mb-2 font-pacifico">Small Chops</h1>
+        <div class="inline-flex items-center gap-3 text-[#5a3a7a] italic">
+          <span class="w-8 h-px bg-amber-500"></span>
+          <span>Price List & Combo Packages</span>
+          <span class="w-8 h-px bg-amber-500"></span>
+        </div>
+      </header>
+
+      <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left: Combos -->
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-9 h-9 bg-gradient-to-br from-[#4a2c6a] to-[#7c5c9c] rounded-xl flex items-center justify-center text-white text-lg shadow-md">📦</div>
+            <h2 class="text-xl font-bold text-[#4a2c6a]">Combo Packages</h2>
+          </div>
+          <div class="space-y-5">
+            ${combos.map(combo => `
+              <div class="combo-card ${combo.bestValue ? 'best-value' : ''}">
+                ${combo.bestValue ? '<div class="best-value-badge">Best Value</div>' : ''}
+                <div class="flex justify-between items-start mb-4 pb-3 border-b-2 border-dashed border-purple-200">
+                  <div class="font-bold text-[#4a2c6a] tracking-wide uppercase text-sm">${combo.name}</div>
+                  <div class="text-2xl font-extrabold text-[#4a2c6a]"><span class="text-sm font-semibold">₦</span>${combo.price.toLocaleString()}</div>
+                </div>
+                <ul class="space-y-2 mb-5">
+                  ${Object.entries(combo.items).map(([name, qty]) => `
+                    <li class="flex items-center gap-3 text-sm text-gray-700">
+                      <span class="item-qty">${qty}</span> ${name}
+                    </li>
+                  `).join('')}
+                </ul>
+                <button onclick="addCombo('${combo.name}', ${combo.price}, ${JSON.stringify(combo.items).replace(/"/g, '&quot;')})"
+                  class="w-full py-3 rounded-xl ${combo.bestValue ? 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500' : 'bg-gradient-to-r from-[#4a2c6a] to-[#7c5c9c] hover:from-[#3a1c5a] hover:to-[#6c4c8c]'} text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                  <span>+</span> Add to Order
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Right: Custom Builder -->
+        <div>
+          <div class="card builder-card rounded-3xl p-6 shadow-xl">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-8 h-8 bg-white/15 rounded-full flex items-center justify-center text-white text-sm">⚡</div>
+              <h2 class="text-lg font-bold text-white">Customize Your Package</h2>
+            </div>
+            <p class="text-sm text-white/70 mb-4">Build your own — pick any quantity you like!</p>
+
+            <div class="bg-white/10 rounded-xl p-3 mb-5 text-xs text-white/80 leading-relaxed">
+              📦 <strong>Packaging Fee:</strong> Custom packages require special packaging. The packaging fee is calculated automatically based on your order total and will be added at checkout.
+            </div>
+
+            <div class="space-y-1">
+              ${Object.entries(smallChopsPrices).map(([item, price]) => `
+                <div class="flex items-center justify-between py-3.5 border-b border-dashed border-white/15 last:border-0">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-1">
+                      <span class="text-xl">${item === 'Samosa' ? '🔺' : item === 'Spring Roll' ? '🟡' : item === 'Puff Puff' ? '💛' : item === 'Beef' ? '🥩' : '🍗'}</span>
+                      <span class="font-medium text-white">${item}</span>
+                    </div>
+                    <div class="flex items-center gap-2 ml-10">
+                      <button class="qty-btn" onclick="updateQty('${item}', -1)">−</button>
+                      <span class="font-bold text-white w-5 text-center" id="qty-${item.replace(/\s/g, '-')}">0</span>
+                      <button class="qty-btn" onclick="updateQty('${item}', 1)">+</button>
+                    </div>
+                  </div>
+                  <div class="text-amber-300 font-bold text-sm bg-white/10 px-3 py-1 rounded-full">₦${price.toLocaleString()}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <button onclick="addCustomToCart()" class="w-full mt-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <span>+</span> Add Custom Package
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="text-center mt-12 text-[#7c5c9c] text-sm pb-4">
+        <p>Place your order today <span class="heart-anim text-amber-500">♥</span> Freshly fried, perfectly spiced</p>
+      </footer>
+    </div>`;
+}
+
+// ===================== RENDER =====================
 function render() {
   const app = document.getElementById('app');
   if (!app) return;
-  switch(currentPage) {
+  switch (currentPage) {
     case 'home': app.innerHTML = renderHome(); break;
     case 'gallery': app.innerHTML = renderGallery(); break;
     case 'menu': app.innerHTML = renderMenu(); break;
-    case 'order': app.innerHTML = renderOrder(); break;
+    case 'smallchops': app.innerHTML = renderSmallChops(); break;
     default: app.innerHTML = renderHome();
   }
+  updateCartUI();
 }
 
 document.addEventListener('DOMContentLoaded', render);
 </script>
-
 </body>
 </html>
