@@ -6,6 +6,7 @@
   <title>Moye's Treats</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
       --primary: #4a2c6a;
@@ -160,71 +161,155 @@
       font-weight: 700; color: var(--primary-dark); font-size: 1.05rem;
     }
     
-    /* === PREVIEW GATE === */
-#previewGate {
-  position: fixed; inset: 0; z-index: 9999;
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    /* === PREMIUM ANIMATIONS & UTILITIES === */
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.active { opacity: 1; transform: translateY(0); }
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+.stagger-4 { transition-delay: 0.4s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+.hero-section {
+  position: relative; min-height: 90vh; display: flex; align-items: center;
+  background: linear-gradient(135deg, #2d1b4e 0%, #4a2c6a 50%, #3a1c5a 100%);
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; opacity: 0.25;
+  background-image: url('https://images.unsplash.com/photo-1488477181946-6428a0291777?w=1200&q=80');
+  background-size: cover; background-position: center;
+}
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(45,27,78,0.8), rgba(74,44,106,0.9)); }
+
+.trust-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15); padding: 8px 16px;
+  border-radius: 999px; color: white; font-size: 0.85rem; font-weight: 500;
+}
+
+.section-label {
+  display: inline-block; background: rgba(74,44,106,0.08);
+  color: #4a2c6a; padding: 6px 18px; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+  margin-bottom: 1rem; border: 1px solid rgba(74,44,106,0.12);
+}
+
+.product-card-premium {
+  background: white; border-radius: 24px; overflow: hidden;
+  border: 1px solid #e9d5ff; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(74,44,106,0.06);
+}
+.product-card-premium:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(74,44,106,0.12);
+  border-color: #d8b4fe;
+}
+
+.why-card {
+  background: white; border-radius: 20px; padding: 28px;
+  border: 1px solid #e9d5ff; transition: all 0.3s ease;
+}
+.why-card:hover { border-color: #f59e0b; transform: translateY(-4px); box-shadow: 0 12px 30px rgba(91,46,145,0.08); }
+
+.review-card {
+  background: white; border-radius: 20px; padding: 24px;
+  border: 1px solid #e9d5ff; box-shadow: 0 4px 20px rgba(74,44,106,0.04);
+}
+
+.cta-section {
+  background: linear-gradient(135deg, #4a2c6a 0%, #3a1c5a 100%);
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: ''; position: absolute; top: -50%; right: -10%;
+  width: 400px; height: 400px; background: rgba(245,158,11,0.08);
+  border-radius: 50%; filter: blur(60px);
+}
+
+.site-footer {
+  background: #2d1b4e; color: #c4b5e0;
+  padding: 60px 20px 30px;
+}
+.footer-brand { font-family: 'Pacifico', cursive; color: white; font-size: 1.5rem; }
+.footer-link { color: #a78bfa; transition: color 0.2s; background: none; border: none; cursor: pointer; font-size: 0.875rem; }
+.footer-link:hover { color: #fbbf24; }
+
+.star-filled { color: black; }
+.star-empty { color: #e9d5ff; }
+
+html { scroll-behavior: smooth; }
+
+/* === LIGHTBOX === */
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(10, 5, 20, 0.92);
+  backdrop-filter: blur(20px);
   display: flex; align-items: center; justify-content: center;
-  padding: 20px; font-family: 'Poppins', sans-serif;
+  opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
 }
-#previewGate.hidden { display: none; }
-.gate-card {
-  background: white; border-radius: 24px; padding: 40px 32px;
-  max-width: 420px; width: 100%; text-align: center;
-  box-shadow: 0 25px 80px rgba(74,44,106,0.18);
-  border: 1px solid #e9d5ff;
+.lightbox-overlay.active { opacity: 1; pointer-events: all; }
+.lightbox-content {
+  position: relative; max-width: 95vw; max-height: 90vh;
+  display: flex; align-items: center; justify-content: center;
 }
-.gate-card h2 {
-  font-family: 'Playfair Display', serif;
-  color: #4a2c6a; font-size: 1.6rem; margin-bottom: 8px;
+.lightbox-content img {
+  max-width: 100%; max-height: 90vh; object-fit: contain;
+  border-radius: 12px; box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease; transform-origin: center;
+  cursor: grab; -webkit-user-drag: none;
 }
-.gate-card p {
-  color: #7c5c9c; font-size: 0.95rem; margin-bottom: 24px;
+.lightbox-close {
+  position: absolute; top: 20px; right: 24px; z-index: 10;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; font-size: 1.8rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px);
 }
-.gate-input {
-  width: 100%; padding: 14px 18px; border: 2px solid #e9d5ff;
-  border-radius: 14px; font-size: 1.1rem; text-align: center;
-  letter-spacing: 4px; font-weight: 600; color: #4a2c6a;
-  font-family: 'Poppins', sans-serif; transition: all 0.3s;
+.lightbox-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px);
 }
-.gate-input:focus {
-  outline: none; border-color: #7c5c9c;
-  box-shadow: 0 0 0 4px rgba(124,79,184,0.12);
+.lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+.lightbox-prev { left: 16px; }
+.lightbox-next { right: 16px; }
+.lightbox-counter {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.15); color: white;
+  padding: 6px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 500;
 }
-.gate-btn {
-  width: 100%; margin-top: 16px; padding: 14px;
-  border-radius: 14px; border: none;
-  background: linear-gradient(135deg, #4a2c6a, #7c5c9c);
-  color: white; font-weight: 700; font-size: 1rem;
-  cursor: pointer; transition: all 0.25s;
-  font-family: 'Poppins', sans-serif;
+@media (max-width: 640px) {
+  .lightbox-nav { width: 40px; height: 40px; font-size: 1.2rem; }
+  .lightbox-prev { left: 8px; }
+  .lightbox-next { right: 8px; }
+  .lightbox-close { top: 12px; right: 12px; width: 40px; height: 40px; }
 }
-.gate-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(74,44,106,0.3);
+
+/* === NAVBAR ICON ANIMATION === */
+.nav-icon-anim {
+  display: inline-block;
+  animation: navIconSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.gate-error {
-  color: #ef4444; font-size: 0.85rem; margin-top: 12px;
-  font-weight: 500; display: none;
+@keyframes navIconSlide {
+  from { opacity: 0; transform: translateX(-10px) scale(0.8); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
 }
-.gate-error.show { display: block; }
 
   </style>
 </head>
 <body class="bg-[#f3e8ff] min-h-screen">
-    
-    <!-- PREVIEW ACCESS GATE -->
-<div id="previewGate">
-  <div class="gate-card">
-    <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
-    <h2>This website is currently under review.</h2>
-    <p>Please enter the access code to continue.</p>
-    <input type="password" id="gateCode" class="gate-input" placeholder="••••••" maxlength="10" autocomplete="off">
-    <button class="gate-btn" onclick="checkGateCode()">Continue</button>
-    <div id="gateError" class="gate-error">Incorrect code. Please try again.</div>
-  </div>
-</div>
-
 
 <div class="bg-shape bg-shape-1"></div>
 <div class="bg-shape bg-shape-2"></div>
@@ -300,7 +385,7 @@
           <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Location</label>
           <select name="deliveryLocation" id="deliveryLocation" onchange="onLocationChange(this)" class="form-select">
             <option value="">&#9660; Select your area</option>
-            <option value="Madalla">Madalla</option>
+            <option value="Madalla">Madella</option>
             <option value="Bosso">Bosso</option>
             <option value="GK">GK</option>
             <option value="Tunga">Tunga</option>
@@ -357,12 +442,12 @@
 // ===================== DATA =====================
 const products = {
   parfaits: {
-    id: 'parfaits', name: 'Parfaits', icon: '🍨',
+    id: 'parfaits', name: 'Parfaits', icon: '🍨', lucide: 'ice-cream',
     desc: 'Creamy layers of yoghurt, fruit and crunch — from a single small cup to a shareable 2-litre bowl.',
     fromPrice: 3500,
     images: [
-      'assets/images/yoghurt-parfait.jpg',
       'assets/images/yoghurt-parfait-sm-cup.jpg',
+      'assets/images/yoghurt-parfait-bg-cup.jpg',
       'assets/images/yoghurt-parfait-t.jpg'
     ],
     items: [
@@ -373,7 +458,7 @@ const products = {
     ]
   },
   cakeParfait: {
-    id: 'cakeParfait', name: 'Cake Parfait', icon: '🧁',
+    id: 'cakeParfait', name: 'Cake Parfait', icon: '🧁', lucide:'cup-soda',
     desc: 'Soft cake folded through our parfait cream. Rich, spoonable and gone far too soon.',
     fromPrice: 2500,
     images: [
@@ -386,7 +471,7 @@ const products = {
     ]
   },
   greekYoghurt: {
-    id: 'greekYoghurt', name: 'Greek Yoghurt', icon: '🥣',
+    id: 'greekYoghurt', name: 'Greek Yoghurt', icon: '🥣', lucide:'soup',
     desc: 'Thick, tangy Greek yoghurt in handy cups and bowls. Simple, wholesome, yours.',
     fromPrice: 3000,
     images: [
@@ -400,14 +485,14 @@ const products = {
     ]
   },
   bananaBread: {
-    id: 'bananaBread', name: 'Banana Bread', icon: '🍞',
+    id: 'bananaBread', name: 'Banana Bread', icon: '🍞', lucide:'cake-slice',
     desc: 'Moist, freshly baked banana bread — classic or double chocolate, from mini to maxi.',
     fromPrice: 1500,
     images: [
-      'assets/images/banana-bread.jpg',
+      'assets/images/banana-bread-medium-loaf.jpg',
       'assets/images/banana-bread-maxi-loaf.jpg',
       'assets/images/banana-bread-mini-loaf.jpg',
-      'assets/images/banana-bread-medium-loaf.jpg',
+      'assets/images/banana-bread.jpg',
     ],
     items: [
       { name: 'Mini Loaf (MOQ of 3)', price: 1500 },
@@ -420,7 +505,7 @@ const products = {
     note: 'You can request for any toppings you want. Banana bread can come in boxes (additional fee included).'
   },
   cakeLoafs: {
-    id: 'cakeLoafs', name: 'Cake Loafs', icon: '🍰', subtitle: '(Size 6")',
+    id: 'cakeLoafs', name: 'Cake Loafs', icon: '🍰', lucide:'cake', subtitle: '(Size 6")',
     desc: '6-inch cake loaves in red velvet, chocolate and vanilla. Baked fresh to order.',
     fromPrice: 6000,
     images: [
@@ -434,23 +519,22 @@ const products = {
     ]
   },
   brownies: {
-    id: 'brownies', name: 'Brownies', icon: '🍫',
+    id: 'brownies', name: 'Brownies', icon: '🍫', lucide:'cake',
     desc: 'Rich, fudgy chocolate brownies baked fresh in a shareable pack. Deep, gooey and hard to resist.',
     fromPrice: 5000,
     images: [
       'assets/images/brownies.jpg',
-      
+
     ],
     items: [
       { name: 'Pack', price: 5000 }
     ]
   },
   yoghurtDrink: {
-    id: 'yoghurtDrink', name: 'Yoghurt Drink', icon: '🥤',
+    id: 'yoghurtDrink', name: 'Yoghurt Drink', icon: '🥤', lucide:'cup-soda',
     desc: 'Smooth, drinkable yoghurt in 50cl and 35cl bottles. Chilled and ready to grab.',
     fromPrice: 1800,
     images: [
-      'assets/images/yoghurt-drink.jpg',
       'assets/images/yoghurt-drink-35cl.jpg',
       'assets/images/yoghurt-drink-50cl.jpg',
     ],
@@ -460,7 +544,7 @@ const products = {
     ]
   },
   smallChops: {
-    id: 'smallChops', name: 'Small Chops', icon: '🍤',
+    id: 'smallChops', name: 'Small Chops', icon: '🍤', lucide:'utensils-crossed',
     desc: 'Freshly made party favourites — samosa, spring rolls, puff puff, beef & chicken.',
     fromPrice: 1500,
     images: [
@@ -495,6 +579,91 @@ const contact = {
   instagram: 'moyes_treats', tiktok: 'Moyes.treats', location: 'Minna'
 };
 
+// ===================== PREMIUM DATA =====================
+const testimonials = [
+  { name: 'Aisha M.', rating: 5, text: 'The parfait was absolutely divine! Creamy, fresh, and perfectly layered. My go-to treat spot in Minna.', avatar: 'A' },
+  { name: 'John O.', rating: 5, text: 'Ordered the banana bread for my family and it disappeared in minutes. So moist and flavorful!', avatar: 'J' },
+  { name: 'Fatima L.', rating: 5, text: 'Best small chops in town! The spring rolls were crispy and the beef was perfectly spiced. Will order again.', avatar: 'F' },
+  { name: 'David K.', rating: 4, text: 'Great service and fast delivery. The Greek yoghurt is thick and tangy exactly how I like it.', avatar: 'D' }
+];
+
+const bestSellers = [
+  { id: 'parfaits', item: 'Small Cup', price: 3500, label: 'Most Popular', image: 'assets/images/yoghurt-parfait-bg-cup.jpg' },
+  { id: 'bananaBread', item: 'Medium Loaf', price: 3500, label: 'Fan Favourite', image: 'assets/images/banana-bread.jpg' },
+  { id: 'cakeParfait', item: 'Big Cup', price: 4000, label: 'Trending', image: 'assets/images/cake-parfait-sm-cup.jpg' },
+  { id: 'brownies', item: 'Pack', price: 5000, label: 'Best Seller', image: 'assets/images/brownies.jpg' }
+];
+
+const smallChopsLucide = {
+  'Samosa': 'triangle',
+  'Spring Roll': 'scroll',
+  'Puff Puff': 'circle',
+  'Beef': 'beef',
+  'Chicken': 'bird'
+};
+
+// ===================== FOOTER & HELPERS =====================
+function renderFooter() {
+  return `
+    <footer class="site-footer">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+        <div>
+          <div class="footer-brand mb-4">Moye's Treats</div>
+          <p class="text-sm leading-relaxed mb-4">Premium homemade treats crafted with love in Minna. Parfaits, banana bread, small chops & more.</p>
+          <div class="flex gap-3">
+            <a href="https://instagram.com/${contact.instagram}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors">
+              <i data-lucide="instagram" class="w-4 h-4 text-white"></i>
+            </a>
+            <a href="https://tiktok.com/@${contact.tiktok}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors">
+              <i data-lucide="music" class="w-4 h-4 text-white"></i>
+            </a>
+            <a href="tel:${contact.phone}" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors">
+              <i data-lucide="phone" class="w-4 h-4 text-white"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
+          <ul class="space-y-2 text-sm">
+            <li><button onclick="setPage('home')" class="footer-link">Home</button></li>
+            <li><button onclick="setPage('menu')" class="footer-link">Menu</button></li>
+            <li><button onclick="setPage('gallery')" class="footer-link">Gallery</button></li>
+            <li><button onclick="setPage('smallchops')" class="footer-link">Small Chops</button></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-wider">Contact</h4>
+          <ul class="space-y-3 text-sm">
+            <li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-amber-400"></i> ${contact.displayPhone}</li>
+            <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i> ${contact.location}, Nigeria</li>
+            <li class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-amber-400"></i> Open Monday - Saturday</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-wider">Trust</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i> Made Fresh Daily</li>
+            <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i> Premium Ingredients</li>
+            <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i> Fast Minna Delivery</li>
+            <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i> Secure Packaging</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/10 pt-6 text-center text-xs text-purple-300">
+        © ${new Date().getFullYear()} Moye's Treats. All rights reserved. Crafted with <i data-lucide="heart" class="w-3 h-3 inline text-amber-500" fill="currentColor"></i> in Minna.
+      </div>
+    </footer>`;
+}
+
+function initScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('active');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
 // ===================== STATE =====================
 let currentPage = 'home';
 let cart = [];
@@ -503,57 +672,65 @@ let customQty = { 'Samosa': 0, 'Spring Roll': 0, 'Puff Puff': 0, 'Beef': 0, 'Chi
 let deliveryMethod = 'pickup';
 let selectedLocation = '';
 
-// ===================== PREVIEW GATE =====================
-const ACCESS_CODE = 'moyes2026';        // ← CHANGE THIS TO YOUR DESIRED CODE
-const ACCESS_DURATION_HOURS = 24;       // ← CHANGE EXPIRY TIME (e.g., 24, 48, 72)
-
-function isAccessGranted() {
-  try {
-    const stored = localStorage.getItem('moyesPreviewAccess');
-    if (!stored) return false;
-    const data = JSON.parse(stored);
-    const expiry = data.timestamp + (ACCESS_DURATION_HOURS * 60 * 60 * 1000);
-    return Date.now() < expiry;
-  } catch (e) { return false; }
-}
-
-function grantAccess() {
-  try {
-    localStorage.setItem('moyesPreviewAccess', JSON.stringify({ timestamp: Date.now() }));
-  } catch (e) {}
-  const gate = document.getElementById('previewGate');
-  if (gate) gate.classList.add('hidden');
-  render(); // render the main app
-}
-
-function checkGateCode() {
-  const input = document.getElementById('gateCode');
-  const error = document.getElementById('gateError');
-  if (input.value.trim() === ACCESS_CODE) {
-    error.classList.remove('show');
-    grantAccess();
-  } else {
-    error.classList.add('show');
-    input.value = '';
-    input.focus();
-  }
-}
-
-// Allow Enter key to submit
-document.addEventListener('keydown', function(e) {
-  const gate = document.getElementById('previewGate');
-  if (gate && !gate.classList.contains('hidden') && e.key === 'Enter') {
-    checkGateCode();
-  }
-});
-
-
 // Load saved customer details
 let savedCustomer = {};
 try {
   const stored = localStorage.getItem('moyesCustomer');
   if (stored) savedCustomer = JSON.parse(stored);
 } catch(e) {}
+
+// ===================== LIGHTBOX =====================
+let lightboxCategory = null;
+let lightboxIndex = 0;
+let touchStartX = 0;
+
+function openLightbox(categoryId, imageIndex) {
+  lightboxCategory = categoryId;
+  lightboxIndex = imageIndex;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  updateLightbox();
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+  document.getElementById('lightboxImg').style.transform = 'scale(1)';
+}
+
+function closeLightboxOnBackground(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function updateLightbox() {
+  const cat = products[lightboxCategory];
+  if (!cat) return;
+  document.getElementById('lightboxImg').src = cat.images[lightboxIndex];
+  document.getElementById('lightboxCounter').textContent = `${lightboxIndex + 1} / ${cat.images.length}`;
+}
+
+function lightboxPrev() {
+  const cat = products[lightboxCategory];
+  if (!cat) return;
+  lightboxIndex = (lightboxIndex - 1 + cat.images.length) % cat.images.length;
+  updateLightbox();
+}
+
+function lightboxNext() {
+  const cat = products[lightboxCategory];
+  if (!cat) return;
+  lightboxIndex = (lightboxIndex + 1) % cat.images.length;
+  updateLightbox();
+}
+
+// Keyboard support
+document.addEventListener('keydown', (e) => {
+  const lb = document.getElementById('lightbox');
+  if (!lb || !lb.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lightboxPrev();
+  if (e.key === 'ArrowRight') lightboxNext();
+});
 
 // ===================== UTILS =====================
 function formatPrice(n) {
@@ -973,16 +1150,16 @@ function prevGalleryImage(productId, max) {
 function renderNav() {
   const count = getCartCount();
   const pages = [
-    { key: 'home', label: 'Home' },
-    { key: 'gallery', label: 'Gallery' },
-    { key: 'menu', label: 'Menu' },
-    { key: 'smallchops', label: 'Small Chops' }
+    { key: 'home', label: 'Home', icon: 'home' },
+    { key: 'gallery', label: 'Gallery', icon: 'image' },
+    { key: 'menu', label: 'Menu', icon: 'book-open' },
+    { key: 'smallchops', label: 'Small Chops', icon: 'package' }
   ];
   return `
     <nav class="sticky top-0 z-50 bg-[#f3e8ff]/90 backdrop-blur-md border-b border-purple-200/50 px-4 py-3">
       <div class="max-w-6xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="setPage('home')">
-          <span class="text-2xl">🧁</span>
+          <i data-lucide="cake" class="w-6 h-6 text-[#4a2c6a]"></i>
           <span class="text-xl font-bold text-[#4a2c6a] font-pacifico">Moye's</span>
         </div>
         <div class="flex gap-1 sm:gap-2 items-center">
@@ -990,12 +1167,14 @@ function renderNav() {
             const isActive = currentPage === p.key;
             return `
               <button onclick="setPage('${p.key}')"
-                class="px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-[#4a2c6a] text-white' : 'text-[#4a2c6a] hover:bg-purple-200/50'}">
-                ${p.label}
+                class="rounded-full text-sm font-medium transition-all duration-300 flex items-center whitespace-nowrap ${isActive ? 'bg-[#4a2c6a] text-white px-4 py-2 gap-1.5 shadow-md' : 'text-[#4a2c6a] hover:bg-purple-200/50 px-3 py-1.5'}">
+                ${isActive ? `<i data-lucide="${p.icon}" class="w-3.5 h-3.5 text-white nav-icon-anim"></i>` : ''}
+                <span>${p.label}</span>
               </button>`;
           }).join('')}
-          <button onclick="openCartModal()" class="relative ml-1 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-md shadow-amber-500/20">
-            🛒
+          <button onclick="openCartModal()" class="relative ml-1 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-md shadow-amber-500/20 flex items-center gap-1.5">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Cart</span>
             ${count > 0 ? `<span id="navCartBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-[#f3e8ff]">${count}</span>` : ''}
           </button>
         </div>
@@ -1003,58 +1182,226 @@ function renderNav() {
     </nav>`;
 }
 
+
+
 // ===================== HOME =====================
 function renderHome() {
-  const categories = Object.values(products);
   return `
-    <div class="min-h-screen bg-gradient-to-b from-[#f3e8ff] to-[#e9d5ff] pb-16">
+    <div class="min-h-screen bg-[#f3e8ff] font-poppins">
       ${renderNav()}
-      <div class="text-center pt-12 pb-8 px-4">
-        <div class="text-5xl mb-4">🧁</div>
-        <h1 class="text-4xl sm:text-5xl font-bold text-[#4a2c6a] mb-2 font-pacifico">Moye's Treats</h1>
-        <p class="text-[#7c5c9c] tracking-[0.3em] text-sm font-semibold mb-4 font-poppins">TREATS</p>
-        <p class="text-[#5a3a7a] text-lg italic mb-8">Parfaits, banana bread, brownies, small chops & more</p>
-        <div class="flex gap-4 justify-center flex-wrap">
-          <button onclick="setPage('menu')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg shadow-amber-500/30 transition-all">
-            See the menu
-          </button>
-          <button onclick="setPage('smallchops')" class="bg-white hover:bg-gray-50 text-[#4a2c6a] border-2 border-purple-200 px-8 py-3 rounded-full font-semibold transition-all">
-            Small Chops
-          </button>
+      
+      <!-- HERO -->
+      <section class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="relative z-10 max-w-6xl mx-auto px-4 py-20 text-center">
+          <div class="reveal active">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold tracking-widest uppercase mb-6 border border-amber-500/30">
+              Minna's Finest Homemade Treats
+            </span>
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 font-pacifico leading-tight">
+              Sweet Moments,<br><span class="text-amber-400">Crafted Daily</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-purple-200 max-w-2xl mx-auto mb-10 leading-relaxed">
+              From creamy parfaits to freshly baked banana bread, every bite is made to order with love, precision, and the finest ingredients.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+              <button onclick="setPage('menu')" class="px-8 py-4 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-xl shadow-amber-500/30 transition-all hover:-translate-y-1 flex items-center gap-2">
+                <i data-lucide="utensils" class="w-4 h-4"></i> Explore Menu
+              </button>
+              <button onclick="openCheckoutModal()" class="px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-sm backdrop-blur-sm transition-all hover:-translate-y-1 flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i> Order Now
+              </button>
+            </div>
+            <div class="flex flex-wrap justify-center gap-3">
+              <div class="trust-badge"><i data-lucide="leaf" class="w-4 h-4 text-amber-400"></i> Fresh Daily</div>
+              <div class="trust-badge"><i data-lucide="clock" class="w-4 h-4 text-amber-400"></i> Made to Order</div>
+              <div class="trust-badge"><i data-lucide="truck" class="w-4 h-4 text-amber-400"></i> Fast Delivery</div>
+              <div class="trust-badge"><i data-lucide="star" class="w-4 h-4 text-amber-400"></i> 5-Star Rated</div>
+            </div>
+          </div>
         </div>
-        <div class="mt-8 flex items-center justify-center gap-2">
-          <div class="w-12 h-0.5 bg-purple-300"></div>
-          <div class="w-2 h-2 rounded-full bg-amber-500"></div>
-          <div class="w-12 h-0.5 bg-purple-300"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f3e8ff] to-transparent"></div>
+      </section>
+
+      <!-- BEST SELLERS -->
+      <section class="max-w-6xl mx-auto px-4 py-20">
+        <div class="text-center mb-12 reveal">
+          <span class="section-label">Top Picks</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-[#4a2c6a] mb-2">Best Sellers</h2>
+          <p class="text-[#7c5c9c] mt-3 max-w-md mx-auto">Our most loved treats, ordered again and again by happy customers across Minna.</p>
         </div>
-      </div>
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          ${categories.map(cat => `
-            <div onclick="setPage('${cat.id === 'smallChops' ? 'smallchops' : 'gallery'})" class="bg-white/80 backdrop-blur rounded-2xl p-4 text-center cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all border border-purple-100">
-              <div class="text-3xl mb-2">${cat.icon}</div>
-              <h3 class="font-bold text-[#4a2c6a] text-sm">${cat.name}</h3>
-              <p class="text-amber-600 text-xs font-semibold mt-1">from ${formatPrice(cat.fromPrice)}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          ${bestSellers.map((item, idx) => `
+            <div class="product-card-premium reveal stagger-${idx+1}">
+              <div class="relative h-48 overflow-hidden">
+                <img src="${item.image}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="${item.item}">
+                <div class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                  ${item.label}
+                </div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-[#4a2c6a] text-lg mb-1">${products[item.id].name}</h3>
+                <p class="text-sm text-gray-500 mb-3">${item.item}</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-amber-600 font-bold text-lg">${formatPrice(item.price)}</span>
+                  <button onclick="addMenuItem('${item.id}', '${item.item}', ${item.price})" class="w-10 h-10 rounded-full bg-[#4a2c6a] hover:bg-[#3a1c5a] text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           `).join('')}
         </div>
-      </div>
-      <div class="max-w-6xl mx-auto px-4 mt-12">
-        <div class="bg-[#4a2c6a] rounded-3xl p-8 text-center text-white">
-          <h2 class="text-2xl font-bold mb-3">Tell us what you're craving</h2>
-          <p class="text-purple-200 mb-6 max-w-lg mx-auto">Every cup, loaf and pack is made to order. Pick your treats, send us the list, and we'll take it from there.</p>
-          <div class="flex flex-wrap justify-center gap-6 text-sm">
-            <a href="tel:${contact.phone}" class="flex items-center gap-2 hover:text-amber-300 transition-colors">
-              <span>📞</span> ${contact.displayPhone}
-            </a>
-            <span class="flex items-center gap-2"><span>📷</span> ${contact.instagram}</span>
-            <span class="flex items-center gap-2"><span>🎵</span> ${contact.tiktok}</span>
+      </section>
+
+      <!-- WHY CHOOSE US -->
+      <section class="bg-white py-20 border-y border-purple-100">
+        <div class="max-w-6xl mx-auto px-4">
+          <div class="text-center mb-14 reveal">
+            <span class="section-label">Our Promise</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#4a2c6a] mb-2">Why Choose Moye's?</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="why-card text-center reveal stagger-1">
+              <div class="w-14 h-14 mx-auto mb-4 bg-[#f3e8ff] rounded-2xl flex items-center justify-center text-[#4a2c6a]">
+                <i data-lucide="chef-hat" class="w-7 h-7"></i>
+              </div>
+              <h3 class="font-bold text-[#4a2c6a] mb-2">Made to Order</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">Nothing sits on a shelf. Every cup, loaf, and pack is prepared fresh after you order.</p>
+            </div>
+            <div class="why-card text-center reveal stagger-2">
+              <div class="w-14 h-14 mx-auto mb-4 bg-[#f3e8ff] rounded-2xl flex items-center justify-center text-[#4a2c6a]">
+                <i data-lucide="sprout" class="w-7 h-7"></i>
+              </div>
+              <h3 class="font-bold text-[#4a2c6a] mb-2">Premium Ingredients</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">We source the best dairy, fruits, and chocolate to ensure every bite is worth it.</p>
+            </div>
+            <div class="why-card text-center reveal stagger-3">
+              <div class="w-14 h-14 mx-auto mb-4 bg-[#f3e8ff] rounded-2xl flex items-center justify-center text-[#4a2c6a]">
+                <i data-lucide="zap" class="w-7 h-7"></i>
+              </div>
+              <h3 class="font-bold text-[#4a2c6a] mb-2">Fast Delivery</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">From our kitchen to your doorstep in record time. Hot, chilled, and just right.</p>
+            </div>
+            <div class="why-card text-center reveal stagger-4">
+              <div class="w-14 h-14 mx-auto mb-4 bg-[#f3e8ff] rounded-2xl flex items-center justify-center text-[#4a2c6a]">
+                <i data-lucide="heart" class="w-7 h-7"></i>
+              </div>
+              <h3 class="font-bold text-[#4a2c6a] mb-2">Made with Love</h3>
+              <p class="text-sm text-gray-500 leading-relaxed">This isn't factory food. It's home baking with attention to every single detail.</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
-        Moye's Treats · ${contact.location} · ${contact.displayPhone}
-      </div>
+      </section>
+
+      <!-- GALLERY PREVIEW -->
+      <section class="max-w-6xl mx-auto px-4 py-20">
+        <div class="flex flex-col sm:flex-row items-end justify-between mb-10 reveal">
+          <div>
+            <span class="section-label">Visual Treats</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#4a2c6a] mb-2">Gallery Preview</h2>
+          </div>
+          <button onclick="setPage('gallery')" class="mt-4 sm:mt-0 text-[#4a2c6a] font-semibold text-sm hover:text-amber-600 transition-colors flex items-center gap-1">
+            View Full Gallery <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
+          ${Object.values(products).filter(p => p.id !== 'smallChops').slice(0,4).map((cat, i) => `
+            <div class="group relative rounded-2xl overflow-hidden aspect-square cursor-pointer ${i === 0 ? 'md:col-span-2 md:row-span-2' : ''}" onclick="setPage('gallery')">
+              <img src="${cat.images[0]}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="${cat.name}">
+              <div class="absolute inset-0 bg-gradient-to-t from-[#4a2c6a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
+                <span class="text-white font-bold text-lg">${cat.name}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- MENU PREVIEW -->
+      <section class="bg-gradient-to-b from-white to-[#f3e8ff] py-20">
+        <div class="max-w-4xl mx-auto px-4">
+          <div class="text-center mb-12 reveal">
+            <span class="section-label">Quick Peek</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-[#4a2c6a] mb-2">Menu Preview</h2>
+            <p class="text-[#7c5c9c] mt-3">A taste of what we offer. See something you like?</p>
+          </div>
+          <div class="bg-white rounded-3xl shadow-xl border border-purple-100 overflow-hidden reveal">
+            ${['parfaits', 'bananaBread', 'cakeLoafs'].map((pid, idx) => {
+              const cat = products[pid];
+              return `
+                <div class="p-6 ${idx !== 2 ? 'border-b border-dashed border-purple-200' : ''}">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-[#f3e8ff] flex items-center justify-center text-[#4a2c6a]">
+                      <i data-lucide="${cat.lucide}" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-bold text-[#4a2c6a] text-lg">${cat.name}</h3>
+                  </div>
+                  <div class="space-y-2">
+                    ${cat.items.slice(0,3).map(item => `
+                      <div class="flex items-center justify-between py-2">
+                        <span class="text-sm text-gray-700">${item.name}</span>
+                        <span class="text-sm font-bold text-[#4a2c6a]">${formatPrice(item.price)}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+            <div class="p-4 bg-[#f3e8ff] text-center">
+              <button onclick="setPage('menu')" class="text-[#4a2c6a] font-bold text-sm hover:text-amber-600 transition-colors flex items-center justify-center gap-2 mx-auto">
+                See Full Menu <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CUSTOMER REVIEWS -->
+      <section class="max-w-6xl mx-auto px-4 py-20">
+        <div class="text-center mb-12 reveal">
+          <span class="section-label">Testimonials</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-[#4a2c6a] mb-2">What Our Customers Say</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          ${testimonials.map((t, idx) => `
+            <div class="review-card reveal stagger-${idx+1}">
+              <div class="flex items-center gap-1 mb-3">
+                ${Array(5).fill(0).map((_, i) => `<i data-lucide="star" class="w-4 h-4 ${i < t.rating ? 'star-filled' : 'star-empty'}" ${i < t.rating ? 'fill="currentColor"' : ''}></i>`).join('')}
+              </div>
+              <p class="text-gray-600 text-sm leading-relaxed mb-4">"${t.text}"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#4a2c6a] to-[#7c5c9c] text-white flex items-center justify-center text-sm font-bold">
+                  ${t.avatar}
+                </div>
+                <span class="font-semibold text-[#4a2c6a] text-sm">${t.name}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+
+      <!-- ORDER CTA -->
+      <section class="cta-section py-20 px-4">
+        <div class="max-w-3xl mx-auto text-center relative z-10 reveal">
+          <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            <span class="text-white/90 text-xs font-semibold uppercase tracking-wider">Currently Accepting Orders</span>
+          </div>
+          <h2 class="text-4xl sm:text-5xl font-bold text-white mb-6">Ready to Treat Yourself?</h2>
+          <p class="text-purple-200 text-lg mb-10 max-w-xl mx-auto">Skip the line. Build your order here and send it directly via WhatsApp. We'll confirm and have it ready in no time.</p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <button onclick="setPage('menu')" class="px-8 py-4 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-xl shadow-amber-500/30 transition-all hover:-translate-y-1">
+              Browse Full Menu
+            </button>
+            <button onclick="openCheckoutModal()" class="px-8 py-4 rounded-full bg-white text-[#4a2c6a] font-bold hover:bg-gray-100 transition-all hover:-translate-y-1 flex items-center gap-2">
+              <i data-lucide="message-circle" class="w-5 h-5"></i> Order on WhatsApp
+            </button>
+          </div>
+        </div>
+      </section>
+
+      ${renderFooter()}
     </div>`;
 }
 
@@ -1075,7 +1422,7 @@ function renderGallery() {
           return `
             <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-purple-100 hover:shadow-xl transition-all">
               <div class="relative h-52 bg-gray-100 overflow-hidden group">
-                <img src="${cat.images[imgIdx]}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="${cat.name}">
+                <img src="${cat.images[imgIdx]}" onclick="openLightbox('${cat.id}', ${imgIdx})" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer" alt="${cat.name}">
                 ${imgCount > 1 ? `
                   <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">${imgIdx+1}/${imgCount}</div>
                   <button onclick="prevGalleryImage('${cat.id}', ${imgCount})" class="gal-btn left-2">‹</button>
@@ -1093,9 +1440,9 @@ function renderGallery() {
             </div>`;
         }).join('')}
       </div>
-      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
-        Moye's Treats · ${contact.location} · ${contact.displayPhone}
-      </div>
+      <div class=" mt-8 text-[#7c5c9c] ">
+       ${renderFooter()}
+      
     </div>`;
 }
 
@@ -1113,7 +1460,8 @@ function renderMenu() {
         ${categories.map(cat => `
           <div class="bg-white/90 backdrop-blur rounded-3xl p-6 shadow-lg border border-purple-100">
             <div class="flex items-center gap-3 mb-4 pb-3 border-b border-dashed border-purple-200">
-              <span class="text-2xl">${cat.icon}</span>
+<i data-lucide="${cat.lucide}" class="w-6 h-6 text-[#4a2c6a]"></i>
+
               <div>
                 <h2 class="text-2xl font-bold text-[#4a2c6a]">${cat.name} ${cat.subtitle ? `<span class="text-sm font-normal text-gray-500">${cat.subtitle}</span>` : ''}</h2>
               </div>
@@ -1147,9 +1495,7 @@ function renderMenu() {
           </button>
         </div>
       </div>
-      <div class="text-center mt-8 text-[#7c5c9c] text-sm">
-        Moye's Treats · ${contact.location} · ${contact.displayPhone}
-      </div>
+      
     </div>`;
 }
 
@@ -1179,7 +1525,7 @@ function renderSmallChops() {
         <!-- Left: Combos -->
         <div>
           <div class="flex items-center gap-3 mb-6">
-            <div class="w-9 h-9 bg-gradient-to-br from-[#4a2c6a] to-[#7c5c9c] rounded-xl flex items-center justify-center text-white text-lg shadow-md">📦</div>
+       <div class="w-9 h-9 bg-gradient-to-br from-[#4a2c6a] to-[#7c5c9c] rounded-xl flex items-center justify-center text-white shadow-md"><i data-lucide="package" class="w-5 h-5"></i></div>
             <h2 class="text-xl font-bold text-[#4a2c6a]">Combo Packages</h2>
           </div>
           <div class="space-y-5">
@@ -1210,7 +1556,7 @@ function renderSmallChops() {
         <div>
           <div class="card builder-card rounded-3xl p-6 shadow-xl">
             <div class="flex items-center gap-3 mb-2">
-              <div class="w-8 h-8 bg-white/15 rounded-full flex items-center justify-center text-white text-sm">⚡</div>
+              <div class="w-8 h-8 bg-white/15 rounded-full flex items-center justify-center text-white"><i data-lucide="zap" class="w-4 h-4"></i></div>
               <h2 class="text-lg font-bold text-white">Customize Your Package</h2>
             </div>
             <p class="text-sm text-white/70 mb-4">Build your own — pick any quantity you like!</p>
@@ -1224,7 +1570,7 @@ function renderSmallChops() {
                 <div class="flex items-center justify-between py-3.5 border-b border-dashed border-white/15 last:border-0">
                   <div class="flex-1">
                     <div class="flex items-center gap-3 mb-1">
-                      <span class="text-xl">${item === 'Samosa' ? '🔺' : item === 'Spring Roll' ? '🟡' : item === 'Puff Puff' ? '💛' : item === 'Beef' ? '🥩' : '🍗'}</span>
+                      <i data-lucide="${smallChopsLucide[item] || 'circle'}" class="w-5 h-5 text-amber-300"></i>
                       <span class="font-medium text-white">${item}</span>
                     </div>
                     <div class="flex items-center gap-2 ml-10">
@@ -1263,15 +1609,80 @@ function render() {
     default: app.innerHTML = renderHome();
   }
   updateCartUI();
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+  
+  if (currentPage === 'home') {
+    setTimeout(initScrollReveal, 100);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  if (isAccessGranted()) {
-    grantAccess();
+  render();
+
+  // Lightbox swipe & pinch-to-zoom
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  if (lb && img) {
+    let pinchStartDist = 0;
+    let currentScale = 1;
+
+    lb.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+      } else if (e.touches.length === 2) {
+        pinchStartDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    }, { passive: true });
+
+    lb.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const scale = Math.min(Math.max((dist / pinchStartDist) * currentScale, 1), 3);
+        img.style.transform = `scale(${scale})`;
+      }
+    }, { passive: false });
+
+    lb.addEventListener('touchend', (e) => {
+      if (e.changedTouches.length === 1 && touchStartX && e.touches.length === 0) {
+        const diffX = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diffX) > 50) {
+          diffX > 0 ? lightboxPrev() : lightboxNext();
+        }
+        touchStartX = 0;
+      }
+      if (e.touches.length === 0) {
+        currentScale = 1;
+        img.style.transform = 'scale(1)';
+      } else if (e.touches.length === 1) {
+        const match = img.style.transform.match(/scale\(([\d.]+)\)/);
+        if (match) currentScale = parseFloat(match[1]);
+      }
+    });
   }
-  // If not granted, the gate stays visible and render() is NOT called yet
 });
 
 </script>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox-overlay" onclick="closeLightboxOnBackground(event)">
+  <button class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">×</button>
+  <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); lightboxPrev()">‹</button>
+  <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); lightboxNext()">›</button>
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <img id="lightboxImg" src="" alt="" draggable="false">
+  </div>
+  <div class="lightbox-counter" id="lightboxCounter" onclick="event.stopPropagation()">1 / 1</div>
+</div>
+
 </body>
 </html>
