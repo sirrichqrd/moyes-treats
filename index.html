@@ -6,6 +6,10 @@
   <title>Moye's Treats</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="icon" type="image/svg" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="shortcut icon" type="image/svg" href="favicon.svg">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
@@ -612,10 +616,10 @@ function renderFooter() {
           <p class="text-sm leading-relaxed mb-4">Premium homemade treats crafted with love in Minna. Parfaits, banana bread, small chops & more.</p>
           <div class="flex gap-3">
             <a href="https://instagram.com/${contact.instagram}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors">
-              <i data-lucide="instagram" class="w-4 h-4 text-white"></i>
+              <i class="fa-brands fa-instagram" class="w-4 h-4 text-white"></i>
             </a>
             <a href="https://tiktok.com/@${contact.tiktok}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors">
-              <i data-lucide="music" class="w-4 h-4 text-white"></i>
+              <i class="fa-brands fa-tiktok" class="w-4 h-4 text-white"></i>
             </a>
             <a href="tel:${contact.phone}" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors">
               <i data-lucide="phone" class="w-4 h-4 text-white"></i>
@@ -1683,6 +1687,3 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
   <div class="lightbox-counter" id="lightboxCounter" onclick="event.stopPropagation()">1 / 1</div>
 </div>
-
-</body>
-</html>
