@@ -1,13 +1,14 @@
 {
+  "id": "/",
   "name": "Moye's Treats",
   "short_name": "Moye's Treats",
   "description": "Premium homemade treats crafted with love in Minna.",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
   "background_color": "#f3e8ff",
   "theme_color": "#4a2c6a",
   "orientation": "portrait-primary",
+
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -19,5 +20,24 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1274x680",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "493x678",
+      "type": "image/png"
+    }
+  ],
+
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
   ]
 }
