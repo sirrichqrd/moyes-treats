@@ -10,6 +10,8 @@
   <link rel="icon" type="image/svg" href="favicon.svg">
   <link rel="apple-touch-icon" href="favicon.svg">
   <link rel="shortcut icon" type="image/svg" href="favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#4a2c6a">
   <script src="https://unpkg.com/lucide@latest"></script>
 <style>
     :root {
@@ -1836,7 +1838,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-
+// ===================== PWA SERVICE WORKER =====================
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(registration => {
+        console.log(
+          "Moye's Treats PWA service worker registered:",
+          registration.scope
+        );
+      })
+      .catch(error => {
+        console.error(
+          "Moye's Treats PWA service worker registration failed:",
+          error
+        );
+      });
+  });
+}
 </script>
 
 <!-- Lightbox -->
