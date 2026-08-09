@@ -397,6 +397,179 @@
 
     /* Prevent body scroll when sidebar/modal is open */
     body.sidebar-open { overflow: hidden; }
+
+/* ===================== PWA INSTALL BUTTON ===================== */
+
+.pwa-install-button {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  z-index: 150;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px 10px 10px;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 26px;
+  background: rgba(74,44,106,0.95);
+  color: white;
+  box-shadow: 0 12px 35px rgba(45,27,78,0.3);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.pwa-install-button.show {
+  display: flex;
+  animation: installButtonIn 0.5s ease both;
+}
+
+.pwa-install-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(45,27,78,0.4);
+}
+
+.pwa-install-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  background: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.pwa-install-button strong {
+  display: block;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.pwa-install-button small {
+  display: block;
+  font-size: 0.65rem;
+  color: #d8c8ea;
+  text-align: left;
+  margin-top: 1px;
+}
+
+@keyframes installButtonIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .pwa-install-button {
+    right: 14px;
+    bottom: 78px;
+    padding: 9px 13px 9px 9px;
+  }
+}
+
+/* ===================== PWA UPDATE NOTICE ===================== */
+
+#moyesUpdateNotice {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 500;
+  max-width: 520px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e9d5ff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(45,27,78,0.22);
+  animation: updateNoticeIn 0.45s ease both;
+  font-family: 'Poppins', sans-serif;
+}
+
+.pwa-update-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #f3e8ff;
+  color: #4a2c6a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pwa-update-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-update-text strong {
+  display: block;
+  color: #3a1c5a;
+  font-size: 0.8rem;
+}
+
+.pwa-update-text span {
+  display: block;
+  color: #7c5c9c;
+  font-size: 0.68rem;
+  margin-top: 2px;
+}
+
+#moyesUpdateNotice > button:not(.pwa-update-close) {
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  background: #4a2c6a;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+#moyesUpdateNotice > button:not(.pwa-update-close):hover {
+  background: #3a1c5a;
+  transform: translateY(-1px);
+}
+
+.pwa-update-close {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+@keyframes updateNoticeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  #moyesUpdateNotice {
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+  }
+}
 </style>
 
 </head>
@@ -407,6 +580,22 @@
 <div class="bg-shape bg-shape-3"></div>
 
 <div id="app"></div>
+
+<!-- PWA Install Button -->
+<button id="installAppButton"
+        class="pwa-install-button"
+        onclick="installMoyesApp()"
+        aria-label="Install Moye's Treats app">
+
+  <span class="pwa-install-icon">
+    <i data-lucide="download" class="w-4 h-4"></i>
+  </span>
+
+  <span>
+    <strong>Install App</strong>
+    <small>Moye's Treats</small>
+  </span>
+</button>
 
 <!-- Bottom Cart Bar -->
 <div id="cartBar" class="cart-bar">
@@ -1838,25 +2027,203 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-// ===================== PWA SERVICE WORKER =====================
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then(registration => {
-        console.log(
-          "Moye's Treats PWA service worker registered:",
-          registration.scope
-        );
-      })
-      .catch(error => {
-        console.error(
-          "Moye's Treats PWA service worker registration failed:",
-          error
-        );
+// ===================== PWA MANAGEMENT =====================
+
+let deferredInstallPrompt = null;
+let moyesUpdateRegistration = null;
+
+// ---------- INSTALL PROMPT ----------
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+
+  deferredInstallPrompt = event;
+
+  const installButton = document.getElementById('installAppButton');
+
+  if (installButton && !isMoyesAppInstalled()) {
+    installButton.classList.add('show');
+
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  }
+});
+
+async function installMoyesApp() {
+  if (!deferredInstallPrompt) {
+    return;
+  }
+
+  deferredInstallPrompt.prompt();
+
+  const { outcome } = await deferredInstallPrompt.userChoice;
+
+  if (outcome === 'accepted') {
+    console.log("Moye's Treats app installation accepted.");
+  } else {
+    console.log("Moye's Treats app installation dismissed.");
+  }
+
+  deferredInstallPrompt = null;
+
+  const installButton = document.getElementById('installAppButton');
+
+  if (installButton) {
+    installButton.classList.remove('show');
+  }
+}
+
+function isMoyesAppInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+// ---------- APP INSTALLED ----------
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+
+  const installButton = document.getElementById('installAppButton');
+
+  if (installButton) {
+    installButton.classList.remove('show');
+  }
+
+  console.log("Moye's Treats has been installed.");
+});
+
+// ---------- SERVICE WORKER ----------
+
+if ('serviceWorker' in navigator) {
+
+  window.addEventListener('load', async () => {
+
+    try {
+
+      const registration =
+        await navigator.serviceWorker.register('/sw.js');
+
+      moyesUpdateRegistration = registration;
+
+      console.log(
+        "Moye's Treats service worker registered:",
+        registration.scope
+      );
+
+      // Check for a new version
+      registration.update();
+
+      if (registration.waiting) {
+        showMoyesUpdateNotice(registration);
+      }
+
+      registration.addEventListener('updatefound', () => {
+
+        const newWorker = registration.installing;
+
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', () => {
+
+          if (
+            newWorker.state === 'installed' &&
+            navigator.serviceWorker.controller
+          ) {
+            showMoyesUpdateNotice(registration);
+          }
+
+        });
+
       });
+
+    } catch (error) {
+
+      console.error(
+        "Moye's Treats service worker registration failed:",
+        error
+      );
+
+    }
+
+  });
+
+}
+
+// ---------- UPDATE NOTICE ----------
+
+function showMoyesUpdateNotice(registration) {
+
+  if (document.getElementById('moyesUpdateNotice')) {
+    return;
+  }
+
+  const notice = document.createElement('div');
+
+  notice.id = 'moyesUpdateNotice';
+
+  notice.innerHTML = `
+    <div class="pwa-update-icon">
+      <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+    </div>
+
+    <div class="pwa-update-text">
+      <strong>New version available</strong>
+      <span>Moye's Treats has been updated.</span>
+    </div>
+
+    <button onclick="updateMoyesApp()">
+      Update
+    </button>
+
+    <button class="pwa-update-close"
+            onclick="dismissMoyesUpdate()"
+            aria-label="Dismiss update">
+      ×
+    </button>
+  `;
+
+  document.body.appendChild(notice);
+
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}
+
+function updateMoyesApp() {
+
+  if (!moyesUpdateRegistration ||
+      !moyesUpdateRegistration.waiting) {
+    return;
+  }
+
+  moyesUpdateRegistration.waiting.postMessage({
+    type: 'SKIP_WAITING'
   });
 }
+
+function dismissMoyesUpdate() {
+
+  const notice =
+    document.getElementById('moyesUpdateNotice');
+
+  if (notice) {
+    notice.remove();
+  }
+}
+
+// Reload once the new service worker takes control
+navigator.serviceWorker?.addEventListener('controllerchange', () => {
+
+  if (window.__moyesRefreshing) {
+    return;
+  }
+
+  window.__moyesRefreshing = true;
+
+  window.location.reload();
+
+});
 </script>
 
 <!-- Lightbox -->
