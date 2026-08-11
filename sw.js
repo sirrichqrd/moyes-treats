@@ -1,4 +1,4 @@
-const CACHE_NAME = "moyes-treats-v2";
+const CACHE_NAME = "moyes-treats-v3";
 
 const FILES_TO_CACHE = [
   "/",
@@ -9,36 +9,33 @@ const FILES_TO_CACHE = [
   "/icons/icon-512.png"
 ];
 
+// ===================== INSTALL =====================
 self.addEventListener("install", event => {
-
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(FILES_TO_CACHE))
   );
 
-  // Wait until the user chooses "Update"
-  // before taking control.
+  // Do NOT automatically take control here.
+  // The website's "Update" button will trigger skipWaiting().
 });
 
+// ===================== ACTIVATE =====================
 self.addEventListener("activate", event => {
-
   event.waitUntil(
-
     caches.keys().then(keys =>
       Promise.all(
-
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
-
       )
     )
-
   );
 
   self.clients.claim();
 });
 
+// ===================== FETCH =====================
 self.addEventListener("fetch", event => {
 
   // Only handle GET requests
@@ -46,23 +43,73 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  event.respondWith(
+  const request = event.request;
 
-    caches.match(event.request)
+  // HTML pages → NETWORK FIRST
+  // Always try to get the newest version from the server.
+  if (
+    request.mode === "navigate" ||
+    request.destination === "document"
+  ) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+
+          // Save the newest HTML in cache
+          const responseClone = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, responseClone);
+          });
+
+          return response;
+        })
+        .catch(() => {
+          // If offline, use cached page
+          return caches.match(request)
+            .then(cachedResponse => {
+              return cachedResponse || caches.match("/index.html");
+            });
+        })
+    );
+
+    return;
+  }
+
+  // STATIC ASSETS → CACHE FIRST
+  event.respondWith(
+    caches.match(request)
       .then(cachedResponse => {
 
-        return cachedResponse || fetch(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        return fetch(request).then(response => {
+
+          // Cache successful responses
+          if (response && response.status === 200) {
+            const responseClone = response.clone();
+
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, responseClone);
+            });
+          }
+
+          return response;
+        });
 
       })
-
   );
-
 });
 
-// Receive the "Update" command from the website
+// ===================== UPDATE COMMAND =====================
 self.addEventListener("message", event => {
 
-  if (event.data && event.data.type === "SKIP_WAITING") {
+  if (
+    event.data &&
+    event.data.type === "SKIP_WAITING"
+  ) {
     self.skipWaiting();
   }
 
