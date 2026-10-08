@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Moye's Treats — Minna's Finest Homemade Treats</title>
+  <meta name="description" content="Minna's finest homemade treats, crafted daily. From creamy parfaits to freshly baked banana bread, every bite is made to order with love, precision, and the finest ingredients."/>
+  <meta name="author" content="Moye's Treats" />
+  <meta name="theme-color" content="#4a2c6a">
+  
+  <link rel="canonical" href="https://moyestreats.com/" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://moyestreats.com/" />
+  <meta property="og:site_name" content="Moye's Treats" />
+  <meta property="og:title" content="Moye's Treats — Sweet Moments, Crafted Daily" />
+  <meta property="og:description" content="Minna's finest homemade treats, crafted daily. From creamy parfaits to freshly baked banana bread, every bite is made to order with love, precision, and the finest ingredients."/>
+  <meta property="og:locale" content="en_NG" />
+  <meta property="og:image" content="https://moyestreats.com/assets/social-preview.png"/>
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="680" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="Moye's Treats — Minna's Finest Homemade Treats"/>
+
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Moye's Treats — Sweet Moments, Crafted Daily"/>
+  <meta name="twitter:description" content="Minna's finest homemade treats, crafted daily. From creamy parfaits to freshly baked banana bread, every bite is made to order with love, precision, and the finest ingredients."/>
+  <meta name="twitter:image" content="https://moyestreats.com/assets/social-preview.png"/>
+  <meta name="twitter:image:alt" content="Moye's Treats — Minna's Finest Homemade Treats"/>
+
+  <!-- Styles -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    :root {
+      --primary: #4a2c6a;
+      --primary-light: #7c5c9c;
+      --primary-dark: #3a1c5a;
+      --accent: #f59e0b;
+      --accent-light: #fbbf24;
+      --bg: #f3e8ff;
+      --bg-card: #ffffff;
+      --border: #e9d5ff;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    .font-pacifico { font-family: 'Pacifico', cursive; }
+    .font-poppins { font-family: 'Poppins', sans-serif; }
+
+    .bg-shape { position: fixed; border-radius: 50%; opacity: 0.12; z-index: 0; pointer-events: none; }
+    .bg-shape-1 { width: 300px; height: 300px; background: var(--primary); top: -80px; right: -60px; }
+    .bg-shape-2 { width: 220px; height: 220px; background: var(--accent); bottom: 80px; left: -60px; }
+    .bg-shape-3 { width: 160px; height: 160px; background: var(--primary-light); top: 45%; right: 8%; }
+
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -10px 40px rgba(0,0,0,0.12); padding: 12px 16px; z-index: 100; display: flex; align-items: center; justify-content: space-between; gap: 12px; transform: translateY(100%); transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+    .cart-bar.active { transform: translateY(0); }
+    @media (max-width: 640px) {
+      .cart-bar { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
+      .cart-bar > div:first-child { min-width: 0; flex: 1 1 auto; }
+      .cart-bar .text-xl { font-size: 1.1rem; }
+      .cart-bar button { padding: 10px 14px; font-size: 0.8rem; border-radius: 10px; white-space: nowrap; }
+    }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(31,31,46,0.55); backdrop-filter: blur(10px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal { background: white; border-radius: 24px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 80px rgba(0,0,0,0.2); transform: scale(0.92) translateY(30px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+    .modal-header { padding: 20px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--primary-dark); font-family: 'Poppins', sans-serif; }
+    .modal-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--bg); color: var(--primary-dark); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+    .modal-close:hover { background: var(--border); transform: rotate(90deg); }
+    .modal-body { padding: 16px 24px 24px; }
+    @media (max-width: 640px) {
+      .modal-overlay { padding: 8px; align-items: flex-end; }
+      .modal { border-radius: 20px 20px 0 0; max-height: 92vh; }
+      .modal-header { padding: 16px 16px 0; }
+      .modal-title { font-size: 1.1rem; }
+      .modal-body { padding: 14px 16px 20px; }
+      .modal .grid.grid-cols-2 { grid-template-columns: 1fr; }
+    }
+
+    .toast { position: fixed; top: 20px; right: 20px; background: white; padding: 14px 22px; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; z-index: 300; transform: translateX(150%); transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); border-left: 4px solid var(--success); }
+    .toast.active { transform: translateX(0); }
+    .toast-icon { width: 28px; height: 28px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; font-size: 0.9rem; }
+    @media (max-width: 640px) { .toast { left: 16px; right: 16px; top: 12px; transform: translateY(-150%); } .toast.active { transform: translateY(0); } }
+
+    .combo-card { background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%); border: 2px solid var(--border); border-radius: 18px; padding: 22px; position: relative; transition: all 0.3s ease; }
+    .combo-card:hover { border-color: var(--primary-light); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(91,46,145,0.1); }
+    .combo-card.best-value { border-color: var(--accent); background: linear-gradient(135deg, #FFFFFF 0%, #FFFBEB 100%); }
+    .best-value-badge { position: absolute; top: -11px; right: 18px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: white; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; box-shadow: 0 4px 12px rgba(245,158,11,0.3); letter-spacing: 1px; }
+    .item-qty { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 50%; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+
+    .builder-card { background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); color: white; border: none; position: sticky; top: 80px; }
+    .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255,255,255,0.15); color: white; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-weight: 600; }
+    .qty-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .delivery-option { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .delivery-option.active { border-color: var(--primary); background: rgba(91,46,145,0.05); }
+
+    .form-input, .form-textarea, .form-select { width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: all 0.3s; background: white; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(124,79,184,0.1); }
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+    .heart-anim { display: inline-block; animation: heartbeat 1.5s ease infinite; }
+
+    .gal-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border-radius: 9999px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; transition: all 0.2s; border: none; cursor: pointer; z-index: 5; }
+    .gal-btn:hover { background: white; transform: translateY(-50%) scale(1.1); }
+
+    /* Visual Diary Gallery - template match */
+    .vd-gallery { background: #ffffff; }
+    .vd-eyebrow { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.22em; color: #1e1b4b; text-transform: uppercase; font-family: 'Poppins',sans-serif; }
+    .vd-title { font-family: 'Poppins',sans-serif; font-weight: 800; font-size: clamp(2rem,5vw,3.25rem); color: #0a0a23; letter-spacing: -0.03em; line-height: 1; }
+    .vd-sub { color: #3f3a8a; font-family: 'Poppins',sans-serif; font-size: 1.02rem; line-height: 1.5; }
+    .vd-pill { border: 1.5px solid #0a0a23; background: #fff; color: #0a0a23; border-radius: 999px; padding: 9px 20px; font-size: 0.92rem; font-weight: 500; font-family: 'Poppins',sans-serif; white-space: nowrap; cursor: pointer; transition: all .22s; }
+    .vd-pill.active { background: #0a0a23; color: #fff; }
+    .vd-pill:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+    .vd-pill-view { border: 1.5px solid #0a0a23; background: #fff; color: #0a0a23; border-radius: 999px; padding: 10px 24px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; font-family: 'Poppins',sans-serif; cursor: pointer; transition: all .22s; }
+    .vd-pill-view:hover { background: #0a0a23; color: #fff; }
+    .vd-track-wrap { position: relative; overflow: hidden; padding: 30px 0 60px; }
+    .vd-track { display: flex; align-items: center; justify-content: center; gap: 0; will-change: transform; }
+    .vd-card { flex: 0 0 300px; height: 400px; border-radius: 22px; overflow: hidden; position: relative; background: #eee; transform: scale(0.88); opacity: 0.88; transition: all .55s cubic-bezier(.16,1,.3,1); box-shadow: 0 12px 40px rgba(0,0,0,.14); cursor: pointer; margin: 0 -24px; }
+    @media (max-width: 768px) { .vd-card { flex: 0 0 72vw; height: 92vw; max-height: 420px; margin: 0 -14px; } }
+    .vd-card.center { flex: 0 0 380px; height: 520px; transform: scale(1); opacity: 1; z-index: 3; box-shadow: 0 30px 70px rgba(0,0,0,.28); }
+    @media (max-width: 768px) { .vd-card.center { flex: 0 0 86vw; height: 112vw; max-height: 520px; } }
+    .vd-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vd-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.45) 0%, rgba(0,0,0,0) 42%); pointer-events:none; }
+    .vd-play { position: absolute; right: 16px; bottom: 16px; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; z-index: 2; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+    .vd-nav { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #0a0a23; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .22s; }
+    .vd-nav:hover { background: #0a0a23; color: #fff; transform: translateY(-2px); }
+
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+    .fee-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.9rem; color: #555; }
+    .fee-line.total { border-top: 2px solid var(--primary-dark); padding-top: 10px; margin-top: 6px; font-weight: 700; color: var(--primary-dark); font-size: 1.05rem; }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    .stagger-1 { transition-delay: 0.1s; } .stagger-2 { transition-delay: 0.2s; }
+    .stagger-3 { transition-delay: 0.3s; } .stagger-4 { transition-delay: 0.4s; }
+
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+
+    .hero-section { position: relative; min-height: 90vh; display: flex; align-items: center; background: linear-gradient(135deg, #2d1b4e 0%, #4a2c6a 50%, #3a1c5a 100%); overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; opacity: 0.25; background-image: url('https://images.unsplash.com/photo-1488477181946-6428a0291777?w=1200&q=80'); background-size: cover; background-position: center; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(45,27,78,0.8), rgba(74,44,106,0.9)); }
+    .trust-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 999px; color: white; font-size: 0.85rem; font-weight: 500; }
+
+    .section-label { display: inline-block; background: rgba(74,44,106,0.08); color: #4a2c6a; padding: 6px 18px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; border: 1px solid rgba(74,44,106,0.12); }
+
+    .product-card-premium { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e9d5ff; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 20px rgba(74,44,106,0.06); }
+    .product-card-premium:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(74,44,106,0.12); border-color: #d8b4fe; }
+
+    .why-card { background: white; border-radius: 20px; padding: 28px; border: 1px solid #e9d5ff; transition: all 0.3s ease; }
+    .why-card:hover { border-color: #f59e0b; transform: translateY(-4px); box-shadow: 0 12px 30px rgba(91,46,145,0.08); }
+    .review-card { background: white; border-radius: 20px; padding: 24px; border: 1px solid #e9d5ff; box-shadow: 0 4px 20px rgba(74,44,106,0.04); }
+
+    .cta-section { background: linear-gradient(135deg, #4a2c6a 0%, #3a1c5a 100%); position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; top: -50%; right: -10%; width: 400px; height: 400px; background: rgba(245,158,11,0.08); border-radius: 50%; filter: blur(60px); }
+
+    .site-footer { background: #2d1b4e; color: #c4b5e0; padding: 60px 20px 30px; }
+    .footer-brand { font-family: 'Pacifico', cursive; color: white; font-size: 1.5rem; }
+    .footer-link { color: #a78bfa; transition: color 0.2s; background: none; border: none; cursor: pointer; font-size: 0.875rem; }
+    .footer-link:hover { color: #fbbf24; }
+
+    .star-filled { color: black; } .star-empty { color: #e9d5ff; }
+    html { scroll-behavior: smooth; }
+
+    .lightbox-overlay { position: fixed; inset: 0; z-index: 400; background: rgba(10,5,20,0.92); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+    .lightbox-overlay.active { opacity: 1; pointer-events: all; }
+    .lightbox-content { position: relative; max-width: 95vw; max-height: 90vh; display: flex; align-items: center; justify-content: center; }
+    .lightbox-content img, .lightbox-content video { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 12px; box-shadow: 0 25px 80px rgba(0,0,0,0.5); }
+    .lightbox-content iframe { width: min(90vw, 960px); aspect-ratio: 16/9; border: 0; border-radius: 12px; box-shadow: 0 25px 80px rgba(0,0,0,0.5); }
+    .lightbox-close { position: absolute; top: 20px; right: 24px; z-index: 10; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 1.8rem; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); }
+    .lightbox-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
+    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); }
+    .lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+    .lightbox-prev { left: 16px; } .lightbox-next { right: 16px; }
+    .lightbox-counter { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 6px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 500; }
+    @media (max-width: 640px) {
+      .lightbox-nav { width: 40px; height: 40px; font-size: 1.2rem; }
+      .lightbox-prev { left: 8px; } .lightbox-next { right: 8px; }
+      .lightbox-close { top: 12px; right: 12px; width: 40px; height: 40px; }
+    }
+
+    .nav-desktop { display: flex; } .nav-mobile { display: none; }
+    @media (max-width: 768px) { .nav-desktop { display: none !important; } .nav-mobile { display: flex !important; } }
+
+    .mobile-sidebar { position: fixed; inset: 0; z-index: 250; pointer-events: none; opacity: 0; transition: opacity 0.3s ease; }
+    .mobile-sidebar.active { pointer-events: all; opacity: 1; }
+    .mobile-sidebar-bg { position: absolute; inset: 0; background: rgba(31,31,46,0.5); backdrop-filter: blur(4px); }
+    .mobile-sidebar-panel { position: absolute; top: 0; left: 0; bottom: 0; width: 280px; background: white; transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: 10px 0 40px rgba(0,0,0,0.15); }
+    .mobile-sidebar.active .mobile-sidebar-panel { transform: translateX(0); }
+    .mobile-sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .mobile-sidebar-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--bg); color: var(--primary-dark); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .mobile-sidebar-body { flex: 1; overflow-y: auto; padding: 12px; }
+    .mobile-sidebar-item { width: 100%; text-align: left; padding: 14px 16px; border-radius: 14px; display: flex; align-items: center; gap: 14px; font-size: 1rem; font-weight: 500; color: var(--primary-dark); background: none; border: none; cursor: pointer; transition: all 0.2s; margin-bottom: 4px; }
+    .mobile-sidebar-item:hover, .mobile-sidebar-item.active { background: var(--bg); }
+    .mobile-sidebar-item.active { color: var(--primary); font-weight: 700; }
+    .mobile-sidebar-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+    .mobile-sidebar-item.active .mobile-sidebar-icon { background: var(--primary); color: white; }
+    .mobile-sidebar-footer { padding: 16px; border-top: 1px solid var(--border); text-align: center; font-size: 0.8rem; color: #999; }
+    body.sidebar-open { overflow: hidden; }
+
+    .pwa-install-button { position: fixed; right: 20px; bottom: 24px; z-index: 150; display: none; align-items: center; gap: 10px; padding: 10px 15px 10px 10px; border: 1px solid rgba(255,255,255,0.35); border-radius: 26px; background: rgba(74,44,106,0.95); color: white; box-shadow: 0 12px 35px rgba(45,27,78,0.3); backdrop-filter: blur(14px); cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease; font-family: 'Poppins', sans-serif; }
+    .pwa-install-button.show { display: flex; animation: installButtonIn 0.5s ease both; }
+    .pwa-install-button:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(45,27,78,0.4); }
+    .pwa-install-icon { width: 36px; height: 36px; border-radius: 18px; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; }
+    .pwa-install-button strong { display: block; font-size: 0.8rem; text-align: left; }
+    .pwa-install-button small { display: block; font-size: 0.65rem; color: #d8c8ea; text-align: left; margin-top: 1px; }
+    @keyframes installButtonIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (max-width: 640px) { .pwa-install-button { right: 14px; bottom: 78px; padding: 9px 13px 9px 9px; } }
+
+    #moyesUpdateNotice { position: fixed; left: 20px; right: 20px; bottom: 20px; z-index: 500; max-width: 520px; margin: auto; display: none; align-items: center; gap: 12px; padding: 12px; background: white; border: 1px solid #e9d5ff; border-radius: 18px; box-shadow: 0 20px 60px rgba(45,27,78,0.22); animation: updateNoticeIn 0.45s ease both; font-family: 'Poppins', sans-serif; }
+    #moyesUpdateNotice.show { display: flex; }
+    .pwa-update-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: #f3e8ff; color: #4a2c6a; display: flex; align-items: center; justify-content: center; }
+    .pwa-update-text { flex: 1; min-width: 0; }
+    .pwa-update-text strong { display: block; color: #3a1c5a; font-size: 0.8rem; }
+    .pwa-update-text span { display: block; color: #7c5c9c; font-size: 0.68rem; margin-top: 2px; }
+    #moyesUpdateNotice > button:not(.pwa-update-close) { border: none; border-radius: 10px; padding: 9px 14px; background: #4a2c6a; color: white; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    .pwa-update-close { border: none; background: transparent; color: #9ca3af; font-size: 1.3rem; cursor: pointer; padding: 4px; }
+    @keyframes updateNoticeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 640px) { #moyesUpdateNotice { bottom: 12px; left: 12px; right: 12px; } }
+
+    /* ================= NEW: TEMU-STYLE SHOPPING FEATURES ================= */
+    .announce-bar { background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--primary-dark)); color: #fff; overflow: hidden; position: relative; z-index: 45; }
+    .announce-track { display: inline-flex; white-space: nowrap; animation: announce 20s linear infinite; padding: 8px 0; font-family: 'Poppins', sans-serif; font-size: 0.78rem; font-weight: 500; }
+    .announce-track span { padding-right: 60px; }
+    @keyframes announce { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    .promo-banner { border-radius: 24px; padding: 30px; color: #fff; position: relative; overflow: hidden; background: linear-gradient(135deg, #4a2c6a 0%, #7c5c9c 100%); }
+    .promo-banner.amber { background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%); }
+    .promo-banner-img { position: absolute; right: 0; top: 0; height: 100%; width: 45%; object-fit: cover; opacity: 0.28; -webkit-mask-image: linear-gradient(to right, transparent, black 40%); mask-image: linear-gradient(to right, transparent, black 40%); }
+    .promo-code-chip { display: inline-flex; align-items: center; gap: 6px; border: 2px dashed rgba(255,255,255,0.7); border-radius: 12px; padding: 8px 14px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; }
+
+    .pv-overlay { padding: 0; }
+    .pv-modal { max-width: 540px; width: 100%; height: 100%; max-height: 100vh; border-radius: 0; display: flex; flex-direction: column; overflow: hidden; }
+    @media (min-width: 640px) { .pv-overlay { padding: 24px; align-items: center; } .pv-modal { height: auto; max-height: 92vh; border-radius: 24px; } }
+    .pv-media-wrap { position: relative; flex-shrink: 0; background: #faf5ff; aspect-ratio: 1/1; overflow: hidden; }
+    .pv-media, .pv-media img, .pv-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pv-media iframe { width: 100%; height: 100%; border: 0; }
+    .pv-badge { position: absolute; top: 14px; left: 14px; background: var(--danger); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 5px 12px; border-radius: 999px; font-family: 'Poppins', sans-serif; letter-spacing: 0.05em; z-index: 6; box-shadow: 0 4px 14px rgba(239,68,68,0.4); }
+    .pv-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 6; }
+    .pv-dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,0.55); transition: all 0.25s; }
+    .pv-dot.on { background: #fff; width: 20px; }
+    .pv-body { flex: 1; overflow-y: auto; padding: 20px 22px 10px; }
+    .pv-footer { padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); display: flex; gap: 14px; align-items: center; background: #fff; flex-shrink: 0; }
+    .pv-chip { border: 2px solid var(--border); border-radius: 14px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; text-align: left; background: #fff; }
+    .pv-chip:hover { border-color: #d8b4fe; }
+    .pv-chip.active { border-color: var(--primary); background: var(--bg); }
+    .pv-chip.off { opacity: 0.45; cursor: not-allowed; }
+    .pv-close { position: absolute; top: 14px; right: 14px; z-index: 7; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255,255,255,0.9); color: var(--primary-dark); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+
+    .ci-thumb { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: var(--bg); flex-shrink: 0; }
+    .mini-card { flex: 0 0 auto; width: 130px; background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.25s; text-align: left; padding: 0; }
+    .mini-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(74,44,106,0.12); }
+    .ad-card { flex: 0 0 auto; width: 270px; background: #fff; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; transition: all 0.3s; }
+    .ad-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(74,44,106,0.12); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    @keyframes badgePop { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
+    .badge-pop { animation: badgePop 0.35s ease; }
+    .cart-badge { display: none; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 800; position: absolute; top: -4px; right: -6px; }
+    img { background: #ede9fe; }
+
+    /* Hero slideshow */
+    .hero-slide-track { position: relative; width: 20rem; height: 24rem; border-radius: 2rem; overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45); border: 4px solid rgba(255,255,255,0.2); }
+    .hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      opacity: 0; transform: scale(1.06); transition: opacity 0.9s ease, transform 5s linear; cursor: pointer; }
+    .hero-slide.on { opacity: 1; transform: scale(1); }
+    .hero-dots { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; }
+    .hero-dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.5); border: none; cursor: pointer; transition: all 0.3s; padding: 0; }
+    .hero-dot.on { background: #fff; width: 22px; }
+    .pp-qty { display:inline-flex; align-items:center; gap:14px; border:2px solid var(--border); border-radius:12px; padding:6px 10px; background:#fff; }
+    .pp-qty button { width:30px; height:30px; border-radius:8px; border:none; background:var(--bg); color:var(--primary); font-size:1.15rem; font-weight:700; cursor:pointer; }
+    .pp-qty button:hover { background:var(--border); }
+
+</style>
+</head>
+<body class="bg-[#f3e8ff] min-h-screen">
+
+<div class="bg-shape bg-shape-1"></div>
+<div class="bg-shape bg-shape-2"></div>
+<div class="bg-shape bg-shape-3"></div>
+
+<!-- Announcement bar (admin-controlled) -->
+<div id="announceBar" class="announce-bar" style="display:none;"></div>
+
+<!-- Navbar -->
+<header class="sticky top-0 z-40" style="background:rgba(255,255,255,0.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);">
+  <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+    <button onclick="setPage('home')" class="flex items-center gap-2.5" aria-label="Moye's Treats home">
+      <img src="assets/logo.jpg" alt="logo" class="w-10 h-10 rounded-full object-cover border-2 border-[#e9d5ff]">
+      <span class="font-pacifico text-xl text-[#3a1c5a]">Moye's Treats</span>
+    </button>
+    <nav class="nav-desktop items-center gap-1 font-poppins text-sm font-medium text-[#4a2c6a]">
+      <button onclick="setPage('home')" class="px-4 py-2 rounded-xl hover:bg-[#f3e8ff] transition-all">Home</button>
+      <button onclick="setPage('menu')" class="px-4 py-2 rounded-xl hover:bg-[#f3e8ff] transition-all">Menu</button>
+      <button onclick="setPage('smallchops')" class="px-4 py-2 rounded-xl hover:bg-[#f3e8ff] transition-all">Small Chops</button>
+      <button onclick="setPage('gallery')" class="px-4 py-2 rounded-xl hover:bg-[#f3e8ff] transition-all">Gallery</button>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button onclick="openCartModal()" class="relative w-11 h-11 rounded-full bg-[#f3e8ff] text-[#4a2c6a] flex items-center justify-center hover:bg-[#e9d5ff] transition-all" aria-label="Open cart">
+        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+        <span class="cart-badge" id="navCartBadge">0</span>
+      </button>
+      <button class="nav-mobile w-11 h-11 rounded-full bg-[#f3e8ff] text-[#4a2c6a] items-center justify-center" onclick="openMobileSidebar()" aria-label="Menu">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile sidebar -->
+<div id="mobileSidebar" class="mobile-sidebar">
+  <div class="mobile-sidebar-bg" onclick="closeMobileSidebar()"></div>
+  <div class="mobile-sidebar-panel">
+    <div class="mobile-sidebar-header">
+      <span class="font-pacifico text-lg text-[#3a1c5a]">Moye's Treats</span>
+      <button class="mobile-sidebar-close" onclick="closeMobileSidebar()">&#215;</button>
+    </div>
+    <div class="mobile-sidebar-body">
+      <button class="mobile-sidebar-item" data-page="home" onclick="setPage('home')"><span class="mobile-sidebar-icon"><i data-lucide="home" class="w-4 h-4"></i></span>Home</button>
+      <button class="mobile-sidebar-item" data-page="menu" onclick="setPage('menu')"><span class="mobile-sidebar-icon"><i data-lucide="clipboard-list" class="w-4 h-4"></i></span>Menu</button>
+      <button class="mobile-sidebar-item" data-page="smallchops" onclick="setPage('smallchops')"><span class="mobile-sidebar-icon"><i data-lucide="utensils-crossed" class="w-4 h-4"></i></span>Small Chops</button>
+      <button class="mobile-sidebar-item" data-page="gallery" onclick="setPage('gallery')"><span class="mobile-sidebar-icon"><i data-lucide="images" class="w-4 h-4"></i></span>Gallery</button>
+    </div>
+    <div class="mobile-sidebar-footer">Made with 💜 in Minna</div>
+  </div>
+</div>
+
+<div id="app"></div>
+
+
+<!-- iOS Install Guide -->
+<div id="iosInstallModal" class="modal-overlay" onclick="if(event.target===this)closeIosInstall()">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header"><div class="modal-title">📲 Install Moye's Treats</div><button class="modal-close" onclick="closeIosInstall()">×</button></div>
+    <div class="modal-body">
+      <p class="text-sm text-gray-600 font-poppins mb-4">Add to Home Screen for full app experience.</p>
+      <div class="bg-[#faf5ff] border border-[#e9d5ff] rounded-2xl p-4 space-y-3">
+        <div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-[#4a2c6a] text-white flex items-center justify-center text-xs font-bold">1</span><p class="text-sm font-poppins">Tap <b>Share</b> <i data-lucide="share" class="w-4 h-4 inline"></i> in Safari bottom bar.</p></div>
+        <div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-[#4a2c6a] text-white flex items-center justify-center text-xs font-bold">2</span><p class="text-sm font-poppins">Tap <b>Add to Home Screen</b> ➕</p></div>
+        <div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-[#4a2c6a] text-white flex items-center justify-center text-xs font-bold">3</span><p class="text-sm font-poppins">Tap <b>Add</b> — app appears on Home Screen!</p></div>
+      </div>
+      <button onclick="closeIosInstall()" class="w-full mt-5 py-3 rounded-xl bg-[#4a2c6a] text-white font-bold">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA Install Button -->
+<button id="installAppButton" class="pwa-install-button" onclick="installMoyesApp()" aria-label="Install Moye's Treats app">
+  <span class="pwa-install-icon"><i data-lucide="download" class="w-4 h-4"></i></span>
+  <span><strong>Install App</strong><small>Moye's Treats</small></span>
+</button>
+
+<!-- PWA update notice -->
+<div id="moyesUpdateNotice">
+  <div class="pwa-update-icon"><i data-lucide="refresh-cw" class="w-5 h-5"></i></div>
+  <div class="pwa-update-text"><strong>Update available</strong><span>Refresh to get the latest Moye's Treats experience.</span></div>
+  <button onclick="location.reload()">Refresh</button>
+  <button class="pwa-update-close" onclick="document.getElementById('moyesUpdateNotice').classList.remove('show')">&#215;</button>
+</div>
+
+<!-- Bottom Cart Bar -->
+<div id="cartBar" class="cart-bar">
+  <div class="flex-1 min-w-0">
+    <div class="text-xs text-gray-500 font-medium font-poppins">Total Order</div>
+    <div class="text-xl font-extrabold text-[#4a2c6a] font-poppins" id="cartBarTotal">₦0</div>
+  </div>
+  <div class="flex items-center gap-3">
+    <button onclick="openCartModal()" class="px-5 py-2.5 rounded-xl bg-[#f3e8ff] text-[#4a2c6a] font-semibold text-sm font-poppins hover:bg-[#e9d5ff] transition-all">View Cart</button>
+    <button onclick="openCheckoutModal()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm font-poppins shadow-lg shadow-amber-500/30 transition-all">Checkout</button>
+  </div>
+</div>
+
+<!-- Temu-style Product Preview Modal -->
+<div id="previewModal" class="modal-overlay pv-overlay" onclick="if(event.target===this)closePreview()">
+  <div class="modal pv-modal" id="pvModal"></div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="modal-overlay" onclick="if(event.target===this)closeCartModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Your Order</div>
+      <button class="modal-close" onclick="closeCartModal()">&#215;</button>
+    </div>
+    <div class="modal-body" id="cartModalBody"></div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal-overlay" onclick="if(event.target===this)closeCheckoutModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Complete Your Order</div>
+      <button class="modal-close" onclick="closeCheckoutModal()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <div id="checkoutSummary" style="margin-bottom:20px;padding:16px;background:var(--bg);border-radius:14px;"></div>
+      <form onsubmit="submitOrder(event)">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">First Name</label>
+            <input type="text" name="firstName" id="firstName" required placeholder="John" class="form-input">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Last Name</label>
+            <input type="text" name="lastName" id="lastName" required placeholder="Doe" class="form-input">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Phone Number</label>
+          <input type="tel" name="phone" id="phone" required placeholder="0801 234 5678" class="form-input">
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Method</label>
+          <div class="flex gap-3">
+            <div id="delOptPickup" class="delivery-option active" onclick="selectDelivery(this,'pickup')">
+              <div class="font-semibold text-sm text-gray-800 font-poppins">Pickup</div>
+              <div class="text-xs text-gray-500 mt-1 font-poppins">Free</div>
+            </div>
+            <div id="delOptDelivery" class="delivery-option" onclick="selectDelivery(this,'delivery')">
+              <div class="font-semibold text-sm text-gray-800 font-poppins">Delivery</div>
+              <div class="text-xs text-gray-500 mt-1 font-poppins">From ₦1,000</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-4" id="deliveryLocationGroup" style="display:none;">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Location</label>
+          <select name="deliveryLocation" id="deliveryLocation" onchange="onLocationChange(this)" class="form-select"></select>
+          <div id="deliveryFeeDisplay" class="mt-2 text-sm font-semibold text-amber-600 font-poppins" style="display:none;"></div>
+        </div>
+        <div class="mb-4" id="addressGroup" style="display:none;">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Delivery Address</label>
+          <input type="text" name="houseNumber" id="houseNumber" placeholder="House Number" class="form-input mb-2">
+          <input type="text" name="street" id="street" placeholder="Street" class="form-input mb-2">
+          <input type="text" name="landmark" id="landmark" placeholder="Nearest Landmark" class="form-input">
+        </div>
+        <div class="mb-5">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 font-poppins">Order Notes (Optional)</label>
+          <textarea name="notes" id="notes" placeholder="Any special requests, allergies, or delivery instructions..." class="form-textarea"></textarea>
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#4a2c6a] to-[#7c5c9c] text-white font-bold text-base font-poppins shadow-lg shadow-purple-900/30 hover:shadow-purple-900/40 hover:-translate-y-0.5 transition-all">
+          Place Order via WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox-overlay" onclick="closeLightboxOnBackground(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&#215;</button>
+  <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation();lightboxPrev()" aria-label="Previous">‹</button>
+  <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation();lightboxNext()" aria-label="Next">›</button>
+  <div class="lightbox-content">
+    <div id="lightboxMedia"></div>
+  </div>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast">
+  <div class="toast-icon" id="toastIcon">✓</div>
+  <div>
+    <div class="font-semibold text-sm text-gray-800" id="toastTitle">Added!</div>
+    <div class="text-xs text-gray-500 mt-0.5" id="toastMessage">Item added to your cart</div>
+  </div>
+</div>
+
+<script src="store-data.js"></script>
+<script>
+
+
+/* ====== Fallback data from store-data.js ====== */
+const FALLBACK_CATALOG = {
+    contact: {
+      phone: "08123456789",
+      displayPhone: "0812 345 6789",
+      instagram: "moyestreats",
+      tiktok: "moyestreats",
+      location: "Minna, Niger State"
+    },
+    deliveryFees: {
+      "Tunga": 1000,
+      "Bosco": 1000,
+      "GRA": 1200,
+      "Kpakungu": 1000,
+      "F-Layout": 1200,
+      "Dutsen Kura": 1500,
+      "Bosso": 1500
+    },
+    smallChopsPrices: {
+      "Samosa": 150,
+      "Spring Roll": 150,
+      "Puff Puff": 100,
+      "Beef": 250,
+      "Chicken": 350
+    },
+    combos: [
+      { name: "Mini Box", price: 3000, bestValue: false, items: { "Samosa": 4, "Spring Roll": 4, "Puff Puff": 6 } },
+      { name: "Party Box", price: 6500, bestValue: true, items: { "Samosa": 8, "Spring Roll": 8, "Puff Puff": 12, "Beef": 4 } },
+      { name: "Luxe Box", price: 11500, bestValue: false, items: { "Samosa": 12, "Spring Roll": 12, "Puff Puff": 20, "Chicken": 6, "Beef": 6 } }
+    ],
+    promotions: {
+      announcement: { enabled: true, text: "🎉 Free delivery on orders above ₦15,000 in Minna — Order now on WhatsApp! 🍰" },
+      banner: { enabled: true, title: "Weekend Treat Drop!", subtitle: "Get 10% off all parfaits and cake loaves this weekend.", bg: "grape", code: "MOYE10", discountPercent: 10, image: "" }
+    },
+    ads: [
+      { id: "ad1", active: true, title: "Valentine Parfait Special", text: "Limited strawberry & cream parfait — pre-order now!", image: "https://images.unsplash.com/photo-1488477181946-64290103bbd6?w=400", ctaLabel: "Order Now", action: "whatsapp", url: "" },
+      { id: "ad2", active: true, title: "Build Your Small Chops Box", text: "Mix samosa, spring rolls, puff puff & more from ₦3,000", image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400", ctaLabel: "Build Box", action: "smallchops", url: "" }
+    ],
+    categories: [
+      {
+        id: "parfait",
+        name: "Yoghurt Parfait",
+        icon: "🍨",
+        subtitle: "Layered goodness",
+        desc: "Creamy Greek yoghurt layered with granola, fruits and honey — assembled fresh daily.",
+        note: "Best consumed within 24 hours. Keep refrigerated.",
+        images: ["https://images.unsplash.com/photo-1488477181946-64290103bbd6?w=600", "https://images.unsplash.com/photo-1488477304112-4944851de03d?w=600"],
+        video: "",
+        featured: true,
+        featuredLabel: "Bestseller",
+        sold: 250,
+        items: [
+          { name: "Small Cup (300ml)", price: 3500, salePrice: 0, available: true },
+          { name: "Medium Cup (500ml)", price: 5000, salePrice: 4500, available: true },
+          { name: "Large Bowl (750ml)", price: 7000, salePrice: 0, available: true }
+        ]
+      },
+      {
+        id: "banana-bread",
+        name: "Banana Bread",
+        icon: "🍌",
+        subtitle: "Moist & fluffy",
+        desc: "Rich, moist banana bread baked with ripe bananas, nuts and a hint of cinnamon.",
+        note: "",
+        images: ["https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=600", "https://images.unsplash.com/photo-1586444248908-6d84134724a5?w=600"],
+        video: "",
+        featured: true,
+        featuredLabel: "Trending",
+        sold: 180,
+        items: [
+          { name: "Mini Loaf", price: 2500, salePrice: 0, available: true },
+          { name: "Medium Loaf", price: 4000, salePrice: 3500, available: true },
+          { name: "Large Loaf", price: 6000, salePrice: 0, available: true }
+        ]
+      },
+      {
+        id: "cake-loaf",
+        name: "Cake Loaf",
+        icon: "🍰",
+        subtitle: "Buttery soft",
+        desc: "Vanilla and chocolate swirl loaf, buttery and perfect for tea time.",
+        note: "",
+        images: ["https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600"],
+        video: "",
+        featured: true,
+        featuredLabel: "",
+        sold: 120,
+        items: [
+          { name: "Small", price: 3000, salePrice: 0, available: true },
+          { name: "Medium", price: 5000, salePrice: 0, available: true }
+        ]
+      },
+      {
+        id: "brownies",
+        name: "Fudgy Brownies",
+        icon: "🍫",
+        subtitle: "Chocolate overload",
+        desc: "Dense, fudgy chocolate brownies with crackly top.",
+        note: "",
+        images: ["https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600"],
+        video: "",
+        featured: false,
+        featuredLabel: "",
+        sold: 90,
+        items: [
+          { name: "Box of 4", price: 4000, salePrice: 0, available: true },
+          { name: "Box of 8", price: 7000, salePrice: 6000, available: true }
+        ]
+      },
+      {
+        id: "greek-yoghurt",
+        name: "Greek Yoghurt",
+        icon: "🥛",
+        subtitle: "Thick & tangy",
+        desc: "Thick, creamy Greek yoghurt — unsweetened, protein-rich.",
+        note: "",
+        images: ["https://images.unsplash.com/photo-1488477304112-4944851de03d?w=600"],
+        video: "",
+        featured: false,
+        featuredLabel: "",
+        sold: 70,
+        items: [
+          { name: "500ml", price: 3000, salePrice: 0, available: true },
+          { name: "1 Litre", price: 5500, salePrice: 0, available: true }
+        ]
+      }
+    ]
+  };
+if (typeof StoreData === 'undefined') {
+  window.StoreData = {
+    init: async()=>FALLBACK_CATALOG,
+    get:()=>FALLBACK_CATALOG,
+    save:()=>false,
+    export:()=>JSON.stringify(FALLBACK_CATALOG,null,2),
+    reset:()=>{},
+    import:()=>{}
+  };
+}
+
+if (typeof fmt === 'undefined') { window.fmt = function(n){ n=+n||0; return '₦' + n.toLocaleString('en-NG'); }; }
+if (typeof catCover === 'undefined') { window.catCover = function(cat){ if(!cat) return ''; if(cat.images && cat.images[0]) return cat.images[0]; if(cat.image) return cat.image; return ''; }; }
+if (typeof catPriceRange === 'undefined') { window.catPriceRange = function(cat){ if(!cat||!cat.items||!cat.items.length) return null; const prices=cat.items.filter(v=>v.available!==false).map(v=> (v.salePrice>0?v.salePrice:v.price)).filter(p=>p>0); if(!prices.length) return null; return {min:Math.min(...prices), max:Math.max(...prices)}; }; }
+if (typeof onSale === 'undefined') { window.onSale = function(v){ return v && v.salePrice && v.salePrice>0 && v.salePrice < v.price; }; }
+if (typeof discountPct === 'undefined') { window.discountPct = function(v){ if(!onSale(v)) return 0; return Math.round((1 - v.salePrice/v.price)*100); }; }
+if (typeof effPrice === 'undefined') { window.effPrice = function(v){ return onSale(v)? v.salePrice : (v? v.price:0); }; }
+if (typeof mediaHTML === 'undefined') { window.mediaHTML = function(src, cls){ if(!src) return `<div class="${cls||''} bg-[#f3e8ff]"></div>`; const yt = (typeof ytEmbed!=='undefined'? ytEmbed(src): null); if(yt) return `<iframe src="${yt}" class="${cls||''}" frameborder="0" allowfullscreen></iframe>`; if(typeof isVideo!=='undefined' && isVideo(src)) return `<video src="${src}" class="${cls||''}" controls></video>`; return `<img src="${src}" class="${cls||''}" loading="lazy" alt="">`; }; }
+if (typeof catById === 'undefined') { window.catById = function(id){ return (typeof catMap!=='undefined' && catMap[id]) ? catMap[id] : (typeof cats!=='undefined' ? cats.find(c=>c.id===id) : null); }; }
+if (typeof isVideo === 'undefined') { window.isVideo = function(s){ return typeof s==='string' && /\.(mp4|webm|ogg)(\?.*)?$/i.test(s); }; }
+if (typeof ytEmbed === 'undefined') { window.ytEmbed = function(url){ if(!url) return null; const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/); return m ? `https://www.youtube.com/embed/${m[1]}` : null; }; }
+if (typeof slugify === 'undefined') { window.slugify = function(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }; }
+
+
+/* ===================== STATE ===================== */
+let C = null, cats = [], catMap = {};
+let currentPage = 'home', menuQuery = '';
+let heroTimer = null, heroIdx = 0, heroCats = [];
+let cart = [], appliedPromo = null;
+let customQty = { 'Samosa': 0, 'Spring Roll': 0, 'Puff Puff': 0, 'Beef': 0, 'Chicken': 0 };
+let deliveryMethod = 'pickup', selectedLocation = '';
+let pv = { cat: null, v: 0, q: 1, img: 0 };
+let lightboxCategory = null, lightboxIndex = 0, touchStartX = 0;
+let savedCustomer = {};
+try { savedCustomer = JSON.parse(localStorage.getItem('moyesCustomer') || '{}'); } catch (e) {}
+
+document.addEventListener('DOMContentLoaded', boot);
+async function boot() {
+  C = await StoreData.init();
+  cats = C.categories; catMap = Object.fromEntries(cats.map(c => [c.id, c]));
+  try { cart = JSON.parse(localStorage.getItem('moyes_cart_v1') || '[]'); } catch (e) { cart = []; }
+  renderAnnouncement();
+  renderApp();
+  routeHash();
+  initPWA();
+  lucide.createIcons();
+}
+
+/* ===================== RENDER SHELL ===================== */
+function setPage(p) {
+  currentPage = p;
+  if ((location.hash || '').startsWith('#/p/')) { suppressHashRender = true; location.hash = ''; }
+  closeMobileSidebar(); renderApp(); window.scrollTo(0, 0);
+}
+function renderApp() {
+  stopGalleryAuto();
+  let page = '';
+  if (currentPage === 'home') page = renderHome();
+  else if (currentPage === 'menu') page = renderMenuPage();
+  else if (currentPage === 'smallchops') page = renderSmallChopsPage();
+  else if (currentPage === 'gallery') page = renderGalleryPage();
+  document.getElementById('app').innerHTML = page + renderFooter();
+  if (currentPage === 'menu') { const inp = document.getElementById('menuSearch'); if (inp) inp.value = menuQuery; }
+  lucide.createIcons();
+  updateCartUI();
+  initScrollReveal();
+  if (currentPage === 'home') startHeroSlideshow(); else stopHeroSlideshow();
+  if (currentPage === 'gallery') startGalleryAuto();
+}
+let revealObserver = null;
+function initScrollReveal() {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+    return;
+  }
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('active'); revealObserver.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+  }
+  document.querySelectorAll('.reveal:not(.active)').forEach(el => revealObserver.observe(el));
+}
+
+/* ===================== PROMOTIONS & ADS ===================== */
+function renderAnnouncement() {
+  const bar = document.getElementById('announceBar');
+  const a = C.promotions && C.promotions.announcement;
+  if (a && a.enabled && a.text) {
+    const seg = `<span>${a.text}</span>`;
+    bar.innerHTML = `<div class="announce-track">${seg}${seg}${seg}${seg}</div>`;
+    bar.style.display = 'block';
+  } else bar.style.display = 'none';
+}
+function promoBannerHTML() {
+  const b = C.promotions && C.promotions.banner;
+  if (!b || !b.enabled || !b.title) return '';
+  return `
+  <section class="px-4 max-w-6xl mx-auto relative z-10 my-8 reveal">
+    <div class="promo-banner ${b.bg === 'amber' ? 'amber' : ''}">
+      ${b.image ? `<img src="${b.image}" class="promo-banner-img" loading="lazy" alt="">` : ''}
+      <div class="relative z-10 max-w-lg">
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-amber-200 font-poppins">Limited Time</span>
+        <h3 class="text-2xl sm:text-3xl font-bold mt-2">${b.title}</h3>
+        <p class="text-white/85 text-sm mt-2 font-poppins">${b.subtitle || ''}</p>
+        <div class="flex items-center gap-3 mt-4 flex-wrap">
+          ${b.code ? `<span class="promo-code-chip">🎁 ${b.code} · ${b.discountPercent || 0}% OFF</span>` : ''}
+          <button onclick="setPage('menu')" class="px-5 py-2.5 rounded-xl bg-white text-[#4a2c6a] text-sm font-bold font-poppins hover:-translate-y-0.5 transition-all shadow-lg">Shop Now</button>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+function adsHTML() {
+  const ads = (C.ads || []).filter(a => a.active);
+  if (!ads.length) return '';
+  return `
+  <section class="px-4 max-w-6xl mx-auto relative z-10 my-10 reveal">
+    <span class="section-label">Sponsored</span>
+    <div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+      ${ads.map(a => {
+        const act = a.action === 'whatsapp' ? `adWhatsApp('${a.title.replace(/'/g, "\\'")}');`
+          : a.action === 'menu' ? `setPage('menu');`
+          : a.action === 'smallchops' ? `setPage('smallchops');`
+          : a.action === 'url' && a.url ? `window.open('${a.url}','_blank');` : '';
+        return `
+        <div class="ad-card">
+          <div class="h-32 overflow-hidden bg-[#faf5ff]">${mediaHTML(a.image, 'w-full h-full object-cover')}</div>
+          <div class="p-4">
+            <div class="font-bold text-sm text-[#3a1c5a] font-poppins">${a.title}</div>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2">${a.text || ''}</p>
+            ${act ? `<button onclick="${act}" class="mt-3 px-4 py-2 rounded-xl bg-[#f3e8ff] text-[#4a2c6a] text-xs font-bold font-poppins hover:bg-[#e9d5ff] transition-all">${a.ctaLabel || 'Learn more'}</button>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </section>`;
+}
+function adWhatsApp(title) {
+  const ph = '234' + C.contact.phone.replace(/^0/, '');
+  window.open(`https://wa.me/${ph}?text=${encodeURIComponent("Hi Moye's Treats! I'm interested in: " + title)}`, '_blank');
+}
+
+/* ===================== PAGES ===================== */
+function productCard(cat) {
+  const range = catPriceRange(cat);
+  const first = (cat.items || []).find(v => v.available !== false) || (cat.items || [])[0];
+  const sale = first && onSale(first);
+  const cover = catCover(cat);
+  const priceLine = range
+    ? `${sale ? `<span class="text-xs text-gray-400 line-through mr-1">${fmt(first.price)}</span>` : ''}<span class="font-extrabold text-[#4a2c6a] font-poppins">From ${fmt(range.min)}</span>`
+    : `<span class="font-extrabold text-[#4a2c6a] font-poppins">Build Your Box</span>`;
+  return `
+  <div class="product-card-premium cursor-pointer reveal" onclick="openPreview('${cat.id}')">
+    <div class="relative">
+      ${mediaHTML(cover, 'w-full h-48 object-cover')}
+      ${sale ? `<span class="pv-badge" style="top:12px;">-${discountPct(first)}%</span>` : ''}
+      ${cat.featuredLabel ? `<span style="position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#fff;font-size:0.65rem;font-weight:700;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:0.08em;font-family:'Poppins',sans-serif;">${cat.featuredLabel}</span>` : ''}
+    </div>
+    <div class="p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-[#3a1c5a] font-poppins">${cat.name}</h3><span>${cat.icon}</span>
+      </div>
+      <p class="text-xs text-purple-500 mt-1 line-clamp-2">${cat.desc}</p>
+      <div class="flex items-end justify-between mt-3 gap-2">
+        <div class="min-w-0">${priceLine}</div>
+        <button onclick="event.stopPropagation();openPreview('${cat.id}')" class="px-3.5 py-2 rounded-xl bg-[#4a2c6a] text-white text-xs font-bold font-poppins hover:bg-[#3a1c5a] transition-all shrink-0">Preview</button>
+      </div>
+    </div>
+  </div>`;
+}
+function miniCard(cat) {
+  return `
+  <button class="mini-card" onclick="openPreview('${cat.id}')">
+    <img src="${catCover(cat)}" class="w-full h-24 object-cover" loading="lazy" alt="${cat.name}">
+    <div class="p-2">
+      <div class="text-xs font-bold text-[#3a1c5a] font-poppins truncate">${cat.name}</div>
+      <div class="text-[11px] text-amber-600 font-bold font-poppins">From ${fmt((catPriceRange(cat) || { min: 0 }).min)}</div>
+    </div>
+  </button>`;
+}
+function getRecentlyViewed() {
+  try { return JSON.parse(localStorage.getItem('moyes_recent_v1') || '[]'); } catch (e) { return []; }
+}
+function pushRecentlyViewed(id) {
+  let r = getRecentlyViewed().filter(x => x !== id); r.unshift(id);
+  try { localStorage.setItem('moyes_recent_v1', JSON.stringify(r.slice(0, 8))); } catch (e) {}
+}
+
+function renderHome() {
+  const heroSlides = [...cats].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)).filter(c => catCover(c)).slice(0, 6);
+  heroCats = heroSlides;
+  const featured = cats.filter(c => c.featured);
+  const recent = getRecentlyViewed().map(id => catMap[id]).filter(Boolean).slice(0, 6);
+  const t = (C.testimonials && C.testimonials.length ? C.testimonials : [
+    { name: 'Aisha M.', text: 'The parfait was absolutely divine! Creamy, fresh, and perfectly layered. My go-to treat spot in Minna.', rating: 5, avatar: 'A' },
+    { name: 'John O.', text: 'Ordered the banana bread for my family and it disappeared in minutes. So moist and flavorful!', rating: 5, avatar: 'J' },
+    { name: 'Fatima L.', text: 'Best small chops in town! The spring rolls were crispy and the beef was perfectly spiced.', rating: 5, avatar: 'F' },
+    { name: 'David K.', text: 'Great service and fast delivery. The Greek yoghurt is thick and tangy exactly how I like it.', rating: 5, avatar: 'D' }
+  ]);
+  return `
+  <section class="hero-section">
+    <div class="hero-bg"></div><div class="hero-overlay"></div>
+    <div class="max-w-6xl mx-auto px-4 py-20 relative z-10 grid lg:grid-cols-2 gap-12 items-center w-full">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="trust-badge"><i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i> Made Fresh Daily</span>
+          <span class="trust-badge"><i data-lucide="truck" class="w-4 h-4 text-amber-400"></i> Minna Delivery</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">Handcrafted Treats,<br><span class="font-pacifico font-normal text-amber-400">Made with Love</span></h1>
+        <p class="text-purple-200 mt-5 max-w-md font-poppins">Premium parfaits, banana bread, cake loaves, brownies and small chops — baked and layered fresh every day in Minna.</p>
+        <div class="flex flex-wrap gap-3 mt-8">
+          <button onclick="setPage('menu')" class="px-7 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold font-poppins shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 transition-all">Explore Menu</button>
+          <button onclick="setPage('smallchops')" class="px-7 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold font-poppins backdrop-blur transition-all">Build a Small Chops Box</button>
+        </div>
+        <div class="flex items-center gap-2 mt-8 text-amber-400 text-sm">
+          <span class="star-filled" style="color:#fbbf24;">★★★★★</span>
+          <span class="text-purple-200 font-poppins">Loved by 100+ customers in Minna</span>
+        </div>
+      </div>
+      <div class="hidden lg:block relative">
+        <div class="animate-float relative">
+          <div class="hero-slide-track" id="heroSlides" onmouseenter="stopHeroSlideshow()" onmouseleave="heroRestart()">
+            ${heroSlides.map((c, i) => `<img src="${catCover(c)}" alt="${c.name}" class="hero-slide ${i === 0 ? 'on' : ''}" onclick="openPreview('${c.id}')">`).join('')}
+            <div class="hero-dots" id="heroDots">
+              ${heroSlides.map((_, i) => `<button class="hero-dot ${i === 0 ? 'on' : ''}" onclick="heroShow(${i});heroRestart()" aria-label="Slide ${i + 1}"></button>`).join('')}
+            </div>
+          </div>
+          <div class="absolute -bottom-6 -left-8 bg-white rounded-2xl p-4 shadow-2xl cursor-pointer" onclick="heroCats[heroIdx]&&openPreview(heroCats[heroIdx].id)">
+            <div id="heroCap"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 max-w-6xl mx-auto relative z-10 py-12">
+    <div class="flex items-end justify-between mb-6">
+      <div><span class="section-label">Customer Favourites</span><h2 class="text-3xl font-bold text-[#3a1c5a]">Best Sellers</h2></div>
+      <button onclick="setPage('menu')" class="text-sm font-semibold text-[#7c5c9c] hover:text-[#4a2c6a] font-poppins">View all →</button>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">${featured.map(productCard).join('')}</div>
+  </section>
+
+  ${promoBannerHTML()}
+  ${adsHTML()}
+
+  <section class="px-4 max-w-6xl mx-auto relative z-10 py-6">
+    <span class="section-label">Our Menu</span>
+    <h2 class="text-3xl font-bold text-[#3a1c5a] mb-6">Explore Every Treat</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">${cats.map(productCard).join('')}</div>
+  </section>
+
+  ${recent.length ? `
+  <section class="px-4 max-w-6xl mx-auto relative z-10 py-8">
+    <h2 class="text-xl font-bold text-[#3a1c5a] font-poppins mb-4">👀 Recently Viewed</h2>
+    <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">${recent.map(miniCard).join('')}</div>
+  </section>` : ''}
+
+  <section class="px-4 max-w-6xl mx-auto relative z-10 py-12">
+    <div class="text-center mb-10"><span class="section-label">Why Moye's Treats</span><h2 class="text-3xl font-bold text-[#3a1c5a]">The Premium Difference</h2></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      ${[['cake', 'Baked Fresh Daily', 'Everything is made to order — never day-old.'],
+         ['cherry', 'Premium Ingredients', 'Real fruit, quality dairy and rich chocolate.'],
+         ['truck', 'Fast Minna Delivery', 'Carefully packed and delivered across Minna.'],
+         ['package-check', 'Secure Packaging', 'Beautiful, sturdy packaging for every order.']]
+        .map(([ic, ti, de], i) => `
+      <div class="why-card reveal stagger-${i + 1}">
+        <div class="w-12 h-12 rounded-2xl bg-[#f3e8ff] flex items-center justify-center mb-4"><i data-lucide="${ic}" class="w-6 h-6 text-[#4a2c6a]"></i></div>
+        <h3 class="font-bold text-[#3a1c5a] font-poppins">${ti}</h3>
+        <p class="text-sm text-gray-500 mt-2">${de}</p>
+      </div>`).join('')}
+    </div>
+  </section>
+
+  <section class="px-4 max-w-6xl mx-auto relative z-10 py-6">
+    <div class="text-center mb-10"><span class="section-label">Reviews</span><h2 class="text-3xl font-bold text-[#3a1c5a]">What Our Customers Say</h2></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      ${t.map(rv => `
+      <div class="review-card reveal">
+        <div class="text-sm mb-2"><span class="star-filled">★★★★★</span></div>
+        <p class="text-sm text-gray-600 leading-relaxed">"${rv.text}"</p>
+        <div class="flex items-center gap-3 mt-4">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#4a2c6a] to-[#7c5c9c] text-white flex items-center justify-center font-bold text-sm font-poppins">${rv.avatar}</div>
+          <div class="font-semibold text-sm text-[#3a1c5a] font-poppins">${rv.name}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+  </section>
+
+  <section class="cta-section mt-12">
+    <div class="max-w-4xl mx-auto px-4 py-16 text-center relative z-10">
+      <h2 class="text-3xl sm:text-4xl font-bold text-white">Craving Something <span class="font-pacifico font-normal text-amber-400">Delicious?</span></h2>
+      <p class="text-purple-200 mt-4 font-poppins">Order now and treat yourself — delivered fresh across Minna.</p>
+      <button onclick="setPage('menu')" class="mt-8 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold font-poppins shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 transition-all">Start Your Order</button>
+    </div>
+  </section>`;
+}
+
+function renderMenuPage() {
+  return `
+  <section class="py-10 px-4 max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-6">
+      <span class="section-label">Full Menu</span>
+      <h1 class="text-4xl font-bold text-[#3a1c5a]">Our Treats</h1>
+      <p class="text-gray-500 font-poppins mt-2 text-sm">Tap any treat to preview sizes, prices and photos — just like a premium store.</p>
+    </div>
+    <div class="max-w-md mx-auto mb-8 relative">
+      <i data-lucide="search" class="w-5 h-5 text-purple-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+      <input id="menuSearch" class="form-input pl-12" placeholder="Search treats... parfait, banana, brownies" oninput="menuQuery=this.value;renderMenuGrid()">
+    </div>
+    <div id="menuGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">${menuCards()}</div>
+  </section>`;
+}
+function menuCards() {
+  const q = menuQuery.trim().toLowerCase();
+  const list = cats.filter(c => !q || c.name.toLowerCase().includes(q) || (c.desc || '').toLowerCase().includes(q) || (c.items || []).some(v => v.name.toLowerCase().includes(q)));
+  if (!list.length) return `<div class="col-span-full text-center py-16"><div class="text-5xl mb-3">🔍</div><p class="text-gray-500 font-poppins">No treats found for "${menuQuery}"</p></div>`;
+  return list.map(productCard).join('');
+}
+function renderMenuGrid() { document.getElementById('menuGrid').innerHTML = menuCards(); lucide.createIcons(); initScrollReveal(); }
+
+function renderSmallChopsPage() {
+  const prices = C.smallChopsPrices;
+  const comboCards = (C.combos || []).map(cb => `
+    <div class="combo-card ${cb.bestValue ? 'best-value' : ''} reveal">
+      ${cb.bestValue ? '<div class="best-value-badge">Best Value</div>' : ''}
+      <h3 class="font-bold text-lg text-[#3a1c5a] font-poppins">${cb.name}</h3>
+      <div class="my-3 space-y-2">
+        ${Object.entries(cb.items).map(([n, q]) => `<div class="flex items-center gap-2 text-sm text-gray-600"><span class="item-qty">${q}</span> ${n}</div>`).join('')}
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="font-extrabold text-xl text-[#4a2c6a] font-poppins">${fmt(cb.price)}</div>
+        <button onclick="addCombo('${cb.name}')" class="px-4 py-2.5 rounded-xl bg-[#4a2c6a] text-white text-sm font-bold font-poppins hover:bg-[#3a1c5a] transition-all">Add Box</button>
+      </div>
+    </div>`).join('');
+  const builderRows = Object.keys(prices).map(item => `
+    <div class="flex items-center justify-between py-3 border-b border-white/10">
+      <div><div class="font-semibold text-sm">${item}</div><div class="text-xs text-purple-200">${fmt(prices[item])} each</div></div>
+      <div class="flex items-center gap-2">
+        <button class="qty-btn" onclick="updateQty('${item}',-1)">−</button>
+        <span id="qty-${item.replace(/\s/g, '-')}" class="w-6 text-center font-bold">${customQty[item] || 0}</span>
+        <button class="qty-btn" onclick="updateQty('${item}',1)">+</button>
+      </div>
+    </div>`).join('');
+  return `
+  <section class="py-10 px-4 max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-8">
+      <span class="section-label">Party Favourites</span>
+      <h1 class="text-4xl font-bold text-[#3a1c5a]">Small Chops</h1>
+      <p class="text-gray-500 font-poppins mt-2 text-sm">Grab a ready-made combo or build your own custom box.</p>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 grid sm:grid-cols-2 gap-5">${comboCards}</div>
+      <div class="builder-card rounded-3xl p-6">
+        <h3 class="font-bold text-lg font-poppins mb-1">🛠️ Build Your Box</h3>
+        <p class="text-xs text-purple-200 mb-4">Mix and match, then add your custom package to the cart.</p>
+        ${builderRows}
+        <button onclick="addCustomToCart()" class="w-full mt-5 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold font-poppins transition-all">Add Custom Package</button>
+      </div>
+    </div>
+  </section>`;
+}
+
+let galleryState = { filter: 'All', idx: 0 };
+function renderGalleryPage() {
+  // Build flat image list with category
+  const allImgs = [];
+  cats.forEach(cat => (cat.images || []).forEach((src, i) => {
+    allImgs.push({ src, catId: cat.id, catName: cat.name, icon: cat.icon, idxInCat: i });
+  }));
+  const filters = ['All', ...cats.map(c => c.name)];
+  const filtered = galleryState.filter === 'All' ? allImgs : allImgs.filter(x => x.catName === galleryState.filter);
+  if (!filtered.length) galleryState.idx = 0;
+  if (galleryState.idx >= filtered.length) galleryState.idx = 0;
+  if (galleryState.idx < 0) galleryState.idx = Math.max(0, filtered.length - 1);
+  const getVisible = () => {
+    const len = filtered.length;
+    if (len === 0) return [];
+    if (len <= 5) return filtered.map((_, i) => filtered[i]);
+    // show 5 around center, with center = idx
+    const res = [];
+    for (let off = -2; off <= 2; off++) {
+      let j = (galleryState.idx + off + len) % len;
+      res.push(filtered[j]);
+    }
+    return res;
+  };
+  const visible = getVisible();
+  const pills = filters.slice(0, 8).map(name => `<button class="vd-pill ${galleryState.filter === name ? 'active' : ''}" onclick="gallerySetFilter('${name.replace(/'/g, "\\'")}')">${name}</button>`).join('');
+  const extraCount = filters.length - 8;
+  const viewMorePill = extraCount > 0 ? `<button class="vd-pill-view" onclick="galleryShowAllFilters()">View More →</button>` : '';
+  return `
+  <section class="vd-gallery py-16 sm:py-20 px-4 relative z-10">
+    <div class="max-w-6xl mx-auto text-center">
+      <div class="vd-eyebrow mb-5">GALLERY</div>
+      <h1 class="vd-title">My Visual Diary</h1>
+      <p class="vd-sub mt-4 max-w-[520px] mx-auto">See the world through my lens:<br>adventures in photos and videos</p>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-3">${pills}${viewMorePill}</div>
+    </div>
+    <div class="vd-track-wrap mt-10">
+      <div class="vd-track" id="vdTrack">
+        ${visible.map((item, pos) => {
+          const isCenter = pos === 2 || (visible.length < 5 && pos === Math.floor(visible.length/2));
+          const yt = ytEmbed(item.src);
+          const isVid = isVideo(item.src) || !!yt;
+          return `<div class="vd-card ${isCenter ? 'center' : ''}" onclick="openLightbox('${item.catId}', ${item.idxInCat})">
+            ${mediaHTML(item.src, 'w-full h-full object-cover')}
+            ${isVid ? `<span class="vd-play"><i data-lucide="play" class="w-4 h-4 fill-black"></i></span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="flex items-center justify-center gap-3 -mt-2">
+      <button class="vd-nav" onclick="galleryPrev()" aria-label="Previous">←</button>
+      <button class="vd-nav" onclick="galleryNext()" aria-label="Next">→</button>
+    </div>
+    <div class="max-w-6xl mx-auto mt-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      ${filtered.map(it => `<div class="relative rounded-2xl overflow-hidden cursor-pointer group" onclick="openLightbox('${it.catId}',${it.idxInCat})">
+        ${mediaHTML(it.src, 'w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500')}
+        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-2.5"><span class="text-white text-[11px] font-semibold font-poppins">${it.icon} ${it.catName}</span></div>
+      </div>`).join('')}
+    </div>
+  </section>`;
+}
+function gallerySetFilter(name) { 
+  galleryState.filter = name; 
+  galleryState.idx = 0; 
+  stopGalleryAuto();
+  renderApp(); 
+  startGalleryAuto();
+  setTimeout(()=>{ if(typeof lucide!=='undefined') lucide.createIcons(); }, 50); 
+}
+function galleryShowAllFilters() {
+  const filters = ['All', ...cats.map(c => c.name)];
+  const html = filters.map(n => `<button class="vd-pill ${galleryState.filter===n?'active':''}" onclick="gallerySetFilter('${n.replace(/'/g, "\\'")}');closeFilterModal()">${n}</button>`).join('');
+  const mod = document.createElement('div');
+  mod.id = 'filterModal';
+  mod.className = 'modal-overlay active';
+  mod.innerHTML = `<div class="modal" style="max-width:520px;"><div class="modal-header"><div class="modal-title">All Categories</div><button class="modal-close" onclick="closeFilterModal()">×</button></div><div class="modal-body flex flex-wrap gap-2">${html}</div></div>`;
+  mod.onclick = (e)=>{ if(e.target===mod) closeFilterModal(); };
+  document.body.appendChild(mod);
+  document.body.style.overflow='hidden';
+}
+function closeFilterModal(){ const m=document.getElementById('filterModal'); if(m) m.remove(); document.body.style.overflow=''; }
+function getGalleryFiltered(){
+  if(galleryState.filter==='All'){ const arr=[]; cats.forEach(c=>(c.images||[]).forEach((src,i)=>arr.push({src,catId:c.id,catName:c.name,icon:c.icon,idxInCat:i}))); return arr; }
+  const cat=cats.find(c=>c.name===galleryState.filter); if(!cat) return []; return (cat.images||[]).map((src,i)=>({src,catId:cat.id,catName:cat.name,icon:cat.icon,idxInCat:i}));
+}
+function galleryNext(){ 
+  const list=getGalleryFiltered(); const total=list.length; if(total<=1) return;
+  galleryState.idx=(galleryState.idx+1)%total; 
+  stopGalleryAuto(); updateGalleryDOM(); startGalleryAuto();
+}
+function galleryPrev(){ 
+  const list=getGalleryFiltered(); const total=list.length; if(total<=1) return;
+  galleryState.idx=(galleryState.idx-1+total)%total; 
+  stopGalleryAuto(); updateGalleryDOM(); startGalleryAuto();
+}
+function updateGalleryDOM(){
+  if(currentPage!=='gallery'){ renderApp(); return; }
+  const y=window.scrollY;
+  const html=renderGalleryPage();
+  document.getElementById('app').innerHTML=html+renderFooter();
+  if(typeof lucide!=='undefined') lucide.createIcons();
+  window.scrollTo(0,y);
+  updateCartUI();
+}
+function startGalleryAuto(){
+  stopGalleryAuto();
+  if(currentPage!=='gallery') return;
+  const list=getGalleryFiltered(); if(list.length<=1) return;
+  galleryAutoTimer=setInterval(()=>{
+    const l=getGalleryFiltered(); if(l.length<=1) return;
+    galleryState.idx=(galleryState.idx+1)%l.length;
+    updateGalleryDOM();
+  },3500);
+}
+function stopGalleryAuto(){ if(galleryAutoTimer){ clearInterval(galleryAutoTimer); galleryAutoTimer=null; } }
+
+
+
+function renderFooter() {
+  const c = C.contact;
+  return `
+  <footer class="site-footer mt-16">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+      <div>
+        <div class="footer-brand mb-4">Moye's Treats</div>
+        <p class="text-sm leading-relaxed mb-4">Premium homemade treats crafted with love in Minna. Parfaits, banana bread, small chops & more.</p>
+        <div class="flex gap-3">
+          <a href="https://instagram.com/${c.instagram}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors"><i class="fa-brands fa-instagram text-white"></i></a>
+          <a href="https://tiktok.com/@${c.tiktok}" target="_blank" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors"><i class="fa-brands fa-tiktok text-white"></i></a>
+          <a href="tel:${c.phone}" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 transition-colors"><i data-lucide="phone" class="w-4 h-4 text-white"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-wider font-poppins">Quick Links</h4>
+        <ul class="space-y-2 text-sm">
+          <li><button onclick="setPage('home')" class="footer-link">Home</button></li>
+          <li><button onclick="setPage('menu')" class="footer-link">Menu</button></li>
+          <li><button onclick="setPage('gallery')" class="footer-link">Gallery</button></li>
+          <li><button onclick="setPage('smallchops')" class="footer-link">Small Chops</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-wider font-poppins">Contact</h4>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-amber-400"></i> ${c.displayPhone}</li>
+          <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i> ${c.location}, Nigeria</li>
+          <li class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-amber-400"></i> Open Monday - Saturday</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-wider font-poppins">Trust</h4>
+        <ul class="space-y-2 text-sm">
+          ${['Made Fresh Daily', 'Premium Ingredients', 'Fast Minna Delivery', 'Secure Packaging'].map(x => `<li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i> ${x}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-6 text-center text-xs text-purple-300">
+      © ${new Date().getFullYear()} Moye's Treats. All rights reserved. Crafted with <span class="heart-anim text-amber-500">♥</span> in Minna ·
+      <a href="admin.html" class="footer-link underline opacity-60">Admin</a>
+    </div>
+  </footer>`;
+}
+
+/* ===================== HERO SLIDESHOW ===================== */
+function heroShow(i) {
+  heroIdx = i;
+  document.querySelectorAll('#heroSlides .hero-slide').forEach((el, j) => el.classList.toggle('on', j === i));
+  document.querySelectorAll('#heroDots .hero-dot').forEach((el, j) => el.classList.toggle('on', j === i));
+  const c = heroCats[i], cap = document.getElementById('heroCap');
+  if (!c || !cap) return;
+  const range = catPriceRange(c);
+  cap.innerHTML = `<div class="text-xs text-gray-500 font-poppins">${c.name}</div>
+    <div class="font-extrabold text-[#4a2c6a] font-poppins text-lg">${range ? 'From ' + fmt(range.min) : 'Build Your Box'}</div>`;
+}
+function stopHeroSlideshow() { if (heroTimer) { clearInterval(heroTimer); heroTimer = null; } }
+function startHeroSlideshow() {
+  stopHeroSlideshow();
+  if (!heroCats.length) return;
+  heroShow(0);
+  if (heroCats.length > 1) heroTimer = setInterval(() => heroShow((heroIdx + 1) % heroCats.length), 4000);
+}
+function heroRestart() {
+  stopHeroSlideshow();
+  if (heroCats.length > 1) heroTimer = setInterval(() => heroShow((heroIdx + 1) % heroCats.length), 4000);
+}
+
+/* ===================== TEMU-STYLE PRODUCT PAGE ===================== */
+let pp = { id: null, v: 0, q: 1, img: 0 };
+let suppressHashRender = false;
+
+function openPreview(id) {
+  if (!catMap[id]) return;
+  location.hash = '#/p/' + id;
+}
+window.addEventListener('hashchange', routeHash);
+
+function routeHash() {
+  if (suppressHashRender) { suppressHashRender = false; return; }
+  const m = (location.hash || '').match(/^#\/p\/([A-Za-z0-9_-]+)/);
+  if (m && catMap[m[1]]) {
+    stopHeroSlideshow();
+    if (pp.id !== m[1]) pp = { id: m[1], v: 0, q: 1, img: 0 };
+    pushRecentlyViewed(m[1]);
+    renderProductPage();
+    window.scrollTo(0, 0);
+  } else if (!location.hash.startsWith('#/p/')) {
+    // user pressed Back to home/menu etc - re-render current page
+    if (document.getElementById('app')) renderApp();
+  }
+}
+
+function ppBack() {
+  if (history.length > 1) history.back();
+  else { suppressHashRender = true; location.hash = ''; renderApp(); }
+}
+
+function ppShare(btn) {
+  if (navigator.clipboard) navigator.clipboard.writeText(location.href)
+    .then(() => { btn.textContent = '✓'; setTimeout(() => btn.textContent = '🔗', 1400); }).catch(() => {});
+}
+
+function ppAdd(buyNow) {
+  const cat = catMap[pp.id], v = (cat.items || [])[pp.v];
+  if (!v || v.available === false) return;
+  addToCart({ type: 'menu', productId: cat.id, itemName: v.name, price: onSale(v) ? v.salePrice : v.price, was: onSale(v) ? v.price : 0, qty: pp.q, thumb: catCover(cat) });
+  if (navigator.vibrate) navigator.vibrate(25);
+  showToast('Added to Cart!', `${cat.name} — ${v.name} ×${pp.q}`);
+  if (buyNow) openCartModal();
+}
+
+function ppWhatsApp() {
+  const cat = catMap[pp.id], v = (cat.items || [])[pp.v] || {};
+  const unit = onSale(v) ? v.salePrice : v.price;
+  const ph = '234' + C.contact.phone.replace(/^0/, '');
+  const msg = `Hi Moye's Treats! I'd like to order:
+${cat.name} — ${v.name || 'Standard'} × ${pp.q}
+Total: ${fmt(unit * pp.q)}`;
+  window.open(`https://wa.me/${ph}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function renderProductPage() {
+  const cat = catMap[pp.id];
+  const items = cat.items || [];
+  const v = items[pp.v] || items[0] || { name: '', price: 0 };
+  const sale = onSale(v);
+  const unit = sale ? v.salePrice : v.price;
+  const media = (cat.images && cat.images.length ? cat.images : [catCover(cat)]);
+  const cur = media[Math.min(pp.img, media.length - 1)];
+  const related = cats.filter(c => c.id !== cat.id).slice(0, 6);
+
+  document.getElementById('app').innerHTML = `
+  <div class="max-w-5xl mx-auto px-4 py-4 relative z-10">
+    <div class="flex items-center gap-3 mb-4">
+      <button onclick="ppBack()" class="w-10 h-10 rounded-xl bg-white border border-[#e9d5ff] text-[#4a2c6a] flex items-center justify-center hover:bg-[#f3e8ff] transition-all"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+      <nav class="text-xs text-gray-400 font-poppins truncate">Home / Menu / <span class="text-[#4a2c6a] font-semibold">${cat.name}</span></nav>
+      <button onclick="ppShare(this)" class="ml-auto w-10 h-10 rounded-xl bg-white border border-[#e9d5ff] text-[#4a2c6a] flex items-center justify-center hover:bg-[#f3e8ff] transition-all" title="Copy link">🔗</button>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-3xl border border-[#e9d5ff] overflow-hidden self-start">
+        <div class="relative aspect-square bg-[#faf5ff]">
+          ${mediaHTML(cur, 'w-full h-full object-cover')}
+          ${sale ? `<span class="pv-badge" style="top:14px;">-${discountPct(v)}%</span>` : ''}
+        </div>
+        ${media.length > 1 ? `
+        <div class="flex gap-2 p-3 overflow-x-auto no-scrollbar">
+          ${media.map((m, i) => `<button onclick="pp.img=${i};renderProductPage()" class="w-16 h-16 rounded-xl overflow-hidden border-2 shrink-0 bg-[#faf5ff] ${i === pp.img ? 'border-[#4a2c6a]' : 'border-transparent'}">${mediaHTML(m, 'w-full h-full object-cover')}</button>`).join('')}
+        </div>` : ''}
+      </div>
+
+      <div class="bg-white rounded-3xl border border-[#e9d5ff] p-5 sm:p-6 self-start">
+        <div class="flex items-start justify-between gap-3">
+          <h1 class="text-2xl font-bold text-[#3a1c5a] font-poppins">${cat.icon} ${cat.name}</h1>
+          ${cat.featuredLabel ? `<span class="shrink-0" style="background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#fff;font-size:.65rem;font-weight:700;padding:5px 12px;border-radius:999px;text-transform:uppercase;">${cat.featuredLabel}</span>` : ''}
+        </div>
+        ${cat.subtitle ? `<p class="text-sm text-purple-500 font-poppins mt-1">${cat.subtitle}</p>` : ''}
+        ${cat.sold ? `<div class="text-xs text-gray-400 mt-2 font-poppins">🔥 ${cat.sold}+ sold · ★★★★★</div>` : ''}
+
+        <div class="flex items-end gap-2 mt-4 flex-wrap">
+          <span class="text-3xl font-extrabold text-[#4a2c6a] font-poppins">${fmt(unit)}</span>
+          ${sale ? `<span class="text-gray-400 line-through font-poppins">${fmt(v.price)}</span><span class="text-red-500 font-extrabold text-sm font-poppins">-${discountPct(v)}%</span>` : ''}
+        </div>
+        ${cat.desc ? `<p class="text-sm text-gray-600 mt-3 leading-relaxed">${cat.desc}</p>` : ''}
+
+        ${items.length ? `
+        <div class="mt-5">
+          <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 font-poppins">Choose option</div>
+          <div class="flex flex-wrap gap-2">
+            ${items.map((it, i) => `<button class="pv-chip ${i === pp.v ? 'active' : ''} ${it.available === false ? 'off' : ''}" ${it.available === false ? 'disabled' : `onclick="pp.v=${i};pp.q=1;pp.img=0;renderProductPage()"`}>
+              <span class="block text-sm font-bold text-[#3a1c5a] font-poppins">${it.name}</span>
+              <span class="block text-xs ${onSale(it) ? 'text-red-500 font-bold' : 'text-gray-500'}">${fmt(onSale(it) ? it.salePrice : it.price)}</span>
+            </button>`).join('')}
+          </div>
+        </div>` : ''}
+
+        <div class="flex items-center gap-4 mt-5 flex-wrap">
+          <div class="pp-qty">
+            <button onclick="if(pp.q>1){pp.q--;renderProductPage()}">−</button>
+            <span class="font-bold text-[#3a1c5a] font-poppins w-6 text-center">${pp.q}</span>
+            <button onclick="pp.q++;renderProductPage()">+</button>
+          </div>
+          <div class="text-sm text-gray-500 font-poppins">Total: <b class="text-[#4a2c6a] text-lg">${fmt(unit * pp.q)}</b></div>
+        </div>
+
+        ${cat.note ? `<div class="mt-4 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 font-poppins">ℹ ${cat.note}</div>` : ''}
+
+        <div class="mt-5">
+          <button onclick="ppAdd(false)" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#4a2c6a] to-[#7c5c9c] text-white font-bold font-poppins shadow-lg shadow-purple-900/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"><i data-lucide="shopping-bag" class="w-4 h-4"></i> Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    ${related.length ? `
+    <div class="mt-10">
+      <h2 class="text-xl font-bold text-[#3a1c5a] font-poppins mb-4">You may also like</h2>
+      <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">${related.map(miniCard).join('')}</div>
+    </div>` : ''}
+  </div>` + renderFooter();
+  lucide.createIcons();
+  updateCartUI();
+}
+
+/* ===================== CART ===================== */
+
+function addToCart(entry) {
+  const key = e => (e.type || '') + (e.productId || '') + (e.itemName || e.name || '');
+  const ex = cart.find(i => key(i) === key(entry));
+  if (ex) ex.qty = (ex.qty || 1) + (entry.qty || 1);
+  else cart.push(Object.assign({ id: String(Date.now() + Math.random()), was: 0, thumb: '', qty: 1 }, entry));
+  updateCartUI();
+}
+function addMenuItem(productId, itemName, price) {
+  const cat = catById(productId); const v = (cat.items || []).find(x => x.name === itemName);
+  addToCart({ type: 'menu', productId, itemName, price: effPrice(v), was: onSale(v) ? v.price : 0, qty: 1, thumb: catCover(cat) });
+  showToast('Added to Cart!', `${cat.name} — ${itemName}`);
+}
+function addCombo(name) {
+  const cb = (C.combos || []).find(c => c.name === name); if (!cb) return;
+  addToCart({ type: 'combo', name: cb.name, price: cb.price, items: cb.items, thumb: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300' });
+  showToast('Combo Added!', `${name} added to your order.`);
+}
+function addCustomToCart() {
+  const hasItems = Object.values(customQty).some(q => q > 0);
+  if (!hasItems) { showToast('Empty Package', 'Please select at least one item.', true); return; }
+  let total = 0, items = {};
+  for (const [item, qty] of Object.entries(customQty)) if (qty > 0) { items[item] = qty; total += qty * C.smallChopsPrices[item]; }
+  addToCart({ type: 'custom', name: 'Custom Package', price: total, items, thumb: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300' });
+  for (const k in customQty) customQty[k] = 0;
+  cats; // no-op
+  renderApp();
+  showToast('Custom Package Added!', 'Your custom selection has been added.');
+}
+function updateQty(item, change) {
+  customQty[item] = Math.max(0, (customQty[item] || 0) + change);
+  const el = document.getElementById('qty-' + item.replace(/\s/g, '-'));
+  if (el) el.textContent = customQty[item];
+}
+function updateCartQty(cartId, delta) {
+  const item = cart.find(i => i.id === cartId); if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(i => i.id !== cartId);
+  updateCartUI();
+}
+function removeFromCart(cartId) { cart = cart.filter(i => i.id !== cartId); updateCartUI(); }
+
+function getCartTotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+function getCartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+function getCustomSubtotal() { return cart.filter(i => i.type === 'custom').reduce((s, i) => s + i.price * i.qty, 0); }
+function getPackagingFee() {
+  const t = getCustomSubtotal();
+  if (t === 0) return 0;
+  if (t >= 1000 && t <= 4999) return 600;
+  if (t >= 5000 && t <= 9999) return 1000;
+  if (t >= 10000 && t <= 14999) return 1200;
+  if (t >= 15000 && t <= 20000) return 1500;
+  if (t > 20000) return 2500;
+  return 0;
+}
+function getDeliveryFee() { return getDeliveryFeeLive(); }
+function getSavings() { return cart.reduce((s, i) => s + ((i.was && i.was > i.price) ? (i.was - i.price) * i.qty : 0), 0); }
+function getDiscount() { return appliedPromo ? Math.round(getCartTotal() * appliedPromo.percent / 100) : 0; }
+function getGrandTotal() { return Math.max(0, getCartTotal() + getPackagingFee() + getDeliveryFee() - getDiscount()); }
+
+function updateCartUI() {
+  try { localStorage.setItem('moyes_cart_v1', JSON.stringify(cart)); } catch (e) {}
+  document.getElementById('cartBarTotal').textContent = fmt(getGrandTotal());
+  document.getElementById('cartBar').classList.toggle('active', getCartCount() > 0);
+  document.querySelectorAll('.cart-badge').forEach(b => {
+    b.textContent = getCartCount();
+    b.style.display = getCartCount() > 0 ? 'flex' : 'none';
+    b.classList.remove('badge-pop'); void b.offsetWidth; b.classList.add('badge-pop');
+  });
+  if (document.getElementById('cartModal').classList.contains('active')) renderCartModal();
+  if (document.getElementById('checkoutModal').classList.contains('active')) renderCheckoutSummary();
+}
+
+function cartThumb(item) {
+  if (item.thumb) return item.thumb;
+  if (item.type === 'menu' && catMap[item.productId]) return catCover(catMap[item.productId]);
+  return 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=200';
+}
+function renderCartModal() {
+  const container = document.getElementById('cartModalBody');
+  if (!cart.length) {
+    container.innerHTML = `<div class="text-center py-10"><div class="text-5xl mb-3">🛒</div><p class="text-gray-500 font-medium font-poppins">Your cart is empty</p><p class="text-gray-400 text-sm mt-1 font-poppins">Add some treats to get started!</p></div>`;
+    return;
+  }
+  const rows = cart.map(item => {
+    let title, subtitle;
+    if (item.type === 'menu') { title = item.itemName; subtitle = (catMap[item.productId] || {}).name || ''; }
+    else if (item.type === 'combo') { title = item.name; subtitle = Object.entries(item.items).map(([n, q]) => `${q} ${n}`).join(', '); }
+    else { title = item.name; subtitle = Object.entries(item.items).map(([n, q]) => `${q}× ${n}`).join(', '); }
+    return `
+    <div class="flex gap-3 py-3 border-b border-dashed border-purple-200">
+      <img src="${cartThumb(item)}" class="ci-thumb" alt="">
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between gap-2">
+          <div class="font-bold text-sm text-[#3a1c5a] font-poppins truncate">${title}</div>
+          <button onclick="removeFromCart('${item.id}')" class="text-gray-300 hover:text-red-500 text-xl leading-none shrink-0" aria-label="Remove">×</button>
+        </div>
+        <div class="text-xs text-purple-500 truncate font-poppins">${subtitle}</div>
+        ${item.was > item.price ? `<div class="text-[11px] mt-0.5 font-poppins"><span class="line-through text-gray-400">${fmt(item.was)}</span> <span class="text-green-600 font-bold">Save ${fmt((item.was - item.price) * item.qty)}</span></div>` : ''}
+        <div class="flex items-center justify-between mt-2">
+          <div class="flex items-center gap-1 bg-gray-50 rounded-full px-1">
+            <button onclick="updateCartQty('${item.id}',-1)" class="w-7 h-7 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 text-sm font-bold">−</button>
+            <span class="w-5 text-center font-semibold text-[#4a2c6a] text-sm">${item.qty}</span>
+            <button onclick="updateCartQty('${item.id}',1)" class="w-7 h-7 rounded-full bg-white border border-purple-200 text-[#4a2c6a] flex items-center justify-center hover:bg-purple-50 text-sm font-bold">+</button>
+          </div>
+          <div class="font-bold text-sm text-[#4a2c6a] font-poppins">${fmt(item.price * item.qty)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const savings = getSavings();
+  const b = C.promotions && C.promotions.banner;
+  const promoUI = appliedPromo
+    ? `<div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2 mt-3">
+        <span class="text-xs font-bold text-green-700 font-poppins">🎁 ${appliedPromo.code} · −${appliedPromo.percent}%</span>
+        <button onclick="appliedPromo=null;renderCartModal();updateCartUI()" class="text-xs text-gray-400 hover:text-red-500 font-poppins">Remove</button>
+       </div>`
+    : (b && b.enabled && b.code ? `
+      <div class="flex gap-2 mt-3">
+        <input id="promoInput" class="form-input !py-2.5" placeholder="Promo code (e.g. ${b.code})" style="text-transform:uppercase;">
+        <button onclick="applyPromo()" class="px-4 rounded-xl bg-[#4a2c6a] text-white text-xs font-bold font-poppins hover:bg-[#3a1c5a]">Apply</button>
+      </div>` : '');
+  container.innerHTML = `
+    <div class="space-y-1 mb-4">${rows}</div>
+    ${promoUI}
+    <div class="mt-4 bg-[#faf5ff] rounded-2xl p-4">
+      <div class="fee-line"><span>Subtotal</span><span>${fmt(getCartTotal())}</span></div>
+      ${savings > 0 ? `<div class="fee-line" style="color:var(--success);font-weight:600;"><span>You save</span><span>−${fmt(savings)}</span></div>` : ''}
+      ${getDiscount() > 0 ? `<div class="fee-line" style="color:var(--success);font-weight:600;"><span>Promo (${appliedPromo.code})</span><span>−${fmt(getDiscount())}</span></div>` : ''}
+      <div class="fee-line"><span>Packaging</span><span>${fmt(getPackagingFee())}</span></div>
+      <div class="fee-line"><span>Delivery</span><span>${deliveryMethod === 'delivery' && selectedLocation ? fmt(getDeliveryFee()) : 'at checkout'}</span></div>
+      <div class="fee-line total"><span>Total</span><span>${fmt(getGrandTotal())}</span></div>
+    </div>
+    <button onclick="closeCartModal();openCheckoutModal()" class="w-full mt-4 py-3.5 rounded-xl bg-gradient-to-r from-[#4a2c6a] to-[#7c5c9c] text-white font-bold font-poppins shadow-lg shadow-purple-900/25 hover:-translate-y-0.5 transition-all">Checkout · ${fmt(getGrandTotal())}</button>`;
+}
+function applyPromo() {
+  const el = document.getElementById('promoInput');
+  const code = (el.value || '').trim().toUpperCase();
+  const b = C.promotions && C.promotions.banner;
+  if (!code) { showToast('Enter a Code', 'Type your promo code first.', true); return; }
+  if (b && b.enabled && b.code && code === b.code.toUpperCase()) {
+    appliedPromo = { code: b.code.toUpperCase(), percent: b.discountPercent || 0 };
+    showToast('Promo Applied! 🎉', `${code} — ${appliedPromo.percent}% off your order.`);
+    renderCartModal(); updateCartUI();
+  } else showToast('Invalid Code', 'That promo code is not active right now.', true);
+}
+
+/* ===================== CHECKOUT ===================== */
+function openCartModal() { renderCartModal(); document.getElementById('cartModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeCartModal() { document.getElementById('cartModal').classList.remove('active'); document.body.style.overflow = ''; }
+function openCheckoutModal() {
+  if (!cart.length) { showToast('Cart Empty', 'Add some treats first!', true); return; }
+  ['firstName', 'lastName', 'phone', 'houseNumber', 'street', 'landmark', 'notes'].forEach(k => {
+    const el = document.getElementById(k); if (el && savedCustomer[k]) el.value = savedCustomer[k];
+  });
+  const sel = document.getElementById('deliveryLocation');
+  sel.innerHTML = '<option value="">▼ Select your area</option>' + Object.keys(C.deliveryFees).sort().map(k => `<option value="${k}">${k}</option>`).join('');
+  if (savedCustomer.deliveryMethod === 'delivery') {
+    deliveryMethod = 'delivery';
+    document.getElementById('delOptPickup').classList.remove('active');
+    document.getElementById('delOptDelivery').classList.add('active');
+    if (savedCustomer.location && C.deliveryFees[savedCustomer.location]) { sel.value = savedCustomer.location; selectedLocation = savedCustomer.location; }
+    syncDeliveryState();
+    if (selectedLocation) onLocationChange(sel);
+  } else {
+    syncDeliveryState();
+  }
+  renderCheckoutSummary();
+  document.getElementById('checkoutModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeCheckoutModal() { document.getElementById('checkoutModal').classList.remove('active'); document.body.style.overflow = ''; }
+function renderCheckoutSummary() {
+  const el = document.getElementById('checkoutSummary'); if (!el) return;
+  const savings = getSavings();
+  el.innerHTML = `
+    <div class="text-xs font-bold text-gray-500 uppercase tracking-wider font-poppins mb-2">Order Summary</div>
+    ${cart.map(i => {
+      const t = i.type === 'menu' ? `${(catMap[i.productId] || {}).name || ''} — ${i.itemName}` : i.name;
+      return `<div class="flex justify-between text-xs text-gray-600 py-0.5 font-poppins"><span class="truncate pr-2">${t} ×${i.qty}</span><span class="shrink-0">${fmt(i.price * i.qty)}</span></div>`;
+    }).join('')}
+    <div class="fee-line mt-2"><span>Subtotal</span><span>${fmt(getCartTotal())}</span></div>
+    ${savings > 0 ? `<div class="fee-line" style="color:var(--success);font-weight:600;"><span>Savings</span><span>−${fmt(savings)}</span></div>` : ''}
+    ${getDiscount() > 0 ? `<div class="fee-line" style="color:var(--success);font-weight:600;"><span>Promo (${appliedPromo.code})</span><span>−${fmt(getDiscount())}</span></div>` : ''}
+    <div class="fee-line"><span>Packaging</span><span>${fmt(getPackagingFee())}</span></div>
+    <div class="fee-line"><span>Delivery</span><span>${fmt(getDeliveryFee())}</span></div>
+    <div class="fee-line total"><span>Total</span><span>${fmt(getGrandTotal())}</span></div>`;
+}
+function getDeliveryFeeLive() {
+  const selEl = document.getElementById('deliveryLocation');
+  const locFromUI = selEl ? selEl.value : '';
+  const effectiveLoc = selectedLocation || locFromUI;
+  return (deliveryMethod === 'delivery' && effectiveLoc) ? (C.deliveryFees[effectiveLoc] || 0) : 0;
+}
+function syncDeliveryState() {
+  const selEl = document.getElementById('deliveryLocation');
+  const locGroup = document.getElementById('deliveryLocationGroup');
+  const addrGroup = document.getElementById('addressGroup');
+  const feeEl = document.getElementById('deliveryFeeDisplay');
+  const locFromUI = selEl ? selEl.value : '';
+  // keep selectedLocation in sync if UI has value
+  if (deliveryMethod === 'delivery') {
+    if (locFromUI) selectedLocation = locFromUI;
+    if (locGroup) locGroup.style.display = 'block';
+    if (addrGroup) addrGroup.style.display = 'block';
+    if (selectedLocation && C.deliveryFees[selectedLocation]) {
+      if (feeEl) { feeEl.textContent = `Delivery to ${selectedLocation}: ${fmt(C.deliveryFees[selectedLocation])}`; feeEl.style.display = 'block'; }
+    } else {
+      if (feeEl) feeEl.style.display = 'none';
+    }
+  } else {
+    if (locGroup) locGroup.style.display = 'none';
+    if (addrGroup) addrGroup.style.display = 'none';
+    if (feeEl) feeEl.style.display = 'none';
+    // DO NOT clear selectedLocation - keep it so toggling back restores fee. Fee is 0 anyway because deliveryMethod != delivery.
+  }
+}
+function selectDelivery(el, method) {
+  deliveryMethod = method;
+  if (el && el.parentElement) {
+    el.parentElement.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+  }
+  syncDeliveryState();
+  updateCartUI();
+}
+function onLocationChange(sel) {
+  selectedLocation = sel ? sel.value : '';
+  syncDeliveryState();
+  updateCartUI();
+}
+function submitOrder(e) {
+  e.preventDefault();
+  if (!cart.length) { showToast('Cart Empty', 'Add some treats first.', true); return; }
+  const d = Object.fromEntries(new FormData(e.target).entries());
+  const lines = cart.map((it, idx) => {
+    const title = it.type === 'menu' ? `${(catMap[it.productId] || {}).name || ''} — ${it.itemName}` : it.name;
+    const sub = it.items ? ` (${Object.entries(it.items).map(([n, q]) => `${q}× ${n}`).join(', ')})` : '';
+    return `${idx + 1}. ${title}${sub} ×${it.qty} — ${fmt(it.price * it.qty)}`;
+  });
+  const subtotal = getCartTotal(), pack = getPackagingFee(), del = getDeliveryFee(), disc = getDiscount(), total = getGrandTotal();
+  const addr = deliveryMethod === 'delivery' ? `Delivery: ${d.houseNumber || ''} ${d.street || ''}, ${selectedLocation}${d.landmark ? ' (Near: ' + d.landmark + ')' : ''}` : 'Pickup';
+  const msg = `🛍️ *NEW ORDER — MOYE'S TREATS*\n\n${lines.join('\n')}\n\nSubtotal: ${fmt(subtotal)}`
+    + (disc ? `\nPromo (${appliedPromo.code}): −${fmt(disc)}` : '')
+    + `\nPackaging: ${fmt(pack)}\nDelivery: ${fmt(del)}\n*TOTAL: ${fmt(total)}*\n\n👤 ${d.firstName} ${d.lastName}\n📞 ${d.phone}\n🚚 ${addr}`
+    + (d.notes ? `\n📝 ${d.notes}` : '');
+  logOrder({ id: 'MT-' + Date.now().toString(36).toUpperCase(), date: new Date().toISOString(), customer: d, deliveryMethod, location: selectedLocation, items: cart.map(i => ({ title: i.type === 'menu' ? `${(catMap[i.productId] || {}).name || ''} — ${i.itemName}` : i.name, qty: i.qty, price: i.price })), totals: { subtotal, discount: disc, packaging: pack, delivery: del, total }, status: 'new' });
+  savedCustomer = Object.assign({}, savedCustomer, d, { deliveryMethod, location: selectedLocation });
+  try { localStorage.setItem('moyesCustomer', JSON.stringify(savedCustomer)); } catch (e2) {}
+  window.open(`https://wa.me/234${C.contact.phone.replace(/^0/, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+  cart = []; appliedPromo = null; updateCartUI();
+  closeCheckoutModal();
+  showToast('Order Sent! 🎉', 'We will confirm your order on WhatsApp.');
+}
+function logOrder(order) {
+  try {
+    const arr = JSON.parse(localStorage.getItem('moyes_orders_v1') || '[]');
+    arr.unshift(order);
+    localStorage.setItem('moyes_orders_v1', JSON.stringify(arr.slice(0, 200)));
+  } catch (e) {}
+}
+
+/* ===================== LIGHTBOX / SIDEBAR / TOAST / PWA ===================== */
+function openLightbox(catId, idx) {
+  lightboxCategory = catId; lightboxIndex = idx;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  updateLightbox();
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); document.body.style.overflow = ''; document.getElementById('lightboxMedia').innerHTML = ''; }
+function closeLightboxOnBackground(e) { if (e.target.closest('.lightbox-content') || e.target.closest('button')) return; closeLightbox(); }
+function updateLightbox() {
+  const cat = catById(lightboxCategory); if (!cat) return;
+  const src = cat.images[lightboxIndex];
+  const yt = ytEmbed(src);
+  document.getElementById('lightboxMedia').innerHTML = yt
+    ? `<iframe src="${yt}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
+    : isVideo(src) ? `<video src="${src}" controls autoplay style="max-width:90vw;max-height:80vh;border-radius:12px;"></video>`
+    : `<img src="${src}" alt="">`;
+  document.getElementById('lightboxCounter').textContent = `${lightboxIndex + 1} / ${cat.images.length}`;
+}
+function lightboxPrev() { const c = catById(lightboxCategory); lightboxIndex = (lightboxIndex - 1 + c.images.length) % c.images.length; updateLightbox(); }
+function lightboxNext() { const c = catById(lightboxCategory); lightboxIndex = (lightboxIndex + 1) % c.images.length; updateLightbox(); }
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (lb && lb.classList.contains('active')) {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lightboxPrev();
+    if (e.key === 'ArrowRight') lightboxNext();
+  }
+  if (e.key === 'Escape') { closeCartModal(); closeCheckoutModal(); if(location.hash.startsWith('#/p/')) ppBack(); }
+});
+function openMobileSidebar() { document.getElementById('mobileSidebar').classList.add('active'); document.body.classList.add('sidebar-open'); }
+function closeMobileSidebar() { document.getElementById('mobileSidebar').classList.remove('active'); document.body.classList.remove('sidebar-open'); }
+function showToast(title, message, isError = false) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMessage').textContent = message;
+  const icon = document.getElementById('toastIcon');
+  icon.textContent = isError ? '!' : '✓';
+  icon.style.background = isError ? 'var(--danger)' : 'var(--success)';
+  toast.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--success)';
+  toast.classList.add('active');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('active'), 2800);
+}
+let deferredPrompt = null;
+let deferredInstallPrompt = null;
+let galleryAutoTimer = null;
+
+function isIos() { return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+function isInStandalone() { return window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches; }
+function isIOSDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isMoyesAppInstalled() { return isInStandalone(); }
+function openIosInstall() { document.getElementById('iosInstallModal')?.classList.add('active'); document.body.style.overflow='hidden'; if(typeof lucide!=='undefined') lucide.createIcons(); }
+function closeIosInstall() { document.getElementById('iosInstallModal')?.classList.remove('active'); document.body.style.overflow=''; }
+
+function showIOSInstallGuide() {
+  if (document.getElementById('iosInstallGuide')) return;
+  const guide = document.createElement('div');
+  guide.id = 'iosInstallGuide';
+  guide.innerHTML = `
+    <div class="ios-install-backdrop" onclick="closeIOSInstallGuide()"></div>
+    <div class="ios-install-modal">
+      <button class="ios-install-close" onclick="closeIOSInstallGuide()" aria-label="Close">×</button>
+      <div class="ios-install-logo"><img src="/favicon.svg" alt="Moye's Treats"></div>
+      <h2>Add Moye's Treats to your Home Screen</h2>
+      <p>Install Moye's Treats for quick access from your iPhone or iPad Home Screen.</p>
+      <div class="ios-install-step"><div class="ios-step-number">1</div><div><strong>Tap Share</strong><span>Tap the Share button <span class="ios-share-symbol">↑</span> in Safari.</span></div></div>
+      <div class="ios-install-step"><div class="ios-step-number">2</div><div><strong>Choose \"Add to Home Screen\"</strong><span>Scroll through the Share menu and select <strong>Add to Home Screen</strong>.</span></div></div>
+      <div class="ios-install-step"><div class="ios-step-number">3</div><div><strong>Tap \"Add\"</strong><span>Moye's Treats will appear on your Home Screen.</span></div></div>
+      <button class="ios-install-done" onclick="closeIOSInstallGuide()">Got it</button>
+    </div>
+  `;
+  document.body.appendChild(guide);
+}
+function closeIOSInstallGuide(){ const g=document.getElementById('iosInstallGuide'); if(g) g.remove(); }
+function showMoyesInstallUnavailable(){
+  if(document.getElementById('moyesInstallUnavailable')) return;
+  const n=document.createElement('div'); n.id='moyesInstallUnavailable';
+  n.innerHTML=`<div class="ios-install-backdrop" onclick="closeMoyesInstallUnavailable()"></div><div class="ios-install-modal"><button class="ios-install-close" onclick="closeMoyesInstallUnavailable()">×</button><div class="ios-install-logo"><img src="/favicon.svg" alt="Moye's Treats"></div><h2>Install Moye's Treats</h2><p>Your browser doesn't currently offer the automatic installation option.</p><p>Try opening <strong>moyestreats.com</strong> in Chrome or Safari and use <strong>Add to Home Screen</strong> or <strong>Install App</strong>.</p><button class="ios-install-done" onclick="closeMoyesInstallUnavailable()">Got it</button></div>`;
+  document.body.appendChild(n);
+}
+function closeMoyesInstallUnavailable(){ const n=document.getElementById('moyesInstallUnavailable'); if(n) n.remove(); }
+
+function initPWA() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (nw) nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            document.getElementById('moyesUpdateNotice')?.classList.add('show');
+          }
+        });
+      });
+    }).catch(()=>{});
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    deferredInstallPrompt = e;
+    if (!isMoyesAppInstalled()) document.getElementById('installAppButton')?.classList.add('show');
+  });
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null; deferredInstallPrompt = null;
+    document.getElementById('installAppButton')?.classList.remove('show');
+  });
+  if (isMoyesAppInstalled()) document.getElementById('installAppButton')?.classList.remove('show');
+}
+async function installMoyesApp(){
+  if (isMoyesAppInstalled()) { document.getElementById('installAppButton')?.classList.remove('show'); return; }
+  if (isIOSDevice() && !isMoyesAppInstalled()) { showIOSInstallGuide(); return; }
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    try{ const {outcome}=await deferredInstallPrompt.userChoice; console.log("install",outcome);}catch(e){}
+    deferredInstallPrompt=null; deferredPrompt=null;
+    document.getElementById('installAppButton')?.classList.remove('show');
+    return;
+  }
+  showMoyesInstallUnavailable();
+}
+window.addEventListener('load', ()=>{
+  const b=document.getElementById('installAppButton'); if(!b) return;
+  if(isMoyesAppInstalled()){ b.classList.remove('show'); return; }
+  if(isIOSDevice() && !isMoyesAppInstalled()){
+    b.classList.add('show');
+    b.innerHTML='<span class="pwa-install-icon"><i data-lucide="download" class="w-4 h-4"></i></span><span><strong>Install App</strong><small>Add to Home Screen</small></span>';
+    if(typeof lucide!=='undefined') lucide.createIcons();
+  }
+});
+
+</script>
+</body>
+</html>

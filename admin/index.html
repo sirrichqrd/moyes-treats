@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moye's Treats — Admin</title>
+  <meta name="robots" content="noindex">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="shortcut icon" type="image/svg" href="favicon.svg">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root { --primary:#4a2c6a; --primary-dark:#3a1c5a; --border:#e9d5ff; --bg:#f3e8ff; }
+    body { font-family:'Poppins',sans-serif; background:var(--bg); }
+    .a-switch { position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
+    .a-switch input { opacity:0; width:0; height:0; }
+    .a-switch span { position:absolute; inset:0; background:#ddd; border-radius:999px; transition:.2s; cursor:pointer; }
+    .a-switch span:before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
+    .a-switch input:checked + span { background:#10b981; }
+    .a-switch input:checked + span:before { transform:translateX(18px); }
+    .a-input { width:100%; padding:9px 12px; border:2px solid var(--border); border-radius:10px; font-size:0.85rem; background:#fff; font-family:'Poppins',sans-serif; }
+    .a-input:focus { outline:none; border-color:#7c5c9c; }
+    .a-overlay { position:fixed; inset:0; background:rgba(31,31,46,.55); backdrop-filter:blur(8px); z-index:100; display:none; padding:20px; overflow-y:auto; }
+    .a-overlay.active { display:flex; }
+    .a-modal { background:#fff; border-radius:18px; max-width:760px; width:100%; padding:22px; box-shadow:0 25px 60px rgba(0,0,0,.25); margin:auto; }
+    .a-btn { padding:9px 16px; border-radius:10px; font-size:0.8rem; font-weight:700; cursor:pointer; border:none; transition:.2s; }
+    .btn-primary { background:var(--primary); color:#fff; } .btn-primary:hover { background:var(--primary-dark); }
+    .btn-amber { background:#f59e0b; color:#fff; } .btn-amber:hover { background:#d97706; }
+    .btn-ghost { background:#f3e8ff; color:var(--primary); }
+    .btn-danger { background:#fee2e2; color:#dc2626; }
+    #aToast { position:fixed; top:16px; right:16px; z-index:200; background:#fff; border-left:4px solid #10b981; border-radius:12px; padding:12px 18px; box-shadow:0 10px 40px rgba(0,0,0,.15); font-size:0.85rem; font-weight:600; transform:translateX(150%); transition:.4s; }
+    #aToast.active { transform:translateX(0); }
+  
+    .asb { position:fixed; inset:0; z-index:80; pointer-events:none; opacity:0; transition:opacity .25s; }
+    .asb.active { pointer-events:all; opacity:1; }
+    .asb-bg { position:absolute; inset:0; background:rgba(31,31,46,.5); }
+    .asb-panel { position:absolute; top:0; left:0; bottom:0; width:270px; background:#fff; transform:translateX(-100%);
+      transition:transform .3s cubic-bezier(.16,1,.3,1); display:flex; flex-direction:column; box-shadow:10px 0 40px rgba(0,0,0,.15); }
+    .asb.active .asb-panel { transform:translateX(0); }
+    .asb-item { width:100%; text-align:left; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px;
+      font-size:.9rem; font-weight:600; color:var(--primary); background:none; border:none; cursor:pointer; }
+    .asb-item.active { background:var(--primary); color:#fff; }
+    body.asb-open { overflow:hidden; }
+
+  </style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div id="gate" class="min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center">
+    <div class="w-16 h-16 rounded-full bg-[#f3e8ff] flex items-center justify-center mx-auto mb-4"><i data-lucide="lock" class="w-7 h-7 text-[#4a2c6a]"></i></div>
+    <div class="font-pacifico text-2xl text-[#3a1c5a]">Moye's Treats</div>
+    <p class="text-xs text-gray-400 mt-1 mb-6">Creator Admin Panel</p>
+    <input type="password" id="gatePass" class="a-input text-center mb-3" placeholder="Admin password" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button onclick="tryLogin()" class="a-btn btn-primary w-full">Unlock Dashboard</button>
+    <p class="text-[10px] text-gray-400 mt-4">Default is still moyes2024 — change it in Settings after your first login. Password is now stored as a hash.</p>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="shell" style="display:none" class="min-h-screen">
+  <div class="flex">
+    <aside class="hidden md:block w-60 bg-white border-r border-[#e9d5ff] min-h-screen p-4 sticky top-0 h-screen">
+      <div class="font-pacifico text-xl text-[#3a1c5a] mb-1">Moye's Treats</div>
+      <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-6">Admin Panel</div>
+      <nav id="sideNav" class="space-y-1"></nav>
+      <a href="index.html" class="a-btn btn-ghost w-full inline-block text-center mt-8">← View Store</a>
+    </aside>
+    <main class="flex-1 min-w-0">
+      <div class="md:hidden bg-white border-b border-[#e9d5ff] p-3 sticky top-0 z-30 flex items-center justify-between">
+        <span class="font-pacifico text-lg text-[#3a1c5a]">Admin</span>
+        <button onclick="openAdminSidebar()" class="w-10 h-10 rounded-xl bg-[#f3e8ff] text-[#4a2c6a] flex items-center justify-center" aria-label="Menu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+      </div>
+      <div id="content" class="p-4 md:p-8 max-w-5xl"></div>
+    </main>
+  </div>
+</div>
+
+
+<div id="adminSidebar" class="asb">
+  <div class="asb-bg" onclick="closeAdminSidebar()"></div>
+  <aside class="asb-panel">
+    <div class="flex items-center justify-between p-4 border-b border-[#e9d5ff]">
+      <span class="font-pacifico text-lg text-[#3a1c5a]">Admin</span>
+      <button onclick="closeAdminSidebar()" class="w-9 h-9 rounded-full bg-[#f3e8ff] text-[#3a1c5a] text-xl leading-none">&times;</button>
+    </div>
+    <nav id="drawerNav" class="p-3 space-y-1 overflow-y-auto"></nav>
+    <div class="mt-auto p-4 border-t border-[#e9d5ff]">
+      <a href="index.html" class="a-btn btn-ghost w-full inline-block text-center">← View Store</a>
+    </div>
+  </aside>
+</div>
+
+<div id="editorOverlay" class="a-overlay" onclick="if(event.target===this)closeEditor()"><div class="a-modal" id="editorBody"></div></div>
+<div id="aToast"></div>
+
+<script src="store-data.js"></script>
+<script>
+/* ================= ADMIN CONFIG ================= */
+const ADMIN_LS = 'moyes_admin_hash';
+const LOCK_LS  = 'moyes_admin_lock';
+const SEED_HASH = '6b1712475a6667b4d67d38e54778c745ffd3eab44dacbf9093e85b3709b5a4c4'; // sha256 of moyes2024 — change password in Settings after login to set new hash
+
+function aToast(msg, err) {
+  const t = document.getElementById('aToast');
+  t.textContent = msg; t.style.borderLeftColor = err ? '#ef4444' : '#10b981';
+  t.classList.add('active'); clearTimeout(aToast._t);
+  aToast._t = setTimeout(() => t.classList.remove('active'), 2600);
+}
+function download(name, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.download = name; a.click();
+}
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+async function sha256(text) {
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  let h = 5381;
+  for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) >>> 0;
+  return 'fb_' + h.toString(16);
+}
+async function getPassHash() {
+  let h = localStorage.getItem(ADMIN_LS);
+  if (!h) { h = SEED_HASH; localStorage.setItem(ADMIN_LS, h); }
+  return h;
+}
+
+/* ================= AUTH ================= */
+let catalogReady = null;
+function ensureCatalog() { return catalogReady || (catalogReady = StoreData.init()); }
+(async function bootAdmin() {
+  await ensureCatalog();
+  if (sessionStorage.getItem('moyes_admin_ok') === '1') unlock();
+})();
+async function tryLogin() {
+  const lock = JSON.parse(localStorage.getItem(LOCK_LS) || '{"n":0,"t":0}');
+  const waitSec = Math.min(lock.n * 10, 120);
+  if (lock.n >= 3 && Date.now() - lock.t < waitSec * 1000) {
+    aToast('Too many attempts — wait ' + Math.ceil((waitSec * 1000 - (Date.now() - lock.t)) / 1000) + 's', true); return;
+  }
+  const h = await sha256(document.getElementById('gatePass').value);
+  if (h === await getPassHash()) { localStorage.removeItem(LOCK_LS); unlock(); }
+  else { lock.n++; lock.t = Date.now(); localStorage.setItem(LOCK_LS, JSON.stringify(lock)); aToast('Wrong password', true); }
+}
+async function unlock() {
+  await ensureCatalog();
+  sessionStorage.setItem('moyes_admin_ok', '1');
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('shell').style.display = 'block';
+  buildNav(); nav('dashboard');
+}
+
+/* ================= NAV ================= */
+const TABS = [
+  ['dashboard', 'layout-dashboard', 'Dashboard'],
+  ['products', 'package', 'Products'],
+  ['promos', 'megaphone', 'Promotions'],
+  ['ads', 'badge-percent', 'Ads'],
+  ['reviews', 'message-square-quote', 'Reviews'],
+  ['orders', 'clipboard-list', 'Orders'],
+  ['settings', 'settings', 'Settings']
+];
+let tab = 'dashboard';
+function openAdminSidebar() { document.getElementById('adminSidebar').classList.add('active'); document.body.classList.add('asb-open'); }
+function closeAdminSidebar() { document.getElementById('adminSidebar').classList.remove('active'); document.body.classList.remove('asb-open'); }
+
+function buildNav() {
+  const item = ([id, ic, label]) => `<button onclick="nav('${id}')" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${tab === id ? 'bg-[#4a2c6a] text-white' : 'text-[#4a2c6a] hover:bg-[#f3e8ff]'}"><i data-lucide="${ic}" class="w-4 h-4"></i>${label}</button>`;
+  document.getElementById('sideNav').innerHTML = TABS.map(item).join('');
+  const drawer = document.getElementById('drawerNav');
+  if (drawer) drawer.innerHTML = TABS.map(item).join('');
+  lucide.createIcons();
+}
+function nav(t) { tab = t; buildNav(); render(); closeAdminSidebar(); window.scrollTo(0, 0); }
+function render() {
+  const c = document.getElementById('content');
+  if (!StoreData.get()) { c.innerHTML = '<p class="text-sm text-gray-500">Loading catalog…</p>'; return; }
+  if (tab === 'dashboard') c.innerHTML = tabDashboard();
+  else if (tab === 'products') c.innerHTML = tabProducts();
+  else if (tab === 'promos') c.innerHTML = tabPromos();
+  else if (tab === 'ads') c.innerHTML = tabAds();
+  else if (tab === 'reviews') c.innerHTML = tabReviews();
+  else if (tab === 'orders') c.innerHTML = tabOrders();
+  else if (tab === 'settings') c.innerHTML = tabSettings();
+  lucide.createIcons();
+}
+
+/* ================= DASHBOARD ================= */
+function tabDashboard() {
+  const cat = StoreData.get();
+  const orders = JSON.parse(localStorage.getItem('moyes_orders_v1') || '[]');
+  const newOrders = orders.filter(o => o.status === 'new').length;
+  const stat = (ic, label, val, color) => `
+    <div class="bg-white rounded-2xl border border-[#e9d5ff] p-5">
+      <div class="w-10 h-10 rounded-xl ${color} flex items-center justify-center mb-3"><i data-lucide="${ic}" class="w-5 h-5"></i></div>
+      <div class="text-2xl font-extrabold text-[#3a1c5a]">${val}</div>
+      <div class="text-xs text-gray-500">${label}</div>
+    </div>`;
+  return `
+  <h1 class="text-2xl font-extrabold text-[#3a1c5a] mb-1">Welcome back, Moye 💜</h1>
+  <p class="text-sm text-gray-500 mb-6">Manage your storefront — changes appear instantly on this device.</p>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    ${stat('package', 'Products', cat.categories.length, 'bg-[#f3e8ff] text-[#4a2c6a]')}
+    ${stat('layers', 'Total options', cat.categories.reduce((s, c) => s + (c.items || []).length, 0), 'bg-amber-50 text-amber-600')}
+    ${stat('megaphone', 'Active promos', (cat.promotions.announcement.enabled ? 1 : 0) + (cat.promotions.banner.enabled ? 1 : 0), 'bg-pink-50 text-pink-600')}
+    ${stat('clipboard-list', 'New orders (this device)', newOrders, 'bg-green-50 text-green-600')}
+  </div>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-6">
+    <h3 class="font-bold text-[#3a1c5a] mb-3 flex items-center gap-2"><i data-lucide="upload-cloud" class="w-5 h-5 text-[#7c5c9c]"></i> Publish to all visitors</h3>
+    <ol class="text-sm text-gray-600 space-y-2 list-decimal ml-5">
+      <li>Click <b>Download catalog.json</b> below.</li>
+      <li>Upload that file to your website host, in the same folder as <b>index.html</b>.</li>
+      <li>Done — every visitor now sees your latest products, promos and ads.</li>
+    </ol>
+    <div class="flex flex-wrap gap-3 mt-4">
+      <button onclick="download('catalog.json', StoreData.export())" class="a-btn btn-primary">⬇ Download catalog.json</button>
+      <a href="index.html" target="_blank" class="a-btn btn-ghost">Preview Store</a>
+    </div>
+  </div>
+  <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-sm text-amber-800">
+    <b>Note:</b> Admin edits save on <b>this device</b> only. To update other devices, publish via catalog.json (above), or export/import on each device. For automatic multi-device sync, upgrade to a free backend (Firebase / Supabase) later — the data layer is already isolated in <b>store-data.js</b> to make that swap easy.
+  </div>`;
+}
+
+/* ================= HELPERS (missing, caused ReferenceError) ================= */
+function fmt(n) {
+  if (n == null || isNaN(n)) return '₦0';
+  return '₦' + Number(n).toLocaleString('en-NG');
+}
+function catCover(c) {
+  if (!c) return '';
+  if (c.images && c.images.length) return c.images[0];
+  if (c.cover) return c.cover;
+  if (c.image) return c.image;
+  return '';
+}
+function catPriceRange(c) {
+  if (!c || !c.items || !c.items.length) return null;
+  const prices = c.items.map(it => {
+    const p = Number(it.salePrice || it.price || 0);
+    return isNaN(p) ? 0 : p;
+  }).filter(p => p > 0);
+  if (!prices.length) return null;
+  return { min: Math.min(...prices), max: Math.max(...prices) };
+}
+
+/* ================= PRODUCTS ================= */
+function toggleFeatured(id, val) { const cat = StoreData.get(); const c = cat.categories.find(x => x.id === id); if (c) { c.featured = val; StoreData.save(cat); aToast('Updated'); render(); } }
+function deleteProduct(id) {
+  if (!confirm('Delete this product? This cannot be undone.')) return;
+  const cat = StoreData.get();
+  cat.categories = cat.categories.filter(c => c.id !== id);
+  if (StoreData.save(cat)) { aToast('Product deleted'); render(); }
+}
+function tabProducts() {
+  const cat = StoreData.get();
+  return `
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-[#3a1c5a]">Products</h1>
+    <button onclick="editProduct('new')" class="a-btn btn-amber">+ Add Product</button>
+  </div>
+  <div class="space-y-3">
+    ${cat.categories.map(c => {
+      const range = catPriceRange(c);
+      return `
+      <div class="bg-white rounded-2xl border border-[#e9d5ff] p-4 flex items-center gap-4">
+        <img src="${esc(catCover(c))}" class="w-14 h-14 rounded-xl object-cover bg-[#f3e8ff]" alt="">
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-sm text-[#3a1c5a] truncate">${c.icon} ${esc(c.name)}</div>
+          <div class="text-xs text-gray-500">${(c.items || []).length} options${range ? ' · ' + fmt(range.min) + ' – ' + fmt(range.max) : ' · Builder'}</div>
+        </div>
+        <label class="a-switch" title="Show in Best Sellers"><input type="checkbox" ${c.featured ? 'checked' : ''} onchange="toggleFeatured('${c.id}',this.checked)"><span></span></label>
+        <button onclick="editProduct('${c.id}')" class="a-btn btn-ghost">Edit</button>
+        <button onclick="deleteProduct('${c.id}')" class="a-btn btn-danger">🗑</button>
+      </div>`;
+    }).join('')}
+  </div>
+  <p class="text-xs text-gray-400 mt-4">Toggle the switch to feature a product on the homepage "Best Sellers" row.</p>`;
+}
+
+let EP = null; // working copy of edited product
+function editProduct(id) {
+  const cat = StoreData.get();
+  if (id === 'new') EP = { id: '', name: '', icon: '🍰', lucide: 'cake', subtitle: '', desc: '', note: '', images: [], video: '', featured: false, featuredLabel: '', sold: 0, items: [{ name: '', price: 0, salePrice: 0, available: true }] };
+  else EP = clone(cat.categories.find(c => c.id === id));
+  document.getElementById('editorOverlay').classList.add('active');
+  renderEditor();
+}
+function closeEditor() { document.getElementById('editorOverlay').classList.remove('active'); EP = null; }
+function renderEditor() {
+  const p = EP;
+  document.getElementById('editorBody').innerHTML = `
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-extrabold text-[#3a1c5a]">${p.id ? 'Edit Product' : 'New Product'}</h2>
+    <button onclick="closeEditor()" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+  </div>
+  <div class="grid sm:grid-cols-2 gap-3">
+    <div><label class="text-xs font-bold text-gray-500">NAME *</label><input id="pf_name" class="a-input" value="${esc(p.name)}"></div>
+    <div><label class="text-xs font-bold text-gray-500">ICON (emoji)</label><input id="pf_icon" class="a-input" value="${esc(p.icon)}"></div>
+    <div><label class="text-xs font-bold text-gray-500">SUBTITLE (optional)</label><input id="pf_subtitle" class="a-input" value="${esc(p.subtitle)}"></div>
+    <div><label class="text-xs font-bold text-gray-500">SOLD COUNT (social proof)</label><input id="pf_sold" type="number" class="a-input" value="${p.sold || 0}"></div>
+  </div>
+  <div class="mt-3"><label class="text-xs font-bold text-gray-500">DESCRIPTION</label><textarea id="pf_desc" rows="2" class="a-input">${esc(p.desc)}</textarea></div>
+  <div class="mt-3"><label class="text-xs font-bold text-gray-500">NOTE (shown in preview, e.g. MOQ / toppings)</label><textarea id="pf_note" rows="2" class="a-input">${esc(p.note)}</textarea></div>
+  <div class="mt-4">
+    <div class="flex items-center justify-between"><label class="text-xs font-bold text-gray-500">PHOTOS / VIDEOS (first one = cover)</label></div>
+    <div id="imgList" class="flex flex-wrap gap-3 mt-2"></div>
+    <div class="flex flex-wrap gap-2 mt-3">
+      <input id="imgUrl" class="a-input !w-64" placeholder="Paste image/video URL…">
+      <button onclick="imgAddUrl()" class="a-btn btn-ghost">Add URL</button>
+      <label class="a-btn btn-ghost cursor-pointer">📷 Upload<input type="file" accept="image/*" multiple class="hidden" onchange="imgAddFiles(this)"></label>
+    </div>
+    <div class="mt-3"><label class="text-xs font-bold text-gray-500">VIDEO URL (optional — mp4 or YouTube link)</label><input id="pf_video" class="a-input" value="${esc(p.video)}"></div>
+  </div>
+  <div class="mt-4">
+    <div class="flex items-center justify-between">
+      <label class="text-xs font-bold text-gray-500">SIZE / PRICE OPTIONS</label>
+      <button onclick="addVarRow()" class="a-btn btn-ghost !py-1.5">+ Add option</button>
+    </div>
+    <div class="hidden sm:grid grid-cols-[1fr_100px_100px_70px_40px] gap-2 mt-2 text-[10px] font-bold text-gray-400 uppercase"><div>Name</div><div>Price ₦</div><div>Sale ₦</div><div>Avail</div><div></div></div>
+    <div id="varRows" class="space-y-2 mt-1"></div>
+  </div>
+  <div class="flex items-center gap-6 mt-5 flex-wrap">
+    <div class="flex items-center gap-2">
+    <label class="a-switch"><input type="checkbox" id="pf_featured" ${p.featured ? 'checked' : ''}><span></span></label>
+    <span class="text-xs font-bold text-gray-500">Feature in Best Sellers</span>
+  </div>
+    <input id="pf_featLabel" class="a-input !w-44" placeholder="Badge label (e.g. Trending)" value="${esc(p.featuredLabel)}">
+  </div>
+  <div class="flex gap-3 mt-6">
+    <button onclick="saveProduct()" class="a-btn btn-primary flex-1">💾 Save Product</button>
+    <button onclick="closeEditor()" class="a-btn btn-ghost">Cancel</button>
+  </div>`;
+  renderImgList(); renderVarRows();
+}
+function renderImgList() {
+  document.getElementById('imgList').innerHTML = EP.images.map((s, i) => `
+    <div class="relative w-20 h-20 rounded-xl overflow-hidden border border-[#e9d5ff] bg-[#faf5ff]">
+      ${mediaHTML(s, 'w-full h-full object-cover')}
+      <button onclick="EP.images.splice(${i},1);renderImgList()" class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-white/90 text-red-500 text-xs leading-none">×</button>
+      ${i === 0 ? '<span class="absolute bottom-0 inset-x-0 bg-[#4a2c6a]/80 text-white text-[8px] text-center py-0.5">COVER</span>' : ''}
+    </div>`).join('') || '<span class="text-xs text-gray-400">No photos yet.</span>';
+}
+function imgAddUrl() {
+  const el = document.getElementById('imgUrl');
+  if (el.value.trim()) { EP.images.push(el.value.trim()); el.value = ''; renderImgList(); }
+}
+function imgAddFiles(input) {
+  [...input.files].forEach(file => {
+    const r = new FileReader();
+    r.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 900, s = Math.min(1, max / Math.max(img.width, img.height));
+        const cv = document.createElement('canvas');
+        cv.width = img.width * s; cv.height = img.height * s;
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        EP.images.push(cv.toDataURL('image/jpeg', 0.82));
+        renderImgList();
+      };
+      img.src = e.target.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+function addVarRow() {
+  document.getElementById('varRows').insertAdjacentHTML('beforeend', varRowHTML({ name: '', price: 0, salePrice: 0, available: true }));
+}
+function varRowHTML(v) {
+  return `
+  <div class="var-row grid grid-cols-[1fr_90px_90px_50px_36px] sm:grid-cols-[1fr_100px_100px_70px_40px] gap-2 items-center bg-[#faf5ff] rounded-xl p-2">
+    <input class="a-input v-name" placeholder="e.g. Small Cup" value="${esc(v.name)}">
+    <input class="a-input v-price" type="number" placeholder="₦" value="${v.price || ''}">
+    <input class="a-input v-sale" type="number" placeholder="₦" value="${v.salePrice || ''}" title="Sale price (0 = no sale)">
+    <label class="a-switch justify-self-center"><input type="checkbox" class="v-avail" ${v.available !== false ? 'checked' : ''}><span></span></label>
+    <button onclick="this.closest('.var-row').remove()" class="text-red-400 hover:text-red-600 font-bold text-lg leading-none">×</button>
+  </div>`;
+}
+function renderVarRows() {
+  document.getElementById('varRows').innerHTML = EP.items.map(varRowHTML).join('');
+}
+function saveProduct() {
+  const name = document.getElementById('pf_name').value.trim();
+  if (!name) { aToast('Name is required', true); return; }
+  const cat = StoreData.get();
+  EP.name = name;
+  EP.icon = document.getElementById('pf_icon').value.trim() || '🍰';
+  EP.subtitle = document.getElementById('pf_subtitle').value.trim();
+  EP.desc = document.getElementById('pf_desc').value.trim();
+  EP.note = document.getElementById('pf_note').value.trim();
+  EP.video = document.getElementById('pf_video').value.trim();
+  EP.sold = +document.getElementById('pf_sold').value || 0;
+  EP.featured = document.getElementById('pf_featured').checked;
+  EP.featuredLabel = document.getElementById('pf_featLabel').value.trim();
+  EP.items = [...document.querySelectorAll('#varRows .var-row')].map(r => ({
+    name: r.querySelector('.v-name').value.trim(),
+    price: +r.querySelector('.v-price').value || 0,
+    salePrice: +r.querySelector('.v-sale').value || 0,
+    available: r.querySelector('.v-avail').checked
+  })).filter(v => v.name);
+  if (!EP.id) {
+    let id = slugify(name), n = 2;
+    while (cat.categories.some(c => c.id === id)) id = slugify(name) + (n++);
+    EP.id = id;
+    cat.categories.push(EP);
+  } else {
+    const i = cat.categories.findIndex(c => c.id === EP.id);
+    cat.categories[i] = EP;
+  }
+  if (StoreData.save(cat)) { aToast('Product saved ✔'); closeEditor(); render(); }
+}
+
+/* ================= PROMOTIONS ================= */
+function tabPromos() {
+  const p = StoreData.get().promotions;
+  return `
+  <h1 class="text-2xl font-extrabold text-[#3a1c5a] mb-6">Promotions</h1>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+    <label class="a-switch"><input type="checkbox" id="an_enabled" ${p.announcement.enabled ? 'checked' : ''}><span></span></label>
+    <span class="text-sm font-bold text-[#3a1c5a]">📢 Top Announcement Bar (scrolling text)</span>
+  </div>
+    <textarea id="an_text" rows="2" class="a-input mt-3" placeholder="e.g. 🎉 10% off all parfaits this weekend — order now!">${esc(p.announcement.text)}</textarea>
+  </div>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+    <label class="a-switch"><input type="checkbox" id="bn_enabled" ${p.banner.enabled ? 'checked' : ''}><span></span></label>
+    <span class="text-sm font-bold text-[#3a1c5a]">🏷 Homepage Promo Banner</span>
+  </div>
+    <div class="grid sm:grid-cols-2 gap-3 mt-3">
+      <div><label class="text-xs font-bold text-gray-500">TITLE</label><input id="bn_title" class="a-input" value="${esc(p.banner.title)}"></div>
+      <div><label class="text-xs font-bold text-gray-500">BADGE / COLOUR</label>
+        <select id="bn_bg" class="a-input"><option value="grape" ${p.banner.bg !== 'amber' ? 'selected' : ''}>Grape (purple)</option><option value="amber" ${p.banner.bg === 'amber' ? 'selected' : ''}>Amber (orange)</option></select></div>
+    </div>
+    <div class="mt-3"><label class="text-xs font-bold text-gray-500">SUBTITLE</label><input id="bn_subtitle" class="a-input" value="${esc(p.banner.subtitle)}"></div>
+    <div class="grid sm:grid-cols-2 gap-3 mt-3">
+      <div><label class="text-xs font-bold text-gray-500">PROMO CODE (customers type at checkout)</label><input id="bn_code" class="a-input" value="${esc(p.banner.code)}" style="text-transform:uppercase;"></div>
+      <div><label class="text-xs font-bold text-gray-500">DISCOUNT %</label><input id="bn_pct" type="number" min="0" max="90" class="a-input" value="${p.banner.discountPercent || 0}"></div>
+    </div>
+    <div class="mt-3 flex gap-2 items-end">
+      <div class="flex-1"><label class="text-xs font-bold text-gray-500">BANNER IMAGE URL (optional)</label><input id="bn_image" class="a-input" value="${esc(p.banner.image)}"></div>
+      <label class="a-btn btn-ghost cursor-pointer">📷 Upload<input type="file" accept="image/*" class="hidden" onchange="uploadToInput(this,'bn_image')"></label>
+    </div>
+    <div class="bg-[#faf5ff] rounded-xl p-3 mt-4 text-xs text-gray-500">💡 Customers enter the code in the <b>cart</b> to unlock the discount. Product-level sale prices can also be set per option in <b>Products → Edit</b>.</div>
+  </div>
+  <button onclick="savePromos()" class="a-btn btn-primary">💾 Save Promotions</button>`;
+}
+function savePromos() {
+  const cat = StoreData.get();
+  cat.promotions.announcement = { enabled: document.getElementById('an_enabled').checked, text: document.getElementById('an_text').value.trim() };
+  cat.promotions.banner = {
+    enabled: document.getElementById('bn_enabled').checked,
+    title: document.getElementById('bn_title').value.trim(),
+    subtitle: document.getElementById('bn_subtitle').value.trim(),
+    bg: document.getElementById('bn_bg').value,
+    code: document.getElementById('bn_code').value.trim().toUpperCase(),
+    discountPercent: +document.getElementById('bn_pct').value || 0,
+    image: document.getElementById('bn_image').value.trim()
+  };
+  if (StoreData.save(cat)) aToast('Promotions saved ✔');
+}
+function compressImage(file, cb, max = 900, q = 0.82) {
+  const r = new FileReader();
+  r.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      cb(cv.toDataURL('image/jpeg', q));
+    };
+    img.src = e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+function uploadToInput(input, targetId) {
+  const file = input.files[0]; if (!file) return;
+  compressImage(file, d => { document.getElementById(targetId).value = d; aToast('Image attached'); });
+}
+function uploadAdImage(input, i) {
+  const file = input.files[0]; if (!file) return;
+  compressImage(file, d => { TMP_ADS[i].image = d; renderAdsList(); aToast('Image attached'); });
+}
+
+/* ================= ADS ================= */
+let TMP_ADS = [];
+function tabAds() {
+  TMP_ADS = clone(StoreData.get().ads);
+  return `
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-[#3a1c5a]">Ads</h1>
+    <button onclick="addAd()" class="a-btn btn-amber">+ Add Ad</button>
+  </div>
+  <p class="text-sm text-gray-500 mb-4">Active ads appear in the "Sponsored" strip on the homepage.</p>
+  <div id="adsList" class="space-y-3"></div>
+  <button onclick="saveAds()" class="a-btn btn-primary mt-5">💾 Save Ads</button>`;
+}
+function renderAdsList() {
+  const el = document.getElementById('adsList'); if (!el) return;
+  el.innerHTML = TMP_ADS.length ? TMP_ADS.map((a, i) => `
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-4 space-y-2">
+    <div class="flex items-center gap-3">
+      <img src="${esc(a.image)}" class="w-12 h-12 rounded-lg object-cover bg-[#f3e8ff]" onerror="this.style.display='none'" alt="">
+      <input class="a-input" placeholder="Title" value="${esc(a.title)}" oninput="TMP_ADS[${i}].title=this.value">
+      <label class="a-switch"><input type="checkbox" ${a.active ? 'checked' : ''} onchange="TMP_ADS[${i}].active=this.checked"><span></span></label>
+      <button onclick="TMP_ADS.splice(${i},1);renderAdsList()" class="text-red-400 hover:text-red-600 font-bold text-xl leading-none">×</button>
+    </div>
+    <input class="a-input" placeholder="Short text" value="${esc(a.text)}" oninput="TMP_ADS[${i}].text=this.value">
+    <div class="grid sm:grid-cols-2 gap-2">
+      <div class="flex gap-2">
+        <input class="a-input" placeholder="Image URL (or upload →)" value="${esc(a.image)}" oninput="TMP_ADS[${i}].image=this.value">
+        <label class="a-btn btn-ghost cursor-pointer whitespace-nowrap shrink-0">📷 Upload<input type="file" accept="image/*" class="hidden" onchange="uploadAdImage(this,${i})"></label>
+      </div>
+      <div class="flex gap-2">
+        <input class="a-input" placeholder="Button label" value="${esc(a.ctaLabel)}" oninput="TMP_ADS[${i}].ctaLabel=this.value">
+        <select class="a-input" onchange="TMP_ADS[${i}].action=this.value">
+          ${['whatsapp','menu','smallchops','url'].map(o => `<option value="${o}" ${a.action === o ? 'selected' : ''}>${o === 'url' ? 'External link' : o}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    ${a.action === 'url' ? `<input class="a-input" placeholder="https://…" value="${esc(a.url)}" oninput="TMP_ADS[${i}].url=this.value">` : ''}
+  </div>`).join('') : '<div class="text-sm text-gray-400 bg-white rounded-2xl border border-dashed border-[#e9d5ff] p-8 text-center">No ads yet. Click "+ Add Ad".</div>';
+}
+function addAd() { TMP_ADS.push({ id: 'ad_' + Math.random().toString(36).slice(2, 8), active: false, title: '', text: '', image: '', ctaLabel: 'Order Now', action: 'whatsapp', url: '' }); renderAdsList(); }
+function saveAds() { const cat = StoreData.get(); cat.ads = TMP_ADS; if (StoreData.save(cat)) aToast('Ads saved ✔'); }
+
+
+/* ================= REVIEWS / TESTIMONIALS ================= */
+let TMP_REVIEWS = [];
+function tabReviews() {
+  const cat = StoreData.get();
+  if (!cat.testimonials) cat.testimonials = [];
+  TMP_REVIEWS = JSON.parse(JSON.stringify(cat.testimonials));
+  return `
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#3a1c5a]">Customer Reviews</h1>
+      <p class="text-xs text-gray-500 mt-1">These appear on the homepage "What Our Customers Say" section.</p>
+    </div>
+    <button onclick="addReview()" class="a-btn btn-amber">+ Add Review</button>
+  </div>
+  <div id="reviewsList" class="space-y-3"></div>
+  <button onclick="saveReviews()" class="a-btn btn-primary mt-6">💾 Save Reviews</button>
+  <div class="bg-[#faf5ff] rounded-xl p-3 mt-4 text-xs text-gray-500">💡 Tip: Keep 4 reviews for best layout. Rating is 1-5 stars. Avatar is the letter shown in the circle.</div>
+  `;
+}
+function renderReviewsList() {
+  const el = document.getElementById('reviewsList');
+  if (!el) return;
+  el.innerHTML = TMP_REVIEWS.length ? TMP_REVIEWS.map((r,i) => `
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-4">
+    <div class="flex gap-3">
+      <div class="flex-1 grid sm:grid-cols-[1fr_60px_60px_40px] gap-2 items-start">
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase">Name</label>
+          <input class="a-input" value="${esc(r.name)}" placeholder="Customer name" oninput="TMP_REVIEWS[${i}].name=this.value">
+          <label class="text-[10px] font-bold text-gray-400 uppercase mt-2 block">Review Text</label>
+          <textarea class="a-input" rows="3" placeholder="What they said..." oninput="TMP_REVIEWS[${i}].text=this.value">${esc(r.text)}</textarea>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase">Rating</label>
+          <select class="a-input" onchange="TMP_REVIEWS[${i}].rating=+this.value">
+            ${[5,4,3,2,1].map(n=>`<option value="${n}" ${r.rating==n?'selected':''}>${'★'.repeat(n)}</option>`).join('')}
+          </select>
+          <label class="text-[10px] font-bold text-gray-400 uppercase mt-2 block">Avatar Letter</label>
+          <input class="a-input text-center font-bold" maxlength="1" value="${esc(r.avatar||'A')}" oninput="TMP_REVIEWS[${i}].avatar=this.value.toUpperCase()">
+        </div>
+        <div class="hidden sm:block text-center pt-6">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#4a2c6a] to-[#7c5c9c] text-white flex items-center justify-center font-bold text-sm mx-auto">${esc(r.avatar||r.name?.[0]||'A')}</div>
+          <div class="text-[11px] text-amber-500 mt-1">${'★'.repeat(r.rating||5)}</div>
+        </div>
+        <button onclick="TMP_REVIEWS.splice(${i},1);renderReviewsList()" class="text-red-400 hover:text-red-600 font-bold text-xl leading-none self-start">×</button>
+      </div>
+    </div>
+  </div>`).join('') : '<div class="text-sm text-gray-400 bg-white rounded-2xl border border-dashed border-[#e9d5ff] p-8 text-center">No reviews yet. Click "+ Add Review".</div>';
+}
+function addReview() { TMP_REVIEWS.push({ name: "", text: "", rating: 5, avatar: "A" }); renderReviewsList(); }
+function saveReviews() {
+  const cat = StoreData.get();
+  cat.testimonials = TMP_REVIEWS.filter(r=>r.name && r.text);
+  if (StoreData.save(cat)) { aToast('Reviews saved ✔'); render(); }
+}
+// patch render() to refresh reviews list
+
+/* ================= ORDERS ================= */
+function tabOrders() {
+  const orders = JSON.parse(localStorage.getItem('moyes_orders_v1') || '[]');
+  return `
+  <div class="flex items-center justify-between mb-2 flex-wrap gap-3">
+    <h1 class="text-2xl font-extrabold text-[#3a1c5a]">Orders <span class="text-sm font-medium text-gray-400">(placed on this device)</span></h1>
+    <div class="flex gap-2">
+      <button onclick="exportOrdersCSV()" class="a-btn btn-ghost">⬇ Export CSV</button>
+      <button onclick="if(confirm('Clear order history?')){localStorage.removeItem('moyes_orders_v1');render();}" class="a-btn btn-danger">Clear</button>
+    </div>
+  </div>
+  <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 mb-5">Orders are logged on the customer's device when they check out — for full multi-device order management you'll need a backend (Firebase/Supabase) later.</div>
+  ${orders.length ? orders.map(o => `
+  <details class="bg-white rounded-2xl border border-[#e9d5ff] p-4 mb-3">
+    <summary class="cursor-pointer flex items-center gap-3 flex-wrap">
+      <span class="font-bold text-sm text-[#3a1c5a]">${esc(o.id)}</span>
+      <span class="text-xs text-gray-400">${new Date(o.date).toLocaleString()}</span>
+      <span class="text-xs font-semibold text-gray-600">${esc(o.customer.firstName)} ${esc(o.customer.lastName)} · ${esc(o.customer.phone)}</span>
+      <span class="ml-auto font-extrabold text-[#4a2c6a] text-sm">${fmt(o.totals.total)}</span>
+      <select class="a-input !w-32 !py-1.5" onclick="event.stopPropagation()" onchange="setOrderStatus('${o.id}',this.value)">
+        ${['new', 'confirmed', 'delivered', 'cancelled'].map(s => `<option ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+      </select>
+    </summary>
+    <div class="mt-3 text-sm text-gray-600 border-t border-dashed border-[#e9d5ff] pt-3">
+      ${o.items.map(i => `<div class="flex justify-between py-0.5"><span>${esc(i.title)} ×${i.qty}</span><span>${fmt(i.price * i.qty)}</span></div>`).join('')}
+      <div class="mt-2 text-xs text-gray-400">🚚 ${esc(o.deliveryMethod)}${o.location ? ' · ' + esc(o.location) : ''}</div>
+    </div>
+  </details>`).join('') : '<div class="text-sm text-gray-400 bg-white rounded-2xl border border-dashed border-[#e9d5ff] p-10 text-center">No orders logged yet on this device.</div>'}`;
+}
+function setOrderStatus(id, status) {
+  const arr = JSON.parse(localStorage.getItem('moyes_orders_v1') || '[]');
+  const o = arr.find(x => x.id === id); if (o) { o.status = status; localStorage.setItem('moyes_orders_v1', JSON.stringify(arr)); aToast('Status updated'); }
+}
+function exportOrdersCSV() {
+  const orders = JSON.parse(localStorage.getItem('moyes_orders_v1') || '[]');
+  const rows = [['ID', 'Date', 'Name', 'Phone', 'Method', 'Area', 'Items', 'Total', 'Status']];
+  orders.forEach(o => rows.push([o.id, o.date, `${o.customer.firstName} ${o.customer.lastName}`, o.customer.phone, o.deliveryMethod, o.location || '', o.items.map(i => `${i.title} x${i.qty}`).join(' | '), o.totals.total, o.status]));
+  const csv = rows.map(r => r.map(c => `"${String(c == null ? '' : c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'moyes-orders.csv'; a.click();
+}
+
+/* ================= SETTINGS ================= */
+let TMP_FEES = {}, TMP_PRICES = {}, TMP_COMBOS = [];
+function tabSettings() {
+  const c = StoreData.get();
+  TMP_FEES = clone(c.deliveryFees); TMP_PRICES = clone(c.smallChopsPrices); TMP_COMBOS = clone(c.combos);
+  return `
+  <h1 class="text-2xl font-extrabold text-[#3a1c5a] mb-6">Settings</h1>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-5">
+    <h3 class="font-bold text-[#3a1c5a] mb-3">Contact Info</h3>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <div><label class="text-xs font-bold text-gray-500">PHONE (WhatsApp)</label><input id="st_phone" class="a-input" value="${esc(c.contact.phone)}"></div>
+      <div><label class="text-xs font-bold text-gray-500">PHONE (display)</label><input id="st_displayPhone" class="a-input" value="${esc(c.contact.displayPhone)}"></div>
+      <div><label class="text-xs font-bold text-gray-500">INSTAGRAM</label><input id="st_instagram" class="a-input" value="${esc(c.contact.instagram)}"></div>
+      <div><label class="text-xs font-bold text-gray-500">TIKTOK</label><input id="st_tiktok" class="a-input" value="${esc(c.contact.tiktok)}"></div>
+      <div><label class="text-xs font-bold text-gray-500">LOCATION</label><input id="st_location" class="a-input" value="${esc(c.contact.location)}"></div>
+    </div>
+    <button onclick="saveContact()" class="a-btn btn-primary mt-4">💾 Save Contact</button>
+  </div>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-5">
+    <h3 class="font-bold text-[#3a1c5a] mb-3">Delivery Fees (₦)</h3>
+    <div id="feeList" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+    <div class="flex gap-2 mt-3">
+      <input id="newArea" class="a-input !w-48" placeholder="New area name">
+      <button onclick="addArea()" class="a-btn btn-ghost">+ Add Area</button>
+    </div>
+    <button onclick="saveFees()" class="a-btn btn-primary mt-4">💾 Save Fees</button>
+  </div>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-5">
+    <h3 class="font-bold text-[#3a1c5a] mb-3">Small Chops Item Prices (₦)</h3>
+    <div id="priceList" class="space-y-2"></div>
+    <div class="flex gap-2 mt-3">
+      <input id="newItem" class="a-input !w-48" placeholder="New item name">
+      <button onclick="addScItem()" class="a-btn btn-ghost">+ Add Item</button>
+    </div>
+    <h3 class="font-bold text-[#3a1c5a] mt-6 mb-3">Combo Boxes</h3>
+    <div id="comboList" class="space-y-2"></div>
+    <button onclick="addCombo()" class="a-btn btn-ghost mt-2">+ Add Combo</button>
+    <button onclick="saveChops()" class="a-btn btn-primary mt-4">💾 Save Small Chops</button>
+  </div>
+  <div class="bg-white rounded-2xl border border-[#e9d5ff] p-6 mb-5">
+    <h3 class="font-bold text-[#3a1c5a] mb-3">Data & Security</h3>
+    <div class="flex flex-wrap gap-2">
+      <button onclick="download('catalog.json', StoreData.export())" class="a-btn btn-primary">⬇ Download catalog.json</button>
+      <button onclick="download('moyes-backup.json', StoreData.export())" class="a-btn btn-ghost">⬇ Backup JSON</button>
+      <label class="a-btn btn-ghost cursor-pointer">⬆ Import JSON<input type="file" accept=".json" class="hidden" onchange="importData(this)"></label>
+      <button onclick="if(confirm('Reset everything to factory defaults?')){StoreData.reset();aToast('Reset done');render();}" class="a-btn btn-danger">Reset All</button>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-3 mt-5">
+      <div><label class="text-xs font-bold text-gray-500">CURRENT PASSWORD</label><input id="pw_old" type="password" class="a-input"></div>
+      <div><label class="text-xs font-bold text-gray-500">NEW PASSWORD</label><input id="pw_new" type="password" class="a-input"></div>
+      <div class="flex items-end"><button onclick="changePass()" class="a-btn btn-amber w-full">Change Password</button></div>
+    </div>
+  </div>`;
+}
+function renderSettingsLists() {
+  const fl = document.getElementById('feeList');
+  if (fl) fl.innerHTML = Object.entries(TMP_FEES).map(([k, v]) => `
+    <div class="flex gap-1 items-center">
+      <input class="a-input" value="${esc(k)}" data-old="${esc(k)}" onchange="renameArea(this)">
+      <input class="a-input !w-20" type="number" value="${v}" onchange="TMP_FEES['${esc(k)}']=+this.value">
+      <button onclick="delete TMP_FEES['${esc(k)}'];renderSettingsLists()" class="text-red-400 font-bold px-1">×</button>
+    </div>`).join('');
+  const pl = document.getElementById('priceList');
+  if (pl) pl.innerHTML = Object.entries(TMP_PRICES).map(([k, v]) => `
+    <div class="flex gap-2 items-center">
+      <input class="a-input" value="${esc(k)}" onchange="TMP_PRICES[this.value]=TMP_PRICES[this.dataset.o]||TMP_PRICES[this.value];delete TMP_PRICES[this.dataset.o];this.dataset.o=this.value" data-o="${esc(k)}">
+      <input class="a-input !w-24" type="number" value="${v}" onchange="TMP_PRICES['${esc(k)}']=+this.value">
+      <button onclick="delete TMP_PRICES['${esc(k)}'];renderSettingsLists()" class="text-red-400 font-bold px-1">×</button>
+    </div>`).join('');
+  const cl = document.getElementById('comboList');
+  if (cl) cl.innerHTML = TMP_COMBOS.map((cb, i) => `
+    <div class="bg-[#faf5ff] rounded-xl p-3 space-y-2">
+      <div class="flex gap-2 items-center">
+        <input class="a-input" placeholder="Combo name" value="${esc(cb.name)}" oninput="TMP_COMBOS[${i}].name=this.value">
+        <input class="a-input !w-28" type="number" placeholder="₦" value="${cb.price}" oninput="TMP_COMBOS[${i}].price=+this.value">
+        <label class="text-xs text-gray-500 whitespace-nowrap"><input type="checkbox" ${cb.bestValue ? 'checked' : ''} onchange="TMP_COMBOS[${i}].bestValue=this.checked"> Best value</label>
+        <button onclick="TMP_COMBOS.splice(${i},1);renderSettingsLists()" class="text-red-400 font-bold px-1">×</button>
+      </div>
+      <input class="a-input text-xs" placeholder="Items — e.g. Samosa x2, Puff Puff x3, Beef x1" value="${esc(Object.entries(cb.items).map(([n, q]) => `${n} x${q}`).join(', '))}" oninput="TMP_COMBOS[${i}].items=parseItems(this.value)">
+    </div>`).join('');
+}
+function parseItems(str) {
+  const out = {};
+  str.split(',').forEach(part => {
+    const m = part.trim().match(/^(.*?)[\s]*x(\d+)$/i);
+    if (m && m[1]) out[m[1].trim()] = +m[2]; else if (part.trim()) out[part.trim()] = 1;
+  });
+  return out;
+}
+function addArea() { const el = document.getElementById('newArea'); if (el.value.trim()) { TMP_FEES[el.value.trim()] = 1000; el.value = ''; renderSettingsLists(); } }
+function renameArea(inp) { const oldK = inp.dataset.old, v = inp.value.trim(); if (v && v !== oldK) { TMP_FEES[v] = TMP_FEES[oldK]; delete TMP_FEES[oldK]; inp.dataset.old = v; } }
+function addScItem() { const el = document.getElementById('newItem'); if (el.value.trim()) { TMP_PRICES[el.value.trim()] = 100; el.value = ''; renderSettingsLists(); } }
+function addCombo() { TMP_COMBOS.push({ name: 'New Box', price: 1000, bestValue: false, items: { 'Samosa': 1 } }); renderSettingsLists(); }
+function saveContact() {
+  const cat = StoreData.get();
+  cat.contact = { phone: val('st_phone'), displayPhone: val('st_displayPhone'), instagram: val('st_instagram'), tiktok: val('st_tiktok'), location: val('st_location') };
+  if (StoreData.save(cat)) aToast('Contact saved ✔');
+}
+function saveFees() { const cat = StoreData.get(); cat.deliveryFees = TMP_FEES; if (StoreData.save(cat)) aToast('Delivery fees saved ✔'); }
+function saveChops() {
+  const cat = StoreData.get();
+  cat.smallChopsPrices = TMP_PRICES; cat.combos = TMP_COMBOS.filter(c => c.name);
+  if (StoreData.save(cat)) aToast('Small chops saved ✔');
+}
+function importData(input) {
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => { try { StoreData.import(e.target.result); aToast('Imported ✔'); render(); } catch (err) { aToast('Invalid JSON file', true); } };
+  r.readAsText(f);
+}
+async function changePass() {
+  const oldHash = await sha256(document.getElementById('pw_old').value);
+  if (oldHash !== await getPassHash()) { aToast('Current password is wrong', true); return; }
+  const nw = document.getElementById('pw_new').value;
+  if (nw.length < 6) { aToast('Use at least 6 characters', true); return; }
+  localStorage.setItem(ADMIN_LS, await sha256(nw)); aToast('Password changed ✔ — new hash stored, no plaintext');
+}
+function val(id) { return document.getElementById(id).value.trim(); }
+/* keep settings lists fresh after each render */
+const _render = render;
+render = function () { _render(); if (tab === 'settings') renderSettingsLists(); if (tab === 'ads') renderAdsList(); if (tab === 'reviews') renderReviewsList(); };
+lucide.createIcons();
+</script>
+</body>
+</html>
