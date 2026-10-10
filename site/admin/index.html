@@ -7,12 +7,8 @@
   <meta name="robots" content="noindex">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg" href="favicon.svg">
-  <link rel="icon" type="image/svg" href="../site/favicon.svg">
-  <link rel="apple-touch-icon" href="favicon.svg">
-  <link rel="apple-touch-icon" href="../site/favicon.svg">
-  <link rel="shortcut icon" type="image/svg" href="favicon.svg">
-  <link rel="shortcut icon" type="image/svg" href="../site/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="apple-touch-icon" href="../favicon.svg">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root { --primary:#4a2c6a; --primary-dark:#3a1c5a; --border:#e9d5ff; --bg:#f3e8ff; }
@@ -70,7 +66,7 @@
       <div class="font-pacifico text-xl text-[#3a1c5a] mb-1">Moye's Treats</div>
       <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-6">Admin Panel</div>
       <nav id="sideNav" class="space-y-1"></nav>
-      <a href="../site/index.html" class="a-btn btn-ghost w-full inline-block text-center mt-8">← View Store</a>
+      <a href="../index.html" class="a-btn btn-ghost w-full inline-block text-center mt-8">← View Store</a>
     </aside>
     <main class="flex-1 min-w-0">
       <div class="md:hidden bg-white border-b border-[#e9d5ff] p-3 sticky top-0 z-30 flex items-center justify-between">
@@ -92,7 +88,7 @@
     </div>
     <nav id="drawerNav" class="p-3 space-y-1 overflow-y-auto"></nav>
     <div class="mt-auto p-4 border-t border-[#e9d5ff]">
-      <a href="../site/index.html" class="a-btn btn-ghost w-full inline-block text-center">← View Store</a>
+      <a href="../index.html" class="a-btn btn-ghost w-full inline-block text-center">← View Store</a>
     </div>
   </aside>
 </div>
@@ -100,7 +96,7 @@
 <div id="editorOverlay" class="a-overlay" onclick="if(event.target===this)closeEditor()"><div class="a-modal" id="editorBody"></div></div>
 <div id="aToast"></div>
 
-<script src="store-data.js"></script>
+<script src="../store-data.js"></script>
 <script>
 /* ================= ADMIN CONFIG ================= */
 const ADMIN_LS = 'moyes_admin_hash';
@@ -136,9 +132,75 @@ async function getPassHash() {
   return h;
 }
 
+
+/* ===== FIXED: helpers needed for image list ===== */
+function isVideo(s){ return typeof s==='string' && /\.(mp4|webm|ogg)(\?.*)?$/i.test(s); }
+function ytEmbed(url){ if(!url) return null; const m = String(url).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/); return m ? `https://www.youtube.com/embed/${m[1]}` : null; }
+
+function slugify(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+function mediaHTML(src, cls){
+  if(!src) return `<div class="${cls||''} bg-[#f3e8ff]"></div>`;
+  if(src.startsWith('data:')) return `<img src="${src}" class="${cls||''}" alt="">`;
+  const yt = ytEmbed(src);
+  if(yt) return `<iframe src="${yt}" class="${cls||''}" frameborder="0" allowfullscreen></iframe>`;
+  if(isVideo(src)) return `<video src="${src}" class="${cls||''}" controls muted></video>`;
+  let u = src;
+  // fix paths when admin is in subfolder
+  if(!u.startsWith('http') && !u.startsWith('data:') && !u.startsWith('/') && !u.startsWith('../')){
+    if(u.startsWith('assets/')) u = '../' + u;
+    else if(!u.includes('/') ) u = '../assets/images/' + u;
+  }
+  return `<img src="${u}" class="${cls||''}" loading="lazy" alt="" onerror="this.style.display='none'">`;
+}
+
 /* ================= AUTH ================= */
 let catalogReady = null;
-function ensureCatalog() { return catalogReady || (catalogReady = StoreData.init()); }
+function ensureCatalog(){ 
+  return catalogReady || (catalogReady = (async ()=>{
+    // Patch StoreData to try correct catalog.json location
+    if(window.StoreData && StoreData._origInitPatched !== true){
+      const orig = StoreData.init.bind(StoreData);
+      StoreData.init = async function(){
+        // Try to make fetch work from admin folder
+        const tryUrls = ['../catalog.json', 'catalog.json', '/catalog.json'];
+        // Monkey-patch fetch temporarily inside StoreData if it uses fetch('catalog.json')
+        const realFetch = window.fetch;
+        window.fetch = function(url, ...rest){
+          if(typeof url === 'string' && url.includes('catalog.json') && !url.startsWith('http')){
+            // if we are in /admin/, force ../catalog.json
+            if(location.pathname.includes('/admin')) url = '../catalog.json';
+          }
+          return realFetch.call(this, url, ...rest);
+        };
+        try{
+          const res = await orig();
+          window.fetch = realFetch;
+          return res;
+        }catch(e){
+          window.fetch = realFetch;
+          // try manual fallback
+          for(const u of tryUrls){
+            try{
+              const r = await realFetch(u + '?ts=' + Date.now());
+              if(r.ok){
+                const j = await r.json();
+                // StoreData may have save/get — if init fails we manually set localStorage
+                localStorage.setItem('moyes_catalog_v1', JSON.stringify(j));
+                return j;
+              }
+            }catch(_){}
+          }
+          throw e;
+        }
+      };
+      StoreData._origInitPatched = true;
+    }
+    return StoreData.init();
+  })());
+}
+
 (async function bootAdmin() {
   await ensureCatalog();
   if (sessionStorage.getItem('moyes_admin_ok') === '1') unlock();
@@ -319,7 +381,7 @@ function renderEditor() {
     <div class="flex flex-wrap gap-2 mt-3">
       <input id="imgUrl" class="a-input !w-64" placeholder="Paste image/video URL…">
       <button onclick="imgAddUrl()" class="a-btn btn-ghost">Add URL</button>
-      <label class="a-btn btn-ghost cursor-pointer">📷 Upload<input type="file" accept="image/*" multiple class="hidden" onchange="imgAddFiles(this)"></label>
+      <label class="a-btn btn-ghost cursor-pointer">📷 Upload<input type="file" id="productImageUpload" accept="image/*" multiple style="display:none" onchange="imgAddFiles(this); this.value=''"></label>
     </div>
     <div class="mt-3"><label class="text-xs font-bold text-gray-500">VIDEO URL (optional — mp4 or YouTube link)</label><input id="pf_video" class="a-input" value="${esc(p.video)}"></div>
   </div>
@@ -357,22 +419,42 @@ function imgAddUrl() {
   if (el.value.trim()) { EP.images.push(el.value.trim()); el.value = ''; renderImgList(); }
 }
 function imgAddFiles(input) {
-  [...input.files].forEach(file => {
+  if(!input.files || !input.files.length) return;
+  const files = [...input.files];
+  files.forEach(file => {
+    if(!file.type.startsWith('image/')){ aToast(file.name+' is not an image', true); return; }
     const r = new FileReader();
     r.onload = e => {
       const img = new Image();
       img.onload = () => {
-        const max = 900, s = Math.min(1, max / Math.max(img.width, img.height));
-        const cv = document.createElement('canvas');
-        cv.width = img.width * s; cv.height = img.height * s;
-        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-        EP.images.push(cv.toDataURL('image/jpeg', 0.82));
-        renderImgList();
+        try{
+          const max = 900, s = Math.min(1, max / Math.max(img.width, img.height));
+          const cv = document.createElement('canvas');
+          cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s);
+          const ctx = cv.getContext('2d');
+          if(!ctx){ throw new Error('no ctx'); }
+          ctx.drawImage(img, 0, 0, cv.width, cv.height);
+          EP.images.push(cv.toDataURL('image/jpeg', 0.82));
+          renderImgList();
+          aToast('Image added ✔');
+        }catch(err){ 
+          console.error('compress failed', err);
+          // fallback: use original dataURL without compression
+          EP.images.push(e.target.result);
+          renderImgList();
+          aToast('Image added (original size) ✔');
+        }
+      };
+      img.onerror = ()=> { 
+        console.error('img load failed');
+        aToast('Could not read image', true); 
       };
       img.src = e.target.result;
     };
+    r.onerror = ()=> aToast('Failed to read file', true);
     r.readAsDataURL(file);
   });
+  setTimeout(()=>{ input.value=''; }, 150);
 }
 function addVarRow() {
   document.getElementById('varRows').insertAdjacentHTML('beforeend', varRowHTML({ name: '', price: 0, salePrice: 0, available: true }));
@@ -450,7 +532,7 @@ function tabPromos() {
     </div>
     <div class="mt-3 flex gap-2 items-end">
       <div class="flex-1"><label class="text-xs font-bold text-gray-500">BANNER IMAGE URL (optional)</label><input id="bn_image" class="a-input" value="${esc(p.banner.image)}"></div>
-      <label class="a-btn btn-ghost cursor-pointer">📷 Upload<input type="file" accept="image/*" class="hidden" onchange="uploadToInput(this,'bn_image')"></label>
+      <label class="a-btn btn-ghost cursor-pointer">📷 Upload<input type="file" accept="image/*" style="display:none" onchange="uploadToInput(this,'bn_image')"></label>
     </div>
     <div class="bg-[#faf5ff] rounded-xl p-3 mt-4 text-xs text-gray-500">💡 Customers enter the code in the <b>cart</b> to unlock the discount. Product-level sale prices can also be set per option in <b>Products → Edit</b>.</div>
   </div>
@@ -521,7 +603,7 @@ function renderAdsList() {
     <div class="grid sm:grid-cols-2 gap-2">
       <div class="flex gap-2">
         <input class="a-input" placeholder="Image URL (or upload →)" value="${esc(a.image)}" oninput="TMP_ADS[${i}].image=this.value">
-        <label class="a-btn btn-ghost cursor-pointer whitespace-nowrap shrink-0">📷 Upload<input type="file" accept="image/*" class="hidden" onchange="uploadAdImage(this,${i})"></label>
+        <label class="a-btn btn-ghost cursor-pointer whitespace-nowrap shrink-0">📷 Upload<input type="file" accept="image/*" style="display:none" onchange="uploadAdImage(this,${i})"></label>
       </div>
       <div class="flex gap-2">
         <input class="a-input" placeholder="Button label" value="${esc(a.ctaLabel)}" oninput="TMP_ADS[${i}].ctaLabel=this.value">
@@ -681,7 +763,7 @@ function tabSettings() {
     <div class="flex flex-wrap gap-2">
       <button onclick="download('catalog.json', StoreData.export())" class="a-btn btn-primary">⬇ Download catalog.json</button>
       <button onclick="download('moyes-backup.json', StoreData.export())" class="a-btn btn-ghost">⬇ Backup JSON</button>
-      <label class="a-btn btn-ghost cursor-pointer">⬆ Import JSON<input type="file" accept=".json" class="hidden" onchange="importData(this)"></label>
+      <label class="a-btn btn-ghost cursor-pointer">⬆ Import JSON<input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>
       <button onclick="if(confirm('Reset everything to factory defaults?')){StoreData.reset();aToast('Reset done');render();}" class="a-btn btn-danger">Reset All</button>
     </div>
     <div class="grid sm:grid-cols-3 gap-3 mt-5">
