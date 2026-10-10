@@ -303,7 +303,38 @@
       "featured": false,
       "featuredLabel": "",
       "sold": 0,
-      "items": []
+      "items": [
+        {
+          "name": "Samosa",
+          "price": 350,
+          "salePrice": 0,
+          "available": true
+        },
+        {
+          "name": "Spring Roll",
+          "price": 300,
+          "salePrice": 0,
+          "available": true
+        },
+        {
+          "name": "Puff Puff",
+          "price": 100,
+          "salePrice": 0,
+          "available": true
+        },
+        {
+          "name": "Beef",
+          "price": 400,
+          "salePrice": 0,
+          "available": true
+        },
+        {
+          "name": "Chicken",
+          "price": 1500,
+          "salePrice": 0,
+          "available": true
+        }
+      ]
     }
   ],
   "combos": [
